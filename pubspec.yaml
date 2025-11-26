@@ -1,0 +1,78 @@
+name: attendr
+description: "A comprehensive Flutter application for tracking university lecture attendance with gamification features."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # Icons
+  cupertino_icons: ^1.0.8
+
+  # Supabase
+  supabase_flutter: ^2.10.3
+
+  # State Management
+  provider: ^6.1.2
+
+  # Navigation
+  go_router: ^14.6.2
+
+  # Location
+  geolocator: ^13.0.2
+  location: ^8.0.1
+
+  # Local Storage
+  shared_preferences: ^2.3.3
+  hive_flutter: ^1.1.0
+
+  # UI/UX
+  flutter_animate: ^4.5.0
+  shimmer: ^3.0.0
+  cached_network_image: ^3.4.1
+  flutter_svg: ^2.0.16
+
+  # Utilities
+  dio: ^5.7.0
+  json_annotation: ^4.9.0
+  freezed_annotation: ^2.4.4
+  dartz: ^0.10.1
+  equatable: ^2.0.7
+  intl: ^0.19.0
+
+  # App Locking
+  app_usage: ^3.0.0
+  flutter_app_lock: ^3.0.0
+
+  # Notifications
+  flutter_local_notifications: ^18.0.1
+
+  # Charts for Statistics
+  fl_chart: ^0.70.1
+
+  # HTTP
+  http: ^1.2.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.4.13
+  json_serializable: ^6.8.0
+  freezed: ^2.5.7
+  flutter_lints: ^5.0.0
+  mockito: ^5.4.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+    - assets/images/onboarding/
+    - assets/images/achievements/
+    - assets/icons/
+    - assets/fonts/
