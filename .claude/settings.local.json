@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(find . -type d -exec sh -c 'touch \"\"{}/.gitkeep\"\" 2>/dev/null' ;)",
+      "Bash(for file in data/datasources/gamification_remote_datasource.dart data/models/streak_model.dart data/models/points_model.dart data/models/achievement_model.dart data/models/leaderboard_entry_model.dart data/repositories/gamification_repository_impl.dart domain/entities/streak.dart domain/entities/points.dart domain/entities/achievement.dart domain/entities/leaderboard_entry.dart domain/repositories/gamification_repository.dart domain/usecases/get_streak_usecase.dart domain/usecases/use_streak_freeze_usecase.dart domain/usecases/get_leaderboard_usecase.dart domain/usecases/get_achievements_usecase.dart presentation/pages/leaderboard_page.dart presentation/pages/achievements_page.dart presentation/pages/streak_details_page.dart presentation/widgets/streak_counter.dart presentation/widgets/points_display.dart presentation/widgets/leaderboard_list.dart presentation/widgets/achievement_badge.dart presentation/widgets/streak_freeze_button.dart presentation/providers/gamification_provider.dart presentation/providers/leaderboard_provider.dart)",
+      "Bash(do)",
+      "Bash(\"lib/features/gamification/$file\")",
+      "Bash(done)",
+      "Bash(tree:*)",
+      "Bash(flutter pub get:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(flutter build:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
