@@ -1,1 +1,6 @@
-// TODO: Implement gamification_provider
+// Gamification provider
+import 'package:flutter/cupertino.dart';
+
+class GamificationProvider extends ChangeNotifier {
+  // TODO: Implement gamification_provider
+}
