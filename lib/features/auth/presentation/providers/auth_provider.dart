@@ -1,4 +1,6 @@
 // Auth provider
-class AuthProvider {
+import 'package:flutter/cupertino.dart';
+
+class AuthProvider extends ChangeNotifier{
   // TODO: Implement auth provider
 }

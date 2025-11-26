@@ -12,17 +12,16 @@ void main() async {
   await Supabase.initialize(
     url: 'https://gwprvalawbilnjtffxuh.supabase.co',
     anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3cHJ2YWxhd2JpbG5qdGZmeHVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMDcyMTQsImV4cCI6MjA3OTY4MzIxNH0.dC6CcCUKXGZVfKvsYx6V1vPTSUtSVLfoEQayyYM9ZlU',
-    authOptions: const FlutterAuthClientOptions(
-      authFlowType: AuthFlowType.pkce,
-    ),
-    localStorage: const EmptyLocalStorage(),
+
+    authOptions: const FlutterAuthClientOptions(authFlowType:
+    AuthFlowType.pkce, localStorage: EmptyLocalStorage()),
   );
   
   // Initialize shared preferences
   await SharedPreferences.getInstance();
   
   // Initialize dependency injection
-  await di.init();
+  await di.InjectionContainer.init();
   
   runApp(const LectureTrackerApp());
 }
