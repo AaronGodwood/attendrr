@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'app.dart';
-import 'injection_container.dart' as di;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Supabase
   await Supabase.initialize(
     url: 'https://gwprvalawbilnjtffxuh.supabase.co',
@@ -15,34 +13,10 @@ void main() async {
     authOptions: const FlutterAuthClientOptions(
       authFlowType: AuthFlowType.pkce,
     ),
-    localStorage: const EmptyLocalStorage(),
   );
-  
+
   // Initialize shared preferences
   await SharedPreferences.getInstance();
-  
-  // Initialize dependency injection
-  await di.init();
-  
+
   runApp(const LectureTrackerApp());
-}
-
-// Empty local storage to handle auth persistence manually
-class EmptyLocalStorage implements LocalStorage {
-  const EmptyLocalStorage();
-
-  @override
-  Future<void> initialize() async {}
-
-  @override
-  Future<String?> accessToken() async => null;
-
-  @override
-  Future<bool> hasAccessToken() async => false;
-
-  @override
-  Future<void> persistSession(String persistSessionString) async {}
-
-  @override
-  Future<void> removePersistedSession() async {}
 }
