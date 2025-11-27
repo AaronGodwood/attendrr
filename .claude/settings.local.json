@@ -10,7 +10,11 @@
       "Bash(tree:*)",
       "Bash(flutter pub get:*)",
       "Bash(flutter analyze:*)",
-      "Bash(flutter build:*)"
+      "Bash(flutter build:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(flutter test:*)",
+      "Bash(flutter run:*)"
     ],
     "deny": [],
     "ask": []
