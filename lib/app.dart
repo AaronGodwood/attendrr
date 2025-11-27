@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
 import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/timetable/presentation/providers/timetable_provider.dart';
 import 'features/attendance/presentation/providers/attendance_provider.dart';
 import 'features/social/presentation/providers/friends_provider.dart';
+import 'features/gamification/presentation/providers/gamification_provider.dart';
 import 'config/themes.dart';
 import 'config/routes.dart';
 
