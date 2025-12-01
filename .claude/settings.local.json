@@ -14,7 +14,11 @@
       "Bash(dir:*)",
       "Bash(findstr:*)",
       "Bash(flutter test:*)",
-      "Bash(flutter run:*)"
+      "Bash(flutter run:*)",
+      "Bash(Select-String -Pattern \"error|Error|ERROR|Exception|failed|Failed\")",
+      "Bash(Select-Object -First 50)",
+      "Bash(cat:*)",
+      "Bash(flutter clean:*)"
     ],
     "deny": [],
     "ask": []
