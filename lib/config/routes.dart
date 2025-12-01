@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../features/auth/presentation/pages/splash_page.dart';
+import '../features/auth/presentation/pages/login_page.dart';
+import '../features/auth/presentation/pages/register_page.dart';
+import '../features/auth/presentation/pages/forgot_password_page.dart';
 import '../features/profile/presentation/pages/profile_page.dart';
 import '../features/profile/presentation/pages/settings_page.dart';
 import '../features/timetable/presentation/pages/timetable_page.dart';
@@ -11,6 +15,7 @@ import '../features/social/presentation/pages/friend_requests_page.dart';
 import '../features/social/presentation/pages/add_friend_page.dart';
 import '../features/gamification/presentation/pages/achievements_page.dart';
 import '../features/gamification/presentation/pages/streak_details_page.dart';
+import '../features/debug/supabase_test_page.dart';
 
 class AppRoutes {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -18,8 +23,28 @@ class AppRoutes {
   
   static final GoRouter router = GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: '/timetable',
+    initialLocation: '/',
     routes: [
+      // Splash Screen
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const SplashPage(),
+      ),
+
+      // Authentication Routes (outside shell - full screen)
+      GoRoute(
+        path: '/login',
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
+        path: '/signup',
+        builder: (context, state) => const RegisterPage(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (context, state) => const ForgotPasswordPage(),
+      ),
+
       // Main app shell with bottom navigation
       ShellRoute(
         navigatorKey: _shellNavigatorKey,
@@ -85,6 +110,12 @@ class AppRoutes {
             ],
           ),
         ],
+      ),
+
+      // Debug/Test routes (outside shell - full screen)
+      GoRoute(
+        path: '/test',
+        builder: (context, state) => const SupabaseTestPage(),
       ),
     ],
   );

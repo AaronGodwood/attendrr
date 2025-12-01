@@ -1,0 +1,87 @@
+import 'package:flutter/foundation.dart';
+import '../repositories/friends_repository.dart';
+import '../repositories/leaderboard_repository.dart';
+import '../models/models.dart';
+
+class FriendsProvider extends ChangeNotifier {
+  final _friendsRepo = FriendsRepository.instance;
+  final _leaderboardRepo = LeaderboardRepository.instance;
+
+  List<FriendWithStats> _friends = [];
+  List<FriendRequest> _requests = [];
+  List<LeaderboardEntry> _leaderboard = [];
+  bool _showGlobal = true;
+  bool _isLoading = false;
+  String? _error;
+
+  List<FriendWithStats> get friends => _friends;
+  List<FriendRequest> get requests => _requests;
+  List<LeaderboardEntry> get leaderboard => _leaderboard;
+  bool get showGlobal => _showGlobal;
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+
+  Future<void> loadFriends() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      _friends = await _friendsRepo.getFriends();
+      _requests = await _friendsRepo.getPendingRequests();
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadLeaderboard() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      _leaderboard = _showGlobal
+          ? await _leaderboardRepo.getGlobalLeaderboard()
+          : await _leaderboardRepo.getFriendsLeaderboard();
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _isLoading = false;
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  void toggleLeaderboardType() {
+    _showGlobal = !_showGlobal;
+    loadLeaderboard();
+  }
+
+  Future<void> sendRequest(String userId) async {
+    try {
+      await _friendsRepo.sendRequest(userId);
+    } catch (e) {
+      _error = e.toString();
+      notifyListeners();
+    }
+  }
+
+  Future<void> acceptRequest(String friendshipId) async {
+    await _friendsRepo.acceptRequest(friendshipId);
+    await loadFriends();
+  }
+
+  Future<void> rejectRequest(String friendshipId) async {
+    await _friendsRepo.rejectRequest(friendshipId);
+    _requests.removeWhere((r) => r.id == friendshipId);
+    notifyListeners();
+  }
+
+  Future<void> removeFriend(String friendshipId) async {
+    await _friendsRepo.removeFriend(friendshipId);
+    _friends.removeWhere((f) => f.friendshipId == friendshipId);
+    notifyListeners();
+  }
+}
