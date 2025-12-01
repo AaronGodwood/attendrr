@@ -1,23 +1,17 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../../../services/auth_service.dart';
-import 'dart:async';
+import '../services/auth_service.dart';
 
-enum AuthStatus {
-  initial,
-  loading,
-  authenticated,
-  unauthenticated,
-  emailVerificationRequired,
-}
+enum AuthStatus { initial, loading, authenticated, unauthenticated, emailVerificationRequired }
 
 class AuthProvider extends ChangeNotifier {
-  final AuthService _authService = AuthService.instance;
+  final _authService = AuthService.instance;
 
   AuthStatus _status = AuthStatus.initial;
   User? _user;
   String? _error;
-  StreamSubscription<AuthState>? _authSubscription;
+  StreamSubscription<AuthState>? _subscription;
 
   AuthStatus get status => _status;
   User? get user => _user;
@@ -30,53 +24,36 @@ class AuthProvider extends ChangeNotifier {
   }
 
   void _init() {
-    // Check initial auth state
     _user = _authService.currentUser;
     _status = _user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
 
-    // Listen to auth state changes
-    _authSubscription = _authService.authStateChanges.listen((AuthState state) {
-      _handleAuthStateChange(state);
+    _subscription = _authService.authStateChanges.listen((state) {
+      switch (state.event) {
+        case AuthChangeEvent.signedIn:
+          _user = state.session?.user;
+          _status = AuthStatus.authenticated;
+          _error = null;
+          break;
+        case AuthChangeEvent.signedOut:
+          _user = null;
+          _status = AuthStatus.unauthenticated;
+          break;
+        case AuthChangeEvent.userUpdated:
+          _user = state.session?.user;
+          break;
+        default:
+          break;
+      }
+      notifyListeners();
     });
   }
 
-  void _handleAuthStateChange(AuthState state) {
-    switch (state.event) {
-      case AuthChangeEvent.signedIn:
-        _user = state.session?.user;
-        _status = AuthStatus.authenticated;
-        _error = null;
-        break;
-      case AuthChangeEvent.signedOut:
-        _user = null;
-        _status = AuthStatus.unauthenticated;
-        break;
-      case AuthChangeEvent.userUpdated:
-        _user = state.session?.user;
-        break;
-      case AuthChangeEvent.passwordRecovery:
-        // Handle password recovery flow
-        break;
-      default:
-        break;
-    }
-    notifyListeners();
-  }
-
-  Future<bool> signUp({
-    required String email,
-    required String password,
-    required String username,
-  }) async {
+  Future<bool> signUp({required String email, required String password, required String username}) async {
     _status = AuthStatus.loading;
     _error = null;
     notifyListeners();
 
-    final result = await _authService.signUp(
-      email: email,
-      password: password,
-      username: username,
-    );
+    final result = await _authService.signUp(email: email, password: password, username: username);
 
     if (result.success) {
       if (result.requiresEmailVerification) {
@@ -95,18 +72,12 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> signIn({
-    required String email,
-    required String password,
-  }) async {
+  Future<bool> signIn({required String email, required String password}) async {
     _status = AuthStatus.loading;
     _error = null;
     notifyListeners();
 
-    final result = await _authService.signIn(
-      email: email,
-      password: password,
-    );
+    final result = await _authService.signIn(email: email, password: password);
 
     if (result.success) {
       _user = result.user;
@@ -127,30 +98,24 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     final result = await _authService.signInWithGoogle();
-
-    if (result.isPending) {
-      // OAuth flow is in progress
-      return true;
-    } else if (result.success) {
-      _user = result.user;
-      _status = AuthStatus.authenticated;
-      notifyListeners();
-      return true;
-    } else {
+    if (!result.success && !result.isPending) {
       _error = result.error;
       _status = AuthStatus.unauthenticated;
       notifyListeners();
       return false;
     }
+    return true;
   }
 
   Future<bool> sendPasswordResetEmail(String email) async {
+    _error = null;
     final result = await _authService.sendPasswordResetEmail(email);
     if (!result.success) {
       _error = result.error;
       notifyListeners();
+      return false;
     }
-    return result.success;
+    return true;
   }
 
   Future<void> signOut() async {
@@ -160,19 +125,14 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Legacy method for backwards compatibility
-  Future<void> login(String email, String password) async {
-    await signIn(email: email, password: password);
-  }
-
-  // Legacy method for backwards compatibility
-  Future<void> logout() async {
-    await signOut();
+  void clearError() {
+    _error = null;
+    notifyListeners();
   }
 
   @override
   void dispose() {
-    _authSubscription?.cancel();
+    _subscription?.cancel();
     super.dispose();
   }
 }

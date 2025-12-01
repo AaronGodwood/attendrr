@@ -16,6 +16,8 @@ dependencies:
 
   # Supabase
   supabase_flutter: ^2.10.3
+  flutter_dotenv: ^5.1.0
+  icalendar_parser: ^2.0.0
 
   # State Management
   provider: ^6.1.2
@@ -71,6 +73,7 @@ flutter:
   uses-material-design: true
 
   assets:
+    - .env
     - assets/images/
     - assets/images/onboarding/
     - assets/images/achievements/

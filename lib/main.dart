@@ -1,22 +1,28 @@
+import 'package:attendr/app.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'app.dart';
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
+  await dotenv.load(fileName: '.env');
 
   // Initialize Supabase
   await Supabase.initialize(
-    url: 'https://gwprvalawbilnjtffxuh.supabase.co',
-    anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd3cHJ2YWxhd2JpbG5qdGZmeHVoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxMDcyMTQsImV4cCI6MjA3OTY4MzIxNH0.dC6CcCUKXGZVfKvsYx6V1vPTSUtSVLfoEQayyYM9ZlU',
+    url: dotenv.env['SUPABASE_URL']!,
+    anonKey: dotenv.env['SUPABASE_ANON_KEY']!,
     authOptions: const FlutterAuthClientOptions(
       authFlowType: AuthFlowType.pkce,
     ),
+    realtimeClientOptions: const RealtimeClientOptions(
+      logLevel: RealtimeLogLevel.info,
+    ),
   );
-
-  // Initialize shared preferences
-  await SharedPreferences.getInstance();
 
   runApp(const LectureTrackerApp());
 }
+
+// Global Supabase client accessor
+final supabase = Supabase.instance.client;
