@@ -10,6 +10,8 @@ class NotificationService {
 
   Future<void> initialize() async {
     const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
@@ -17,7 +19,8 @@ class NotificationService {
     );
 
     await _notifications.initialize(
-      const InitializationSettings(android: androidSettings, iOS: iosSettings),
+      const InitializationSettings(android: androidSettings, iOS: iosSettings,
+      macOS: iosSettings),
     );
   }
 
@@ -45,9 +48,9 @@ class NotificationService {
           priority: Priority.high,
         ),
         iOS: const DarwinNotificationDetails(),
+        macOS: const DarwinNotificationDetails(),
       ),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
 
@@ -64,6 +67,7 @@ class NotificationService {
           importance: Importance.high,
         ),
         iOS: const DarwinNotificationDetails(),
+        macOS: const DarwinNotificationDetails(),
       ),
     );
   }
