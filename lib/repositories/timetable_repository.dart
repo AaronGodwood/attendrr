@@ -25,7 +25,7 @@ class TimetableRepository extends BaseRepository {
         .from('lectures')
         .select()
         .eq('timetable_id', timetable.id)
-        .order('start_time');
+        .order('start_time', ascending: true);
     return (response as List).map((json) => Lecture.fromJson(json)).toList();
   }
 
@@ -40,7 +40,7 @@ class TimetableRepository extends BaseRepository {
         .eq('timetable_id', timetable.id)
         .gte('start_time', weekStart.toIso8601String())
         .lt('start_time', weekEnd.toIso8601String())
-        .order('start_time');
+        .order('start_time', ascending: true);
 
     return (response as List).map((json) => LectureWithAttendance.fromJson(json)).toList();
   }
@@ -71,7 +71,7 @@ class TimetableRepository extends BaseRepository {
         .select()
         .eq('timetable_id', timetable.id)
         .gt('start_time', now.toIso8601String())
-        .order('start_time')
+        .order('start_time', ascending: true)
         .limit(1)
         .maybeSingle();
 
