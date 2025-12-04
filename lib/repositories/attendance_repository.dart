@@ -50,7 +50,7 @@ class AttendanceRepository extends BaseRepository {
   Future<AttendanceStats> getStats() async {
     requireAuth();
     final now = DateTime.now();
-    final weekStart = now.subtract(Duration(days: now.weekday - 1));
+    final weekStart = now.subtract(Duration(days: now.weekday));
     final monthStart = DateTime(now.year, now.month, 1);
 
     final timetable = await client.from('timetables').select('id').eq('user_id', currentUserId!).single();

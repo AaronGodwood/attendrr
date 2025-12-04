@@ -97,7 +97,7 @@ class _CheckInPageState extends State<CheckInPage> {
               _buildLectureCard(provider.nextLecture!),
               const SizedBox(height: 16),
               if (provider.timeUntilNext != null)
-                Text('Starts in ${_formatDuration(provider.timeUntilNext!)}', style: const TextStyle(fontSize: 18, color: Colors.blue)),
+                Text('Starts in ${_formatDuration(provider.timeUntilNext! + const Duration(minutes: 1))}', style: const TextStyle(fontSize: 18, color: Colors.blue)),
             ] else
               const Text('No upcoming lectures today', style: TextStyle(color: Colors.grey)),
           ],
