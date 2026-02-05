@@ -7,6 +7,7 @@ import 'providers/profile_provider.dart';
 import 'providers/timetable_provider.dart';
 import 'providers/checkin_provider.dart';
 import 'providers/friends_provider.dart';
+import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
 import 'services/notification_service.dart';
@@ -47,15 +48,16 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TimetableProvider()),
         ChangeNotifierProvider(create: (_) => CheckInProvider()),
         ChangeNotifierProvider(create: (_) => FriendsProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
-      child: Consumer<AuthProvider>(
-        builder: (context, authProvider, _) {
+      child: Consumer2<AuthProvider, ThemeProvider>(
+        builder: (context, authProvider, themeProvider, _) {
           return MaterialApp.router(
             title: 'Lecture Tracker',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
-            themeMode: ThemeMode.system,
+            themeMode: themeProvider.themeMode,
             routerConfig: AppRouter.router(authProvider),
           );
         },
