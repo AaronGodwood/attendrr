@@ -31,7 +31,7 @@ Future<void> main() async {
   );
 
   // Initialize notifications
-  await NotificationService.instance.initialize();
+  //await NotificationService.instance.initialize();
 
   runApp(const MyApp());
 }
@@ -55,7 +55,7 @@ class MyApp extends StatelessWidget {
           return MaterialApp.router(
             title: 'Lecture Tracker',
             debugShowCheckedModeBanner: false,
-            theme: AppTheme.light,
+            theme: themeProvider.useHighContrast ? AppTheme.highContrast : AppTheme.light,
             darkTheme: AppTheme.dark,
             themeMode: themeProvider.themeMode,
             routerConfig: AppRouter.router(authProvider),
