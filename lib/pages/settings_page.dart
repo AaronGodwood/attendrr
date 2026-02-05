@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
+import '../providers/theme_provider.dart';
 import '../widgets/settings/ical_setup_dialog.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -45,11 +46,15 @@ class SettingsPage extends StatelessWidget {
                   subtitle: const Text('Lecture reminders'),
                   trailing: Switch(value: true, onChanged: (_) {}),
                 ),
-                ListTile(
-                  title: const Text('Theme'),
-                  subtitle: const Text('System default'),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {},
+                Consumer<ThemeProvider>(
+                  builder: (context, themeProvider, _) {
+                    return ListTile(
+                      title: const Text('Theme'),
+                      subtitle: Text(themeProvider.themeModeLabel),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () => _showThemeDialog(context),
+                    );
+                  },
                 ),
               ]),
 
@@ -109,6 +114,58 @@ class SettingsPage extends StatelessWidget {
     showDialog(
       context: context,
       builder: (context) => ICalSetupDialog(currentUrl: currentUrl),
+    );
+  }
+
+  void _showThemeDialog(BuildContext context) {
+    final themeProvider = context.read<ThemeProvider>();
+
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Choose Theme'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            RadioListTile<ThemeMode>(
+              title: const Text('System default'),
+              subtitle: const Text('Follow device settings'),
+              value: ThemeMode.system,
+              groupValue: themeProvider.themeMode,
+              onChanged: (mode) {
+                if (mode != null) {
+                  themeProvider.setThemeMode(mode);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Light'),
+              subtitle: const Text('Always use light theme'),
+              value: ThemeMode.light,
+              groupValue: themeProvider.themeMode,
+              onChanged: (mode) {
+                if (mode != null) {
+                  themeProvider.setThemeMode(mode);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<ThemeMode>(
+              title: const Text('Dark'),
+              subtitle: const Text('Always use dark theme'),
+              value: ThemeMode.dark,
+              groupValue: themeProvider.themeMode,
+              onChanged: (mode) {
+                if (mode != null) {
+                  themeProvider.setThemeMode(mode);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+          ],
+        ),
+      ),
     );
   }
 
