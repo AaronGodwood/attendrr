@@ -12,10 +12,28 @@ import '../pages/settings_page.dart';
 import '../pages/timetable_page.dart';
 import '../pages/checkin_page.dart';
 import '../pages/friends_page.dart';
+import '../pages/user_profile_page.dart';
 
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
   static final _shellNavigatorKey = GlobalKey<NavigatorState>();
+
+  static Page _buildPageWithTransition({
+    required BuildContext context,
+    required GoRouterState state,
+    required Widget child,
+  }) {
+    return CustomTransitionPage(
+      key: state.pageKey,
+      child: child,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: CurveTween(curve: Curves.easeInOut).animate(animation),
+          child: child,
+        );
+      },
+    );
+  }
 
   static GoRouter router(AuthProvider authProvider) {
     return GoRouter(
@@ -69,7 +87,11 @@ class AppRouter {
           routes: [
             GoRoute(
               path: '/profile',
-              pageBuilder: (context, state) => const NoTransitionPage(child: ProfilePage()),
+              pageBuilder: (context, state) => _buildPageWithTransition(
+                context: context,
+                state: state,
+                child: const ProfilePage(),
+              ),
               routes: [
                 GoRoute(
                   path: 'settings',
@@ -79,15 +101,40 @@ class AppRouter {
             ),
             GoRoute(
               path: '/timetable',
-              pageBuilder: (context, state) => const NoTransitionPage(child: TimetablePage()),
+              pageBuilder: (context, state) => _buildPageWithTransition(
+                context: context,
+                state: state,
+                child: const TimetablePage(),
+              ),
             ),
             GoRoute(
               path: '/checkin',
-              pageBuilder: (context, state) => const NoTransitionPage(child: CheckInPage()),
+              pageBuilder: (context, state) => _buildPageWithTransition(
+                context: context,
+                state: state,
+                child: const CheckInPage(),
+              ),
             ),
             GoRoute(
               path: '/friends',
-              pageBuilder: (context, state) => const NoTransitionPage(child: FriendsPage()),
+              pageBuilder: (context, state) => _buildPageWithTransition(
+                context: context,
+                state: state,
+                child: const FriendsPage(),
+              ),
+              routes: [
+                GoRoute(
+                  path: 'user/:userId/:username',
+                  builder: (context, state) {
+                    final userId = state.pathParameters['userId']!;
+                    final username = Uri.decodeComponent(state.pathParameters['username']!);
+                    return UserProfilePage(
+                      userId: userId,
+                      username: username,
+                    );
+                  },
+                ),
+              ],
             ),
           ],
         ),

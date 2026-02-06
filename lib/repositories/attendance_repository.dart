@@ -119,4 +119,95 @@ class AttendanceRepository extends BaseRepository {
     }
     return result;
   }
+
+  // Methods to get other users' stats and history
+  Future<AttendanceStats> getUserStats(String userId) async {
+    requireAuth();
+    final now = DateTime.now();
+    final weekStart = now.subtract(Duration(days: now.weekday));
+    final monthStart = DateTime(now.year, now.month, 1);
+
+    // Check if user has a timetable
+    final timetableResponse = await client
+        .from('timetables')
+        .select('id')
+        .eq('user_id', userId)
+        .maybeSingle();
+
+    // If no timetable, return empty stats
+    if (timetableResponse == null) {
+      return AttendanceStats(
+        weeklyAttended: 0,
+        weeklyTotal: 0,
+        monthlyAttended: 0,
+        monthlyTotal: 0,
+        overallAttended: 0,
+        overallTotal: 0,
+      );
+    }
+
+    final allAttendance = await client
+        .from('attendance')
+        .select('check_in_time')
+        .eq('user_id', userId);
+
+    final pastLectures = await client
+        .from('lectures')
+        .select('id, start_time')
+        .eq('timetable_id', timetableResponse['id'])
+        .lte('end_time', now.toIso8601String());
+
+    final attendanceList = allAttendance as List;
+    final lectureList = pastLectures as List;
+
+    int weeklyAttended = 0, monthlyAttended = 0;
+    int weeklyTotal = 0, monthlyTotal = 0;
+
+    for (final a in attendanceList) {
+      final date = DateTime.parse(a['check_in_time']);
+      if (date.isAfter(weekStart)) weeklyAttended++;
+      if (date.isAfter(monthStart)) monthlyAttended++;
+    }
+
+    for (final l in lectureList) {
+      final date = DateTime.parse(l['start_time']);
+      if (date.isAfter(weekStart)) weeklyTotal++;
+      if (date.isAfter(monthStart)) monthlyTotal++;
+    }
+
+    return AttendanceStats(
+      weeklyAttended: weeklyAttended,
+      weeklyTotal: weeklyTotal,
+      monthlyAttended: monthlyAttended,
+      monthlyTotal: monthlyTotal,
+      overallAttended: attendanceList.length,
+      overallTotal: lectureList.length,
+    );
+  }
+
+  Future<List<DailyAttendance>> getUserHistory(String userId, int days) async {
+    requireAuth();
+    final startDate = DateTime.now().subtract(Duration(days: days));
+
+    final response = await client
+        .from('attendance')
+        .select('check_in_time')
+        .eq('user_id', userId)
+        .gte('check_in_time', startDate.toIso8601String());
+
+    final Map<String, int> byDate = {};
+    for (final r in response as List) {
+      final date = DateTime.parse(r['check_in_time']);
+      final key = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      byDate[key] = (byDate[key] ?? 0) + 1;
+    }
+
+    final result = <DailyAttendance>[];
+    for (int i = days - 1; i >= 0; i--) {
+      final date = DateTime.now().subtract(Duration(days: i));
+      final key = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      result.add(DailyAttendance(date: date, count: byDate[key] ?? 0));
+    }
+    return result;
+  }
 }
