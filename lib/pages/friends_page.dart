@@ -5,6 +5,7 @@ import '../repositories/user_repository.dart';
 import '../widgets/friends/friend_card.dart';
 import '../widgets/friends/friend_request_card.dart';
 import '../widgets/friends/leaderboard_entry_tile.dart';
+import '../widgets/friends/podium_widget.dart';
 
 class FriendsPage extends StatefulWidget {
   const FriendsPage({super.key});
@@ -125,12 +126,58 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
                   ? const Center(child: CircularProgressIndicator())
                   : RefreshIndicator(
                 onRefresh: provider.loadLeaderboard,
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: provider.leaderboard.length,
-                  itemBuilder: (context, index) {
-                    return LeaderboardEntryTile(entry: provider.leaderboard[index]);
-                  },
+                child: provider.leaderboard.isEmpty
+                    ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.leaderboard_outlined, size: 64, color: Colors.grey[400]),
+                      const SizedBox(height: 16),
+                      const Text('No leaderboard data yet'),
+                    ],
+                  ),
+                )
+                    : CustomScrollView(
+                  slivers: [
+                    // Podium for top 3
+                    if (provider.leaderboard.isNotEmpty)
+                      SliverToBoxAdapter(
+                        child: PodiumWidget(
+                          topThree: provider.leaderboard.take(3).toList(),
+                        ),
+                      ),
+
+                    // Remaining entries with stagger animation
+                    if (provider.leaderboard.length > 3)
+                      SliverPadding(
+                        padding: const EdgeInsets.all(16),
+                        sliver: SliverList(
+                          delegate: SliverChildBuilderDelegate(
+                                (context, index) {
+                              final actualIndex = index + 3;
+                              return TweenAnimationBuilder<double>(
+                                duration: Duration(milliseconds: 300 + (index * 50)),
+                                tween: Tween(begin: 0.0, end: 1.0),
+                                curve: Curves.easeOut,
+                                builder: (context, value, child) {
+                                  return Transform.translate(
+                                    offset: Offset(0, 20 * (1 - value)),
+                                    child: Opacity(
+                                      opacity: value,
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                                child: LeaderboardEntryTile(
+                                  entry: provider.leaderboard[actualIndex],
+                                ),
+                              );
+                            },
+                            childCount: provider.leaderboard.length - 3,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
               ),
             ),
