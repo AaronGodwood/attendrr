@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../models/friendship.dart';
 
 class FriendCard extends StatelessWidget {
@@ -12,6 +13,9 @@ class FriendCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
+        onTap: () {
+          context.push('/friends/user/${friend.id}/${Uri.encodeComponent(friend.username)}');
+        },
         leading: CircleAvatar(
           backgroundImage: friend.avatarUrl != null ? NetworkImage(friend.avatarUrl!) : null,
           child: friend.avatarUrl == null ? Text(friend.initials) : null,
