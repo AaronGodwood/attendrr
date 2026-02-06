@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/timetable_provider.dart';
 import '../models/lecture.dart';
+import '../widgets/timetable/timetable_skeleton.dart';
 
 class TimetablePage extends StatefulWidget {
   const TimetablePage({super.key});
@@ -150,7 +152,7 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
       body: Consumer<TimetableProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const TimetableSkeleton();
           }
 
           if (provider.error != null) {
@@ -191,7 +193,10 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
           // Left arrow
           IconButton(
             icon: const Icon(Icons.chevron_left),
-            onPressed: _goToPreviousDay,
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              _goToPreviousDay();
+            },
             tooltip: 'Previous day',
           ),
           // Days selector
@@ -212,6 +217,8 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
 
                     return GestureDetector(
                       onTap: () {
+                        HapticFeedback.selectionClick();
+
                         // Determine animation direction based on selected date
                         final dayDifference = date.difference(_selectedDate).inDays;
 
@@ -297,7 +304,10 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
           // Right arrow
           IconButton(
             icon: const Icon(Icons.chevron_right),
-            onPressed: _goToNextDay,
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              _goToNextDay();
+            },
             tooltip: 'Next day',
           ),
         ],
@@ -358,7 +368,7 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
                     child: Align(
                       alignment: Alignment.topRight,
                       child: Padding(
-                        padding: const EdgeInsets.only(right: 8, top: 4),
+                        padding: const EdgeInsets.only(right: 8),
                         child: Text(
                           _formatHour(hour),
                           style: TextStyle(
@@ -467,6 +477,10 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
     final primaryColor = Theme.of(context).primaryColor;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
+    // Get text color based on background
+    final textColor = _getLectureTextColor(status, primaryColor, isDark);
+    final secondaryTextColor = _getLectureSecondaryTextColor(status, primaryColor, isDark);
+
     // Determine what to show based on height
     final showTime = height > 65;
 
@@ -513,7 +527,7 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
                         text: TextSpan(
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? Colors.white : Colors.black,
+                            color: textColor,
                           ),
                           children: [
                             TextSpan(
@@ -542,7 +556,7 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
                       Icon(
                         Icons.location_on,
                         size: 11,
-                        color: isDark ? Colors.grey[300] : Colors.grey[600],
+                        color: secondaryTextColor,
                       ),
                       const SizedBox(width: 3),
                       Expanded(
@@ -550,7 +564,7 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
                           lecture.location,
                           style: TextStyle(
                             fontSize: 11,
-                            color: isDark ? Colors.grey[300] : Colors.grey[700],
+                            color: secondaryTextColor,
                           ),
                           overflow: TextOverflow.ellipsis,
                           maxLines: 1,
@@ -567,14 +581,14 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
                       Icon(
                         Icons.access_time,
                         size: 11,
-                        color: isDark ? Colors.grey[300] : Colors.grey[600],
+                        color: secondaryTextColor,
                       ),
                       const SizedBox(width: 3),
                       Text(
                         lecture.timeRange,
                         style: TextStyle(
                           fontSize: 10,
-                          color: isDark ? Colors.grey[300] : Colors.grey[700],
+                          color: secondaryTextColor,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -591,28 +605,28 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
 
   Color _getLectureBackgroundColor(LectureStatus status, Color primaryColor, bool isDark) {
     if (isDark) {
-      // Use a nice green color for dark mode
+      // Use a nice green color for dark mode with slight translucency
       switch (status) {
         case LectureStatus.attended:
-          return const Color(0xFF2D5F2E); // Dark green
+          return const Color(0xE62D5F2E); // Dark green with 90% opacity
         case LectureStatus.missed:
-          return const Color(0xFF5F2D2D); // Dark red
+          return const Color(0xE65F2D2D); // Dark red with 90% opacity
         case LectureStatus.inProgress:
-          return const Color(0xFF2E4F3D); // Medium green
+          return const Color(0xE62E4F3D); // Medium green with 90% opacity
         case LectureStatus.upcoming:
-          return const Color(0xFF264033); // Softer green
+          return const Color(0xE6264033); // Softer green with 90% opacity
       }
     } else {
-      // Light mode colors
+      // Light mode colors with slight translucency
       switch (status) {
         case LectureStatus.attended:
-          return Colors.green.withValues(alpha: 0.15);
+          return Colors.green.withValues(alpha: 0.12);
         case LectureStatus.missed:
-          return Colors.red.withValues(alpha: 0.15);
+          return Colors.red.withValues(alpha: 0.12);
         case LectureStatus.inProgress:
-          return primaryColor.withValues(alpha: 0.25);
+          return primaryColor.withValues(alpha: 0.2);
         case LectureStatus.upcoming:
-          return primaryColor.withValues(alpha: 0.1);
+          return primaryColor.withValues(alpha: 0.08);
       }
     }
   }
@@ -633,6 +647,62 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
     } else {
       // Light mode uses primary color
       return primaryColor;
+    }
+  }
+
+  Color _getLectureTextColor(LectureStatus status, Color primaryColor, bool isDark) {
+    if (isDark) {
+      // Darker shade of the background color for text in dark mode
+      switch (status) {
+        case LectureStatus.attended:
+          return const Color(0xFF93D693); // Lighter green
+        case LectureStatus.missed:
+          return const Color(0xFFE69393); // Lighter red
+        case LectureStatus.inProgress:
+          return const Color(0xFF7FD6A8); // Lighter medium green
+        case LectureStatus.upcoming:
+          return const Color(0xFF6BC9B8); // Lighter teal
+      }
+    } else {
+      // Darker shade of the background color for text in light mode
+      switch (status) {
+        case LectureStatus.attended:
+          return const Color(0xFF1B5E20); // Dark green
+        case LectureStatus.missed:
+          return const Color(0xFFB71C1C); // Dark red
+        case LectureStatus.inProgress:
+          return primaryColor.withValues(alpha: 0.9);
+        case LectureStatus.upcoming:
+          return primaryColor.withValues(alpha: 0.8);
+      }
+    }
+  }
+
+  Color _getLectureSecondaryTextColor(LectureStatus status, Color primaryColor, bool isDark) {
+    if (isDark) {
+      // Slightly muted version for secondary text in dark mode
+      switch (status) {
+        case LectureStatus.attended:
+          return const Color(0xFF7ABF7A); // Muted lighter green
+        case LectureStatus.missed:
+          return const Color(0xFFCC7A7A); // Muted lighter red
+        case LectureStatus.inProgress:
+          return const Color(0xFF66BB8F); // Muted lighter medium green
+        case LectureStatus.upcoming:
+          return const Color(0xFF52AFA0); // Muted lighter teal
+      }
+    } else {
+      // Muted darker shade for secondary text in light mode
+      switch (status) {
+        case LectureStatus.attended:
+          return const Color(0xFF2E7D32); // Slightly lighter dark green
+        case LectureStatus.missed:
+          return const Color(0xFFC62828); // Slightly lighter dark red
+        case LectureStatus.inProgress:
+          return primaryColor.withValues(alpha: 0.75);
+        case LectureStatus.upcoming:
+          return primaryColor.withValues(alpha: 0.65);
+      }
     }
   }
 
