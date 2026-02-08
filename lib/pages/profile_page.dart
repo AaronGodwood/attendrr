@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/profile_provider.dart';
 import '../widgets/profile/stats_card.dart';
 import '../widgets/profile/attendance_chart.dart';
+import '../widgets/profile/profile_skeleton.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -33,7 +34,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: Consumer<ProfileProvider>(
         builder: (context, provider, _) {
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return const ProfileSkeleton();
           }
 
           if (provider.error != null) {
