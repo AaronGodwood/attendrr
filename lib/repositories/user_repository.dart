@@ -72,4 +72,47 @@ class UserRepository extends BaseRepository {
         .limit(20);
     return (response as List).map((json) => User.fromJson(json)).toList();
   }
+
+  // Methods to get other users' profiles
+  Future<User> getUserProfile(String userId) async {
+    requireAuth();
+    final response = await client
+        .from('profiles')
+        .select()
+        .eq('id', userId)
+        .single();
+    return User.fromJson(response);
+  }
+
+  Future<Streak> getUserStreak(String userId) async {
+    requireAuth();
+    final response = await client
+        .from('streaks')
+        .select()
+        .eq('user_id', userId)
+        .maybeSingle();
+
+    // If no streak record exists, return a default streak
+    if (response == null) {
+      return Streak.empty(userId);
+    }
+
+    return Streak.fromJson(response);
+  }
+
+  Future<Points> getUserPoints(String userId) async {
+    requireAuth();
+    final response = await client
+        .from('points')
+        .select()
+        .eq('user_id', userId)
+        .maybeSingle();
+
+    // If no points record exists, return default points
+    if (response == null) {
+      return Points.empty(userId);
+    }
+
+    return Points.fromJson(response);
+  }
 }

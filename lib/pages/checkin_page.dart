@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/checkin_provider.dart';
 import '../models/lecture.dart';
+import '../widgets/checkin/checkin_skeleton.dart';
 import 'dart:async';
 
 class CheckInPage extends StatefulWidget {
@@ -47,7 +48,7 @@ class _CheckInPageState extends State<CheckInPage> {
         builder: (context, provider, _) {
           switch (provider.state) {
             case CheckInState.loading:
-              return const Center(child: CircularProgressIndicator());
+              return const CheckInSkeleton();
             case CheckInState.error:
               return _buildError(provider);
             case CheckInState.noLecture:
