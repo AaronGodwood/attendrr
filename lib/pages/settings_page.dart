@@ -127,11 +127,11 @@ class SettingsPage extends StatelessWidget {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            RadioListTile<ThemeMode>(
+            RadioListTile<AppThemeMode>(
               title: const Text('System default'),
               subtitle: const Text('Follow device settings'),
-              value: ThemeMode.system,
-              groupValue: themeProvider.themeMode,
+              value: AppThemeMode.system,
+              groupValue: themeProvider.appThemeMode,
               onChanged: (mode) {
                 if (mode != null) {
                   themeProvider.setThemeMode(mode);
@@ -139,11 +139,11 @@ class SettingsPage extends StatelessWidget {
                 }
               },
             ),
-            RadioListTile<ThemeMode>(
+            RadioListTile<AppThemeMode>(
               title: const Text('Light'),
               subtitle: const Text('Always use light theme'),
-              value: ThemeMode.light,
-              groupValue: themeProvider.themeMode,
+              value: AppThemeMode.light,
+              groupValue: themeProvider.appThemeMode,
               onChanged: (mode) {
                 if (mode != null) {
                   themeProvider.setThemeMode(mode);
@@ -151,11 +151,23 @@ class SettingsPage extends StatelessWidget {
                 }
               },
             ),
-            RadioListTile<ThemeMode>(
+            RadioListTile<AppThemeMode>(
               title: const Text('Dark'),
               subtitle: const Text('Always use dark theme'),
-              value: ThemeMode.dark,
-              groupValue: themeProvider.themeMode,
+              value: AppThemeMode.dark,
+              groupValue: themeProvider.appThemeMode,
+              onChanged: (mode) {
+                if (mode != null) {
+                  themeProvider.setThemeMode(mode);
+                  Navigator.pop(context);
+                }
+              },
+            ),
+            RadioListTile<AppThemeMode>(
+              title: const Text('High Contrast'),
+              subtitle: const Text('Accessibility theme with high contrast'),
+              value: AppThemeMode.highContrast,
+              groupValue: themeProvider.appThemeMode,
               onChanged: (mode) {
                 if (mode != null) {
                   themeProvider.setThemeMode(mode);
