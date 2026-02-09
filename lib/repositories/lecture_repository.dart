@@ -11,11 +11,12 @@ class LectureRepository extends BaseRepository {
   Future<List<Lecture>> getAllLectures() async {
     requireAuth();
 
-    final timetable = await client
-        .from('timetables')
-        .select('id')
-        .eq('user_id', currentUserId!)
-        .single();
+    final timetable =
+        await client
+            .from('timetables')
+            .select('id')
+            .eq('user_id', currentUserId!)
+            .single();
 
     final response = await client
         .from('lectures')
@@ -32,11 +33,12 @@ class LectureRepository extends BaseRepository {
 
     final weekEnd = weekStart.add(Duration(days: 7));
 
-    final timetable = await client
-        .from('timetables')
-        .select('id')
-        .eq('user_id', currentUserId!)
-        .single();
+    final timetable =
+        await client
+            .from('timetables')
+            .select('id')
+            .eq('user_id', currentUserId!)
+            .single();
 
     final response = await client
         .from('lectures')
@@ -50,16 +52,19 @@ class LectureRepository extends BaseRepository {
   }
 
   /// Gets lectures with attendance status for a week
-  Future<List<LectureWithAttendance>> getLecturesWithAttendance(DateTime weekStart) async {
+  Future<List<LectureWithAttendance>> getLecturesWithAttendance(
+    DateTime weekStart,
+  ) async {
     requireAuth();
 
     final weekEnd = weekStart.add(Duration(days: 7));
 
-    final timetable = await client
-        .from('timetables')
-        .select('id')
-        .eq('user_id', currentUserId!)
-        .single();
+    final timetable =
+        await client
+            .from('timetables')
+            .select('id')
+            .eq('user_id', currentUserId!)
+            .single();
 
     final response = await client
         .from('lectures')
@@ -80,7 +85,7 @@ class LectureRepository extends BaseRepository {
       return LectureWithAttendance(
         lecture: lecture,
         attended: attended,
-        attendanceId: attended ? attendanceList!.first['id'] : null,
+        attendanceId: attended ? attendanceList.first['id'] : null,
       );
     }).toList();
   }
@@ -91,19 +96,21 @@ class LectureRepository extends BaseRepository {
 
     final now = DateTime.now();
 
-    final timetable = await client
-        .from('timetables')
-        .select('id')
-        .eq('user_id', currentUserId!)
-        .single();
+    final timetable =
+        await client
+            .from('timetables')
+            .select('id')
+            .eq('user_id', currentUserId!)
+            .single();
 
-    final response = await client
-        .from('lectures')
-        .select()
-        .eq('timetable_id', timetable['id'])
-        .lte('start_time', now.toIso8601String())
-        .gte('end_time', now.toIso8601String())
-        .maybeSingle();
+    final response =
+        await client
+            .from('lectures')
+            .select()
+            .eq('timetable_id', timetable['id'])
+            .lte('start_time', now.toIso8601String())
+            .gte('end_time', now.toIso8601String())
+            .maybeSingle();
 
     if (response == null) return null;
     return Lecture.fromJson(response);
@@ -115,20 +122,22 @@ class LectureRepository extends BaseRepository {
 
     final now = DateTime.now();
 
-    final timetable = await client
-        .from('timetables')
-        .select('id')
-        .eq('user_id', currentUserId!)
-        .single();
+    final timetable =
+        await client
+            .from('timetables')
+            .select('id')
+            .eq('user_id', currentUserId!)
+            .single();
 
-    final response = await client
-        .from('lectures')
-        .select()
-        .eq('timetable_id', timetable['id'])
-        .gt('start_time', now.toIso8601String())
-        .order('start_time')
-        .limit(1)
-        .maybeSingle();
+    final response =
+        await client
+            .from('lectures')
+            .select()
+            .eq('timetable_id', timetable['id'])
+            .gt('start_time', now.toIso8601String())
+            .order('start_time')
+            .limit(1)
+            .maybeSingle();
 
     if (response == null) return null;
     return Lecture.fromJson(response);
@@ -142,11 +151,12 @@ class LectureRepository extends BaseRepository {
     final startOfDay = DateTime(now.year, now.month, now.day);
     final endOfDay = startOfDay.add(Duration(days: 1));
 
-    final timetable = await client
-        .from('timetables')
-        .select('id')
-        .eq('user_id', currentUserId!)
-        .single();
+    final timetable =
+        await client
+            .from('timetables')
+            .select('id')
+            .eq('user_id', currentUserId!)
+            .single();
 
     final response = await client
         .from('lectures')

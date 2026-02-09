@@ -1,5 +1,6 @@
 import 'package:http/http.dart' as http;
 import 'package:icalendar_parser/icalendar_parser.dart';
+import '../utils/location_lookup.dart';
 
 class ICalService {
   static final ICalService instance = ICalService._();
@@ -7,9 +8,9 @@ class ICalService {
 
   Future<bool> validateUrl(String url) async {
     try {
-      final response = await http.get(Uri.parse(url)).timeout(
-        const Duration(seconds: 10),
-      );
+      final response = await http
+          .get(Uri.parse(url))
+          .timeout(const Duration(seconds: 10));
       if (response.statusCode != 200) return false;
       return response.body.contains('BEGIN:VCALENDAR') &&
           response.body.contains('BEGIN:VEVENT');
@@ -85,7 +86,9 @@ class ICalEvent {
     }
 
     return ICalEvent(
-      uid: data['uid']?.toString() ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      uid:
+          data['uid']?.toString() ??
+          DateTime.now().millisecondsSinceEpoch.toString(),
       summary: data['summary']?.toString() ?? 'Untitled',
       description: data['description']?.toString(),
       location: data['location']?.toString(),
@@ -101,19 +104,25 @@ class ICalEvent {
   }
 
   String get title {
-    return summary.replaceFirst(RegExp(r'^[A-Z]{2,4}\d{4,5}\s*[-:]\s*'), '').trim();
+    return summary
+        .replaceFirst(RegExp(r'^[A-Z]{2,4}\d{4,5}\s*[-:]\s*'), '')
+        .trim();
   }
 
-  Map<String, dynamic> toLectureJson(String timetableId) => {
-    'timetable_id': timetableId,
-    'external_id': uid,
-    'title': title.isEmpty ? summary : title,
-    'module_code': moduleCode,
-    'location': location ?? 'TBC',
-    'latitude': 0.0,
-    'longitude': 0.0,
-    'start_time': dtStart.toIso8601String(),
-    'end_time': dtEnd.toIso8601String(),
-    'recurrence_rule': rrule,
-  };
+  Map<String, dynamic> toLectureJson(String timetableId) {
+    final building = LocationLookup.resolve(location);
+
+    return {
+      'timetable_id': timetableId,
+      'external_id': uid,
+      'title': title.isEmpty ? summary : title,
+      'module_code': moduleCode,
+      'location': location ?? 'TBC',
+      'latitude': building?.latitude ?? 0.0,
+      'longitude': building?.longitude ?? 0.0,
+      'start_time': dtStart.toIso8601String(),
+      'end_time': dtEnd.toIso8601String(),
+      'recurrence_rule': rrule,
+    };
+  }
 }
