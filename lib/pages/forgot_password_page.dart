@@ -45,13 +45,28 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           Container(
             width: 80,
             height: 80,
-            decoration: BoxDecoration(color: Theme.of(context).primaryColor.withOpacity(0.1), shape: BoxShape.circle),
-            child: Icon(Icons.lock_reset, size: 40, color: Theme.of(context).primaryColor),
+            decoration: BoxDecoration(
+              color: Theme.of(context).primaryColor.withAlpha(26),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.lock_reset,
+              size: 40,
+              color: Theme.of(context).primaryColor,
+            ),
           ),
           const SizedBox(height: 24),
-          const Text('Forgot Password?', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+          const Text(
+            'Forgot Password?',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 8),
-          Text("Enter your email and we'll send you a reset link.", style: TextStyle(fontSize: 16, color: Colors.grey[600]), textAlign: TextAlign.center),
+          Text(
+            "Enter your email and we'll send you a reset link.",
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 32),
 
           TextFormField(
@@ -60,11 +75,19 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             decoration: InputDecoration(
               labelText: 'Email',
               prefixIcon: const Icon(Icons.email_outlined),
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
             validator: (value) {
-              if (value == null || value.isEmpty) return 'Please enter your email';
-              if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'Please enter a valid email';
+              if (value == null || value.isEmpty) {
+                return 'Please enter your email';
+              }
+              if (!RegExp(
+                r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+              ).hasMatch(value)) {
+                return 'Please enter a valid email';
+              }
               return null;
             },
           ),
@@ -74,13 +97,30 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             height: 56,
             child: ElevatedButton(
               onPressed: _isLoading ? null : _handleReset,
-              child: _isLoading
-                  ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                  : const Text('Send Reset Link', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              child:
+                  _isLoading
+                      ? const SizedBox(
+                        width: 24,
+                        height: 24,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                      : const Text(
+                        'Send Reset Link',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
             ),
           ),
           const SizedBox(height: 24),
-          TextButton(onPressed: () => context.pop(), child: const Text('Back to Login')),
+          TextButton(
+            onPressed: () => context.pop(),
+            child: const Text('Back to Login'),
+          ),
         ],
       ),
     );
@@ -93,17 +133,39 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
         Container(
           width: 100,
           height: 100,
-          decoration: BoxDecoration(color: Colors.green.withOpacity(0.1), shape: BoxShape.circle),
-          child: const Icon(Icons.mark_email_read, size: 50, color: Colors.green),
+          decoration: BoxDecoration(
+            color: Colors.green.withAlpha(26),
+            shape: BoxShape.circle,
+          ),
+          child: const Icon(
+            Icons.mark_email_read,
+            size: 50,
+            color: Colors.green,
+          ),
         ),
         const SizedBox(height: 32),
-        const Text('Check Your Email', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+        const Text(
+          'Check Your Email',
+          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 16),
-        Text('We\'ve sent a password reset link to:', style: TextStyle(color: Colors.grey[600]), textAlign: TextAlign.center),
+        Text(
+          'We\'ve sent a password reset link to:',
+          style: TextStyle(color: Colors.grey[600]),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 8),
-        Text(_emailController.text, style: const TextStyle(fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+        Text(
+          _emailController.text,
+          style: const TextStyle(fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
         const SizedBox(height: 32),
-        OutlinedButton(onPressed: () => context.go('/login'), child: const Text('Back to Login')),
+        OutlinedButton(
+          onPressed: () => context.go('/login'),
+          child: const Text('Back to Login'),
+        ),
       ],
     );
   }
@@ -112,7 +174,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
-    final success = await context.read<AuthProvider>().sendPasswordResetEmail(_emailController.text.trim());
+    final success = await context.read<AuthProvider>().sendPasswordResetEmail(
+      _emailController.text.trim(),
+    );
     setState(() => _isLoading = false);
 
     if (success) {

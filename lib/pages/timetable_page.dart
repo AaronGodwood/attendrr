@@ -13,7 +13,10 @@ class TimetablePage extends StatefulWidget {
   State<TimetablePage> createState() => _TimetablePageState();
 }
 
-class _TimetablePageState extends State<TimetablePage> with SingleTickerProviderStateMixin {
+class _TimetablePageState extends State<TimetablePage>
+    with SingleTickerProviderStateMixin {
+  static const int _visibleStartHour = 7;
+  static const int _visibleEndHour = 22; // 10pm
   DateTime _selectedDate = DateTime.now();
   final ScrollController _timeScrollController = ScrollController();
   final ScrollController _labelScrollController = ScrollController();
@@ -33,10 +36,9 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
     _slideAnimation = Tween<Offset>(
       begin: Offset.zero,
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TimetableProvider>().loadWeek(_selectedDate);
@@ -71,10 +73,20 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
         if (_isToday(_selectedDate)) {
           // For today, scroll to current time minus 2 hours for context
           final hour = now.hour;
-          scrollPosition = ((hour - 2).clamp(0, 24) * 60.0);
+          scrollPosition =
+              ((hour - _visibleStartHour - 2).clamp(
+                    0,
+                    _visibleEndHour - _visibleStartHour,
+                  ) *
+                  60.0);
         } else {
           // For other days, scroll to 8 AM (middle of typical day)
-          scrollPosition = 8 * 60.0;
+          scrollPosition =
+              (8 - _visibleStartHour).clamp(
+                0,
+                _visibleEndHour - _visibleStartHour,
+              ) *
+              60.0;
         }
 
         _timeScrollController.animateTo(
@@ -90,10 +102,9 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
     _slideAnimation = Tween<Offset>(
       begin: const Offset(-1.0, 0.0),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
     _animationController.forward(from: 0.0);
 
@@ -111,10 +122,9 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
     _slideAnimation = Tween<Offset>(
       begin: const Offset(1.0, 0.0),
       end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(
+      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
+    );
 
     _animationController.forward(from: 0.0);
 
@@ -177,16 +187,17 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
 
   Widget _buildDaySelector(TimetableProvider provider) {
     final weekStart = _getWeekStart(_selectedDate);
-    final days = List.generate(7, (index) => weekStart.add(Duration(days: index)));
+    final days = List.generate(
+      7,
+      (index) => weekStart.add(Duration(days: index)),
+    );
 
     return Container(
       height: 80,
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: Theme.of(context).cardColor,
-        border: Border(
-          bottom: BorderSide(color: Colors.grey[300]!, width: 1),
-        ),
+        border: Border(bottom: BorderSide(color: Colors.grey[300]!, width: 1)),
       ),
       child: Row(
         children: [
@@ -203,34 +214,38 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
-                // Calculate width for each day based on available space
                 final availableWidth = constraints.maxWidth;
-                final dayWidth = (availableWidth / 7).clamp(50.0, 80.0);
+                final dayWidth = (availableWidth / 7).clamp(44.0, 72.0);
 
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: days.map((date) {
+                return ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  itemCount: days.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 4),
+                  itemBuilder: (context, index) {
+                    final date = days[index];
                     final isSelected = _isSameDay(date, _selectedDate);
                     final isToday = _isToday(date);
-
-                    final isDark = Theme.of(context).brightness == Brightness.dark;
+                    final isDark =
+                        Theme.of(context).brightness == Brightness.dark;
 
                     return GestureDetector(
                       onTap: () {
                         HapticFeedback.selectionClick();
 
-                        // Determine animation direction based on selected date
-                        final dayDifference = date.difference(_selectedDate).inDays;
-
+                        final dayDifference =
+                            date.difference(_selectedDate).inDays;
                         if (dayDifference != 0) {
                           _slideAnimation = Tween<Offset>(
                             begin: Offset(dayDifference > 0 ? 1.0 : -1.0, 0.0),
                             end: Offset.zero,
-                          ).animate(CurvedAnimation(
-                            parent: _animationController,
-                            curve: Curves.easeInOut,
-                          ));
-
+                          ).animate(
+                            CurvedAnimation(
+                              parent: _animationController,
+                              curve: Curves.easeInOut,
+                            ),
+                          );
                           _animationController.forward(from: 0.0);
                         }
 
@@ -238,65 +253,69 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
                           _selectedDate = date;
                         });
                         _scrollToCurrentTime();
-                        // Load new week if needed
-                        if (!_isSameWeek(_selectedDate, provider.selectedWeek)) {
+                        if (!_isSameWeek(
+                          _selectedDate,
+                          provider.selectedWeek,
+                        )) {
                           provider.loadWeek(_selectedDate);
                         }
                       },
                       child: Container(
                         width: dayWidth,
-                        margin: const EdgeInsets.symmetric(horizontal: 2),
                         decoration: BoxDecoration(
-                          color: isSelected
-                              ? Theme.of(context).primaryColor
-                              : isToday
-                                  ? Theme.of(context).primaryColor.withValues(alpha: 0.2)
+                          color:
+                              isSelected
+                                  ? Theme.of(context).primaryColor
+                                  : isToday
+                                  ? Theme.of(
+                                    context,
+                                  ).primaryColor.withValues(alpha: 0.18)
                                   : Colors.transparent,
-                          borderRadius: BorderRadius.circular(25),
+                          borderRadius: BorderRadius.circular(22),
                         ),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                DateFormat('EEE').format(date).substring(0, 3),
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w600,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : isToday
-                                          ? Theme.of(context).primaryColor
-                                          : isDark
-                                              ? Colors.grey[300]
-                                              : Colors.grey[600],
-                                ),
+                            Text(
+                              DateFormat('EEE').format(date).substring(0, 3),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w600,
+                                color:
+                                    isSelected
+                                        ? Colors.white
+                                        : isToday
+                                        ? Theme.of(context).primaryColor
+                                        : isDark
+                                        ? Colors.grey[300]
+                                        : Colors.grey[600],
                               ),
                             ),
                             const SizedBox(height: 2),
-                            FittedBox(
-                              fit: BoxFit.scaleDown,
-                              child: Text(
-                                '${date.day}',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : isToday
-                                          ? Theme.of(context).primaryColor
-                                          : isDark
-                                              ? Colors.white
-                                              : Colors.black,
-                                ),
+                            Text(
+                              '${date.day}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color:
+                                    isSelected
+                                        ? Colors.white
+                                        : isToday
+                                        ? Theme.of(context).primaryColor
+                                        : isDark
+                                        ? Colors.white
+                                        : Colors.black,
                               ),
                             ),
                           ],
                         ),
                       ),
                     );
-                  }).toList(),
+                  },
                 );
               },
             ),
@@ -316,9 +335,10 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
   }
 
   Widget _buildDayView(TimetableProvider provider) {
-    final dayLectures = provider.lectures
-        .where((l) => _isSameDay(l.lecture.startTime, _selectedDate))
-        .toList();
+    final dayLectures =
+        provider.lectures
+            .where((l) => _isSameDay(l.lecture.startTime, _selectedDate))
+            .toList();
 
     if (provider.lectures.isEmpty) {
       return Center(
@@ -329,7 +349,10 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
             const SizedBox(height: 16),
             const Text('No lectures this week', style: TextStyle(fontSize: 18)),
             const SizedBox(height: 8),
-            Text('Import your timetable in Settings', style: TextStyle(color: Colors.grey[600])),
+            Text(
+              'Import your timetable in Settings',
+              style: TextStyle(color: Colors.grey[600]),
+            ),
           ],
         ),
       );
@@ -360,27 +383,28 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
             controller: _labelScrollController,
             physics: const NeverScrollableScrollPhysics(),
             child: SizedBox(
-              height: 24 * 60.0, // 24 hours * 60px per hour
-              child: Column(
-                children: List.generate(24, (hour) {
-                  return SizedBox(
-                    height: 60,
-                    child: Align(
-                      alignment: Alignment.topRight,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: Text(
-                          _formatHour(hour),
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w500,
-                          ),
+              height: (_visibleEndHour - _visibleStartHour) * 60.0,
+              child: Stack(
+                children: List.generate(
+                  _visibleEndHour - _visibleStartHour + 1,
+                  (index) {
+                    final hour = _visibleStartHour + index;
+                    final top = (hour - _visibleStartHour) * 60.0;
+
+                    return Positioned(
+                      top: top,
+                      right: 8,
+                      child: Text(
+                        _formatHour(hour),
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
                         ),
                       ),
-                    ),
-                  );
-                }),
+                    );
+                  },
+                ),
               ),
             ),
           ),
@@ -392,31 +416,34 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
             controller: _timeScrollController,
             physics: const ClampingScrollPhysics(),
             child: SizedBox(
-              height: 24 * 60.0, // 24 hours * 60px per hour
+              height: (_visibleEndHour - _visibleStartHour) * 60.0,
               child: Stack(
                 children: [
                   // Hour lines
-                  Column(
-                    children: List.generate(24, (hour) {
-                      final now = DateTime.now();
-                      final isCurrentHour = _isToday(_selectedDate) && now.hour == hour;
+                  ...List.generate(_visibleEndHour - _visibleStartHour + 1, (
+                    index,
+                  ) {
+                    final hour = _visibleStartHour + index;
+                    final now = DateTime.now();
+                    final isCurrentHour =
+                        _isToday(_selectedDate) && now.hour == hour;
+                    final top = (hour - _visibleStartHour) * 60.0;
 
-                      return Container(
-                        height: 60,
-                        decoration: BoxDecoration(
-                          border: Border(
-                            top: BorderSide(
-                              color: Colors.grey[300]!,
-                              width: 1,
-                            ),
-                          ),
-                          color: isCurrentHour
-                              ? Theme.of(context).primaryColor.withValues(alpha: 0.05)
-                              : null,
-                        ),
-                      );
-                    }),
-                  ),
+                    return Positioned(
+                      top: top,
+                      left: 0,
+                      right: 0,
+                      child: Container(
+                        height: 1,
+                        color:
+                            isCurrentHour
+                                ? Theme.of(
+                                  context,
+                                ).primaryColor.withValues(alpha: 0.2)
+                                : Colors.grey[300]!,
+                      ),
+                    );
+                  }),
 
                   // Current time indicator
                   if (_isToday(_selectedDate)) _buildCurrentTimeIndicator(),
@@ -438,7 +465,15 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
   Widget _buildCurrentTimeIndicator() {
     final now = DateTime.now();
     final minutesSinceMidnight = now.hour * 60 + now.minute;
-    final topPosition = (minutesSinceMidnight / 60) * 60.0;
+    final startMinutes = _visibleStartHour * 60;
+    final endMinutes = _visibleEndHour * 60;
+
+    if (minutesSinceMidnight < startMinutes ||
+        minutesSinceMidnight > endMinutes) {
+      return const SizedBox.shrink();
+    }
+
+    final topPosition = (minutesSinceMidnight - startMinutes).toDouble();
 
     return Positioned(
       top: topPosition,
@@ -454,24 +489,30 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
               shape: BoxShape.circle,
             ),
           ),
-          Expanded(
-            child: Container(
-              height: 2,
-              color: Colors.red,
-            ),
-          ),
+          Expanded(child: Container(height: 2, color: Colors.red)),
         ],
       ),
     );
   }
 
-  Widget _buildLectureBlock(Lecture lecture, LectureWithAttendance lectureWithAttendance) {
+  Widget _buildLectureBlock(
+    Lecture lecture,
+    LectureWithAttendance lectureWithAttendance,
+  ) {
     final startMinutes = lecture.startTime.hour * 60 + lecture.startTime.minute;
     final endMinutes = lecture.endTime.hour * 60 + lecture.endTime.minute;
-    final durationMinutes = endMinutes - startMinutes;
+    final visibleStart = _visibleStartHour * 60;
+    final visibleEnd = _visibleEndHour * 60;
+    final clippedStart = startMinutes.clamp(visibleStart, visibleEnd);
+    final clippedEnd = endMinutes.clamp(visibleStart, visibleEnd);
+    final durationMinutes = clippedEnd - clippedStart;
 
-    final topPosition = (startMinutes / 60) * 60.0;
-    final height = (durationMinutes / 60) * 60.0;
+    if (durationMinutes <= 0) {
+      return const SizedBox.shrink();
+    }
+
+    final topPosition = (clippedStart - visibleStart).toDouble();
+    final height = durationMinutes.toDouble();
 
     final status = lectureWithAttendance.status;
     final primaryColor = Theme.of(context).primaryColor;
@@ -479,123 +520,141 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
 
     // Get text color based on background
     final textColor = _getLectureTextColor(status, primaryColor, isDark);
-    final secondaryTextColor = _getLectureSecondaryTextColor(status, primaryColor, isDark);
+    final secondaryTextColor = _getLectureSecondaryTextColor(
+      status,
+      primaryColor,
+      isDark,
+    );
 
     // Determine what to show based on height
     final showTime = height > 65;
+    final titleMaxLines = height > 72 ? 2 : 1;
 
     return Positioned(
       top: topPosition,
       left: 8,
       right: 8,
-      child: Container(
-        height: height,
-        margin: const EdgeInsets.only(bottom: 2),
-        decoration: BoxDecoration(
-          color: _getLectureBackgroundColor(status, primaryColor, isDark),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          key: Key('lecture_${lecture.id}'),
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: _getLectureBorderColor(status, primaryColor, isDark),
-            width: 2,
-          ),
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(6),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Module code and title on same line
-                Row(
+          onTap: () => _showLectureDetails(lecture, lectureWithAttendance),
+          child: Container(
+            height: height,
+            margin: const EdgeInsets.only(bottom: 2),
+            decoration: BoxDecoration(
+              color: _getLectureBackgroundColor(status, primaryColor, isDark),
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: _getLectureBorderColor(status, primaryColor, isDark),
+                width: 2,
+              ),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(6),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (status == LectureStatus.attended)
-                      const Padding(
-                        padding: EdgeInsets.only(right: 4),
-                        child: Icon(Icons.check_circle, size: 14, color: Colors.green),
-                      )
-                    else if (status == LectureStatus.missed)
-                      const Padding(
-                        padding: EdgeInsets.only(right: 4),
-                        child: Icon(Icons.cancel, size: 14, color: Colors.red),
-                      ),
-                    Expanded(
-                      child: RichText(
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 2,
-                        text: TextSpan(
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: textColor,
+                    // Module code and title on same line
+                    Row(
+                      children: [
+                        if (status == LectureStatus.attended)
+                          const Padding(
+                            padding: EdgeInsets.only(right: 4),
+                            child: Icon(
+                              Icons.check_circle,
+                              size: 14,
+                              color: Colors.green,
+                            ),
+                          )
+                        else if (status == LectureStatus.missed)
+                          const Padding(
+                            padding: EdgeInsets.only(right: 4),
+                            child: Icon(
+                              Icons.cancel,
+                              size: 14,
+                              color: Colors.red,
+                            ),
                           ),
-                          children: [
-                            TextSpan(
-                              text: lecture.moduleCode,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
+                        Expanded(
+                          child: RichText(
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: titleMaxLines,
+                            text: TextSpan(
+                              style: TextStyle(fontSize: 12, color: textColor),
+                              children: [
+                                TextSpan(
+                                  text: lecture.moduleCode,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                TextSpan(
+                                  text: ' ${lecture.title}',
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.normal,
+                                  ),
+                                ),
+                              ],
                             ),
-                            TextSpan(
-                              text: ' ${lecture.title}',
-                              style: const TextStyle(
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
-                      ),
+                      ],
                     ),
-                  ],
-                ),
-                // Location (always show if available)
-                if (lecture.location.isNotEmpty) ...[
-                  const SizedBox(height: 3),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on,
-                        size: 11,
-                        color: secondaryTextColor,
-                      ),
-                      const SizedBox(width: 3),
-                      Expanded(
-                        child: Text(
-                          lecture.location,
-                          style: TextStyle(
-                            fontSize: 11,
+                    // Location (always show if available)
+                    if (lecture.location.isNotEmpty) ...[
+                      const SizedBox(height: 3),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.location_on,
+                            size: 11,
                             color: secondaryTextColor,
                           ),
-                          overflow: TextOverflow.ellipsis,
-                          maxLines: 1,
-                        ),
+                          const SizedBox(width: 3),
+                          Expanded(
+                            child: Text(
+                              lecture.location,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: secondaryTextColor,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 1,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
-                // Time
-                if (showTime) ...[
-                  const SizedBox(height: 3),
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.access_time,
-                        size: 11,
-                        color: secondaryTextColor,
-                      ),
-                      const SizedBox(width: 3),
-                      Text(
-                        lecture.timeRange,
-                        style: TextStyle(
-                          fontSize: 10,
-                          color: secondaryTextColor,
-                          fontWeight: FontWeight.w500,
-                        ),
+                    // Time
+                    if (showTime) ...[
+                      const SizedBox(height: 3),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time,
+                            size: 11,
+                            color: secondaryTextColor,
+                          ),
+                          const SizedBox(width: 3),
+                          Text(
+                            lecture.timeRange,
+                            style: TextStyle(
+                              fontSize: 10,
+                              color: secondaryTextColor,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
-              ],
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -603,7 +662,75 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
     );
   }
 
-  Color _getLectureBackgroundColor(LectureStatus status, Color primaryColor, bool isDark) {
+  void _showLectureDetails(
+    Lecture lecture,
+    LectureWithAttendance lectureWithAttendance,
+  ) {
+    final status = lectureWithAttendance.status;
+    final points = lectureWithAttendance.pointsEarned;
+    final isWide = MediaQuery.of(context).size.width >= 700;
+
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '${lecture.moduleCode} • ${lecture.title}',
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            const Icon(Icons.access_time, size: 16, color: Colors.grey),
+            const SizedBox(width: 6),
+            Text(lecture.timeRange),
+          ],
+        ),
+        const SizedBox(height: 6),
+        Row(
+          children: [
+            const Icon(Icons.location_on, size: 16, color: Colors.grey),
+            const SizedBox(width: 6),
+            Expanded(child: Text(lecture.location)),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Text('Status: ${status.name}'),
+        if (points != null) Text('Points: $points'),
+      ],
+    );
+
+    if (isWide) {
+      showDialog(
+        context: context,
+        builder:
+            (context) => AlertDialog(
+              title: const Text('Lecture Details'),
+              content: content,
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+      );
+    } else {
+      showModalBottomSheet(
+        context: context,
+        showDragHandle: true,
+        builder:
+            (context) =>
+                Padding(padding: const EdgeInsets.all(16), child: content),
+      );
+    }
+  }
+
+  Color _getLectureBackgroundColor(
+    LectureStatus status,
+    Color primaryColor,
+    bool isDark,
+  ) {
     if (isDark) {
       // Use a nice green color for dark mode with slight translucency
       switch (status) {
@@ -631,7 +758,11 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
     }
   }
 
-  Color _getLectureBorderColor(LectureStatus status, Color primaryColor, bool isDark) {
+  Color _getLectureBorderColor(
+    LectureStatus status,
+    Color primaryColor,
+    bool isDark,
+  ) {
     if (isDark) {
       // Brighter borders for dark mode
       switch (status) {
@@ -650,7 +781,11 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
     }
   }
 
-  Color _getLectureTextColor(LectureStatus status, Color primaryColor, bool isDark) {
+  Color _getLectureTextColor(
+    LectureStatus status,
+    Color primaryColor,
+    bool isDark,
+  ) {
     if (isDark) {
       // Darker shade of the background color for text in dark mode
       switch (status) {
@@ -678,7 +813,11 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
     }
   }
 
-  Color _getLectureSecondaryTextColor(LectureStatus status, Color primaryColor, bool isDark) {
+  Color _getLectureSecondaryTextColor(
+    LectureStatus status,
+    Color primaryColor,
+    bool isDark,
+  ) {
     if (isDark) {
       // Slightly muted version for secondary text in dark mode
       switch (status) {
@@ -730,6 +869,8 @@ class _TimetablePageState extends State<TimetablePage> with SingleTickerProvider
 
   bool _isToday(DateTime date) {
     final now = DateTime.now();
-    return date.year == now.year && date.month == now.month && date.day == now.day;
+    return date.year == now.year &&
+        date.month == now.month &&
+        date.day == now.day;
   }
 }
