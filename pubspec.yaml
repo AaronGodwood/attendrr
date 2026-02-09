@@ -1,6 +1,6 @@
 name: attendr
 description: "A comprehensive Flutter application for tracking university lecture attendance with gamification features."
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -36,6 +36,7 @@ dependencies:
   # UI/UX
   flutter_animate: ^4.5.0
   shimmer: ^3.0.0
+  skeleton_text: ^3.0.0
   cached_network_image: ^3.4.1
   flutter_svg: ^2.0.16
 
@@ -59,6 +60,7 @@ dependencies:
 
   # HTTP
   http: ^1.2.2
+  timezone: ^0.10.1
 
 dev_dependencies:
   flutter_test:

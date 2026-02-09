@@ -39,7 +39,7 @@ class _SplashPageState extends State<SplashPage> {
             end: Alignment.bottomCenter,
             colors: [
               Theme.of(context).primaryColor,
-              Theme.of(context).primaryColor.withOpacity(0.7),
+              Theme.of(context).primaryColor.withAlpha(179),
             ],
           ),
         ),
@@ -55,26 +55,39 @@ class _SplashPageState extends State<SplashPage> {
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.2),
+                      color: Colors.black.withAlpha(51),
                       blurRadius: 20,
                       offset: const Offset(0, 10),
                     ),
                   ],
                 ),
-                child: Icon(Icons.school, size: 64, color: Theme.of(context).primaryColor),
+                child: Icon(
+                  Icons.school,
+                  size: 64,
+                  color: Theme.of(context).primaryColor,
+                ),
               ),
               const SizedBox(height: 24),
               const Text(
                 'Lecture Tracker',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Track your attendance, build your streak',
-                style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.8)),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.white.withAlpha(204),
+                ),
               ),
               const SizedBox(height: 48),
-              const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation<Color>(Colors.white)),
+              const CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
             ],
           ),
         ),

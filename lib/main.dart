@@ -10,7 +10,6 @@ import 'providers/friends_provider.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
-import 'services/notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,7 +54,10 @@ class MyApp extends StatelessWidget {
           return MaterialApp.router(
             title: 'Lecture Tracker',
             debugShowCheckedModeBanner: false,
-            theme: themeProvider.useHighContrast ? AppTheme.highContrast : AppTheme.light,
+            theme:
+                themeProvider.useHighContrast
+                    ? AppTheme.highContrast
+                    : AppTheme.light,
             darkTheme: AppTheme.dark,
             themeMode: themeProvider.themeMode,
             routerConfig: AppRouter.router(authProvider),

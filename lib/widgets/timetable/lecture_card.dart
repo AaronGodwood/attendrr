@@ -32,7 +32,10 @@ class LectureCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   lecture.moduleCode,
-                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -56,13 +59,13 @@ class LectureCard extends StatelessWidget {
   Color _getBackgroundColor(LectureStatus status, Color baseColor) {
     switch (status) {
       case LectureStatus.attended:
-        return Colors.green.withOpacity(0.15);
+        return Colors.green.withAlpha(38);
       case LectureStatus.missed:
-        return Colors.red.withOpacity(0.15);
+        return Colors.red.withAlpha(38);
       case LectureStatus.inProgress:
-        return baseColor.withOpacity(0.3);
+        return baseColor.withAlpha(77);
       case LectureStatus.upcoming:
-        return baseColor.withOpacity(0.1);
+        return baseColor.withAlpha(26);
     }
   }
 }

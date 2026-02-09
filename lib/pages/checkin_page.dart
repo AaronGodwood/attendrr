@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/checkin_provider.dart';
 import '../models/lecture.dart';
 import '../widgets/checkin/checkin_skeleton.dart';
+import '../utils/checkin_refresh.dart';
 import 'dart:async';
 
 class CheckInPage extends StatefulWidget {
@@ -21,15 +22,26 @@ class _CheckInPageState extends State<CheckInPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CheckInProvider>().loadState();
     });
-    _timer = Timer.periodic(const Duration(minutes: 1), (_) {
-      if (mounted) setState(() {});
-    });
+    _scheduleNextRefresh();
   }
 
   @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
+  }
+
+  void _scheduleNextRefresh() {
+    _timer?.cancel();
+    final now = DateTime.now();
+    final next = nextCheckInRefreshTime(now);
+    final delay = next.difference(now);
+
+    _timer = Timer(delay, () {
+      if (!mounted) return;
+      context.read<CheckInProvider>().loadState();
+      _scheduleNextRefresh();
+    });
   }
 
   @override
@@ -57,7 +69,16 @@ class _CheckInPageState extends State<CheckInPage> {
             case CheckInState.tooFarAway:
               return _buildReady(provider);
             case CheckInState.checkingIn:
-              return const Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [CircularProgressIndicator(), SizedBox(height: 16), Text('Checking in...')]));
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Checking in...'),
+                  ],
+                ),
+              );
             case CheckInState.checkedIn:
               return _buildCheckedIn(provider);
           }
@@ -75,7 +96,10 @@ class _CheckInPageState extends State<CheckInPage> {
           const SizedBox(height: 16),
           Text(provider.error ?? 'Something went wrong'),
           const SizedBox(height: 16),
-          ElevatedButton(onPressed: provider.refresh, child: const Text('Retry')),
+          ElevatedButton(
+            onPressed: provider.refresh,
+            child: const Text('Retry'),
+          ),
         ],
       ),
     );
@@ -90,7 +114,10 @@ class _CheckInPageState extends State<CheckInPage> {
           children: [
             Icon(Icons.event_available, size: 64, color: Colors.grey[400]),
             const SizedBox(height: 24),
-            const Text('No Lecture Right Now', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const Text(
+              'No Lecture Right Now',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 16),
             if (provider.nextLecture != null) ...[
               const Text('Next lecture:', style: TextStyle(color: Colors.grey)),
@@ -98,9 +125,15 @@ class _CheckInPageState extends State<CheckInPage> {
               _buildLectureCard(provider.nextLecture!),
               const SizedBox(height: 16),
               if (provider.timeUntilNext != null)
-                Text('Starts in ${_formatDuration(provider.timeUntilNext! + const Duration(minutes: 1))}', style: const TextStyle(fontSize: 18, color: Colors.blue)),
+                Text(
+                  'Starts in ${_formatDuration(provider.timeUntilNext! + const Duration(minutes: 1))}',
+                  style: const TextStyle(fontSize: 18, color: Colors.blue),
+                ),
             ] else
-              const Text('No upcoming lectures today', style: TextStyle(color: Colors.grey)),
+              const Text(
+                'No upcoming lectures today',
+                style: TextStyle(color: Colors.grey),
+              ),
           ],
         ),
       ),
@@ -126,9 +159,18 @@ class _CheckInPageState extends State<CheckInPage> {
               ),
               child: Row(
                 children: [
-                  Icon(isTooFar ? Icons.location_off : Icons.location_on, color: isTooFar ? Colors.orange : Colors.green),
+                  Icon(
+                    isTooFar ? Icons.location_off : Icons.location_on,
+                    color: isTooFar ? Colors.orange : Colors.green,
+                  ),
                   const SizedBox(width: 12),
-                  Expanded(child: Text(isTooFar ? 'You are ${provider.distance!.toStringAsFixed(0)}m away' : 'Location verified (${provider.distance!.toStringAsFixed(0)}m)')),
+                  Expanded(
+                    child: Text(
+                      isTooFar
+                          ? 'You are ${provider.distance!.toStringAsFixed(0)}m away'
+                          : 'Location verified (${provider.distance!.toStringAsFixed(0)}m)',
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -139,8 +181,13 @@ class _CheckInPageState extends State<CheckInPage> {
             height: 60,
             child: ElevatedButton(
               onPressed: () => provider.checkIn(forceWithoutLocation: isTooFar),
-              style: ElevatedButton.styleFrom(backgroundColor: isTooFar ? Colors.orange : Colors.green),
-              child: Text(isTooFar ? 'Check In Anyway (5 pts)' : 'Check In (10 pts)', style: const TextStyle(fontSize: 18, color: Colors.white)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: isTooFar ? Colors.orange : Colors.green,
+              ),
+              child: Text(
+                isTooFar ? 'Check In Anyway (5 pts)' : 'Check In (10 pts)',
+                style: const TextStyle(fontSize: 18, color: Colors.white),
+              ),
             ),
           ),
         ],
@@ -149,39 +196,65 @@ class _CheckInPageState extends State<CheckInPage> {
   }
 
   Widget _buildCheckedIn(CheckInProvider provider) {
+    final lecture = provider.currentLecture;
+    final isLectureActive = lecture?.isActive ?? false;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
           const Icon(Icons.check_circle, size: 80, color: Colors.green),
           const SizedBox(height: 16),
-          const Text('Checked In!', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)),
+          const Text(
+            'Checked In!',
+            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          ),
           const SizedBox(height: 8),
-          Text('+${provider.activeAttendance?.pointsEarned ?? 10} points', style: const TextStyle(fontSize: 20, color: Colors.green)),
+          Text(
+            '+${provider.activeAttendance?.pointsEarned ?? 10} points',
+            style: const TextStyle(fontSize: 20, color: Colors.green),
+          ),
           const SizedBox(height: 24),
 
-          if (provider.currentLecture != null) _buildLectureCard(provider.currentLecture!),
+          if (lecture != null) _buildLectureCard(lecture),
           const SizedBox(height: 24),
 
           if (provider.timeRemaining != null)
             Container(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(color: Colors.blue.shade50, borderRadius: BorderRadius.circular(16)),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(16),
+              ),
               child: Column(
                 children: [
-                  const Text('Time Remaining', style: TextStyle(color: Colors.grey)),
+                  const Text(
+                    'Time Remaining',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                   const SizedBox(height: 8),
-                  Text(_formatDuration(provider.timeRemaining!), style: const TextStyle(fontSize: 32, fontWeight: FontWeight.bold, color: Colors.blue)),
+                  Text(
+                    _formatDuration(provider.timeRemaining!),
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
                 ],
               ),
             ),
           const SizedBox(height: 32),
 
-          OutlinedButton(
-            onPressed: () => _showCheckOutDialog(provider),
-            style: OutlinedButton.styleFrom(foregroundColor: Colors.red, side: const BorderSide(color: Colors.red)),
-            child: const Text('End Session Early'),
-          ),
+          if (isLectureActive)
+            OutlinedButton(
+              onPressed: () => _showCheckOutDialog(provider),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.red,
+                side: const BorderSide(color: Colors.red),
+              ),
+              child: const Text('End Session Early'),
+            ),
         ],
       ),
     );
@@ -197,18 +270,50 @@ class _CheckInPageState extends State<CheckInPage> {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(color: lecture.color, borderRadius: BorderRadius.circular(4)),
-                  child: Text(lecture.moduleCode, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: lecture.color,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    lecture.moduleCode,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
                 const SizedBox(width: 8),
-                Expanded(child: Text(lecture.title, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold))),
+                Expanded(
+                  child: Text(
+                    lecture.title,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 12),
-            Row(children: [const Icon(Icons.access_time, size: 16, color: Colors.grey), const SizedBox(width: 4), Text(lecture.timeRange)]),
+            Row(
+              children: [
+                const Icon(Icons.access_time, size: 16, color: Colors.grey),
+                const SizedBox(width: 4),
+                Text(lecture.timeRange),
+              ],
+            ),
             const SizedBox(height: 4),
-            Row(children: [const Icon(Icons.location_on, size: 16, color: Colors.grey), const SizedBox(width: 4), Text(lecture.location)]),
+            Row(
+              children: [
+                const Icon(Icons.location_on, size: 16, color: Colors.grey),
+                const SizedBox(width: 4),
+                Text(lecture.location),
+              ],
+            ),
           ],
         ),
       ),
@@ -218,26 +323,31 @@ class _CheckInPageState extends State<CheckInPage> {
   void _showCheckOutDialog(CheckInProvider provider) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('End Session Early?'),
-        content: const Text('Are you sure you want to end your session?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              provider.checkOut();
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('End Session'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('End Session Early?'),
+            content: const Text('Are you sure you want to end your session?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  provider.checkOut();
+                },
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('End Session'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
   String _formatDuration(Duration duration) {
-    if (duration.inHours > 0) return '${duration.inHours}h ${duration.inMinutes.remainder(60)}m';
+    if (duration.inHours > 0)
+      return '${duration.inHours}h ${duration.inMinutes.remainder(60)}m';
     return '${duration.inMinutes}m';
   }
 }
