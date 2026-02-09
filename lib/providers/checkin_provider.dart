@@ -1,10 +1,20 @@
+import 'dart:async';
 import 'package:flutter/foundation.dart';
 import '../repositories/timetable_repository.dart';
 import '../repositories/attendance_repository.dart';
 import '../services/location_service.dart';
 import '../models/models.dart';
+import '../utils/checkin_checkout.dart';
 
-enum CheckInState { loading, noLecture, readyToCheckIn, tooFarAway, checkingIn, checkedIn, error }
+enum CheckInState {
+  loading,
+  noLecture,
+  readyToCheckIn,
+  tooFarAway,
+  checkingIn,
+  checkedIn,
+  error,
+}
 
 class CheckInProvider extends ChangeNotifier {
   final _timetableRepo = TimetableRepository.instance;
@@ -17,6 +27,7 @@ class CheckInProvider extends ChangeNotifier {
   Attendance? _activeAttendance;
   double? _distance;
   String? _error;
+  Timer? _checkoutTimer;
 
   CheckInState get state => _state;
   Lecture? get currentLecture => _currentLecture;
@@ -28,6 +39,12 @@ class CheckInProvider extends ChangeNotifier {
   Duration? get timeUntilNext => _nextLecture?.timeUntilStart;
   Duration? get timeRemaining => _currentLecture?.timeRemaining;
 
+  @override
+  void dispose() {
+    _checkoutTimer?.cancel();
+    super.dispose();
+  }
+
   Future<void> loadState() async {
     _state = CheckInState.loading;
     notifyListeners();
@@ -38,6 +55,7 @@ class CheckInProvider extends ChangeNotifier {
       if (_activeAttendance != null) {
         _currentLecture = _activeAttendance!.lecture;
         _state = CheckInState.checkedIn;
+        _startCheckoutTimer();
         notifyListeners();
         return;
       }
@@ -60,6 +78,15 @@ class CheckInProvider extends ChangeNotifier {
     }
   }
 
+  void _startCheckoutTimer() {
+    _checkoutTimer?.cancel();
+    _checkoutTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (shouldAutoCheckout(DateTime.now(), _currentLecture)) {
+        checkOut();
+      }
+    });
+  }
+
   Future<void> _checkLocation() async {
     if (!_currentLecture!.hasValidCoordinates) {
       _state = CheckInState.readyToCheckIn;
@@ -73,7 +100,8 @@ class CheckInProvider extends ChangeNotifier {
     );
 
     _distance = result.distance;
-    _state = result.verified ? CheckInState.readyToCheckIn : CheckInState.tooFarAway;
+    _state =
+        result.verified ? CheckInState.readyToCheckIn : CheckInState.tooFarAway;
   }
 
   Future<void> checkIn({bool forceWithoutLocation = false}) async {
@@ -92,6 +120,7 @@ class CheckInProvider extends ChangeNotifier {
       );
 
       _state = CheckInState.checkedIn;
+      _startCheckoutTimer();
       notifyListeners();
     } catch (e) {
       _state = CheckInState.error;
@@ -103,6 +132,7 @@ class CheckInProvider extends ChangeNotifier {
   Future<void> checkOut() async {
     if (_activeAttendance == null) return;
 
+    _checkoutTimer?.cancel();
     try {
       await _attendanceRepo.checkOut(_activeAttendance!.id);
       _activeAttendance = null;

@@ -23,8 +23,10 @@ class LocationService {
       if (!hasPermission) return null;
 
       return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 10),
+        ),
       );
     } catch (e) {
       return null;
@@ -35,11 +37,19 @@ class LocationService {
     return Geolocator.distanceBetween(lat1, lon1, lat2, lon2);
   }
 
-  Future<LocationResult> verifyLocation(double targetLat, double targetLon, {double maxDistance = 100}) async {
+  Future<LocationResult> verifyLocation(
+    double targetLat,
+    double targetLon, {
+    double maxDistance = 100,
+  }) async {
     final position = await getCurrentPosition();
 
     if (position == null) {
-      return LocationResult(verified: false, distance: null, error: 'Could not get location');
+      return LocationResult(
+        verified: false,
+        distance: null,
+        error: 'Could not get location',
+      );
     }
 
     final distance = calculateDistance(

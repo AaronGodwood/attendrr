@@ -29,11 +29,19 @@ class SettingsPage extends StatelessWidget {
                   title: const Text('Username'),
                   subtitle: Text(user?.username ?? 'Not set'),
                   trailing: const Icon(Icons.edit),
-                  onTap: () => _showEditUsernameDialog(context, user?.username ?? ''),
+                  onTap:
+                      () => _showEditUsernameDialog(
+                        context,
+                        user?.username ?? '',
+                      ),
                 ),
                 ListTile(
                   title: const Text('Link Timetable'),
-                  subtitle: Text(user?.hasIcalConnected == true ? 'Connected • Tap to update' : 'Import from university calendar'),
+                  subtitle: Text(
+                    user?.hasIcalConnected == true
+                        ? 'Connected • Tap to update'
+                        : 'Import from university calendar',
+                  ),
                   leading: const Icon(Icons.calendar_month),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showIcalSetup(context, user?.icalUrl),
@@ -78,7 +86,14 @@ class SettingsPage extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          child: Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.grey[600])),
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[600],
+            ),
+          ),
         ),
         ...children,
         const Divider(),
@@ -90,23 +105,29 @@ class SettingsPage extends StatelessWidget {
     final controller = TextEditingController(text: currentUsername);
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Edit Username'),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(labelText: 'Username'),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          TextButton(
-            onPressed: () async {
-              await context.read<ProfileProvider>().updateUsername(controller.text);
-              if (context.mounted) Navigator.pop(context);
-            },
-            child: const Text('Save'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Edit Username'),
+            content: TextField(
+              controller: controller,
+              decoration: const InputDecoration(labelText: 'Username'),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await context.read<ProfileProvider>().updateUsername(
+                    controller.text,
+                  );
+                  if (context.mounted) Navigator.pop(context);
+                },
+                child: const Text('Save'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -122,86 +143,97 @@ class SettingsPage extends StatelessWidget {
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Choose Theme'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RadioListTile<AppThemeMode>(
-              title: const Text('System default'),
-              subtitle: const Text('Follow device settings'),
-              value: AppThemeMode.system,
-              groupValue: themeProvider.appThemeMode,
-              onChanged: (mode) {
-                if (mode != null) {
-                  themeProvider.setThemeMode(mode);
-                  Navigator.pop(context);
-                }
-              },
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Choose Theme'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ListTile(
+                  title: const Text('System default'),
+                  subtitle: const Text('Follow device settings'),
+                  leading: Radio<AppThemeMode>(
+                    value: AppThemeMode.system,
+                    groupValue: themeProvider.appThemeMode,
+                    onChanged: null,
+                  ),
+                  onTap: () {
+                    themeProvider.setThemeMode(AppThemeMode.system);
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Light'),
+                  subtitle: const Text('Always use light theme'),
+                  leading: Radio<AppThemeMode>(
+                    value: AppThemeMode.light,
+                    groupValue: themeProvider.appThemeMode,
+                    onChanged: null,
+                  ),
+                  onTap: () {
+                    themeProvider.setThemeMode(AppThemeMode.light);
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Dark'),
+                  subtitle: const Text('Always use dark theme'),
+                  leading: Radio<AppThemeMode>(
+                    value: AppThemeMode.dark,
+                    groupValue: themeProvider.appThemeMode,
+                    onChanged: null,
+                  ),
+                  onTap: () {
+                    themeProvider.setThemeMode(AppThemeMode.dark);
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('High Contrast'),
+                  subtitle: const Text(
+                    'Accessibility theme with high contrast',
+                  ),
+                  leading: Radio<AppThemeMode>(
+                    value: AppThemeMode.highContrast,
+                    groupValue: themeProvider.appThemeMode,
+                    onChanged: null,
+                  ),
+                  onTap: () {
+                    themeProvider.setThemeMode(AppThemeMode.highContrast);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
             ),
-            RadioListTile<AppThemeMode>(
-              title: const Text('Light'),
-              subtitle: const Text('Always use light theme'),
-              value: AppThemeMode.light,
-              groupValue: themeProvider.appThemeMode,
-              onChanged: (mode) {
-                if (mode != null) {
-                  themeProvider.setThemeMode(mode);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-            RadioListTile<AppThemeMode>(
-              title: const Text('Dark'),
-              subtitle: const Text('Always use dark theme'),
-              value: AppThemeMode.dark,
-              groupValue: themeProvider.appThemeMode,
-              onChanged: (mode) {
-                if (mode != null) {
-                  themeProvider.setThemeMode(mode);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-            RadioListTile<AppThemeMode>(
-              title: const Text('High Contrast'),
-              subtitle: const Text('Accessibility theme with high contrast'),
-              value: AppThemeMode.highContrast,
-              groupValue: themeProvider.appThemeMode,
-              onChanged: (mode) {
-                if (mode != null) {
-                  themeProvider.setThemeMode(mode);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
   void _handleSignOut(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          TextButton(
-            onPressed: () async {
-              await context.read<AuthProvider>().signOut();
-              if (context.mounted) {
-                Navigator.pop(context);
-                context.go('/login');
-              }
-            },
-            style: TextButton.styleFrom(foregroundColor: Colors.red),
-            child: const Text('Sign Out'),
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Sign Out'),
+            content: const Text('Are you sure you want to sign out?'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  await context.read<AuthProvider>().signOut();
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                    context.go('/login');
+                  }
+                },
+                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                child: const Text('Sign Out'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }

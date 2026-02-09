@@ -124,8 +124,10 @@ class Lecture extends Equatable {
   int get durationMinutes => duration.inMinutes;
 
   String get timeRange {
-    final start = '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}';
-    final end = '${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}';
+    final start =
+        '${startTime.hour.toString().padLeft(2, '0')}:${startTime.minute.toString().padLeft(2, '0')}';
+    final end =
+        '${endTime.hour.toString().padLeft(2, '0')}:${endTime.minute.toString().padLeft(2, '0')}';
     return '$start - $end';
   }
 
@@ -133,21 +135,40 @@ class Lecture extends Equatable {
 
   bool get hasValidCoordinates => latitude != 0.0 && longitude != 0.0;
 
-  Duration? get timeUntilStart => isUpcoming ? startTime.difference(DateTime.now()) : null;
-  Duration? get timeRemaining => isActive ? endTime.difference(DateTime.now()) : null;
+  Duration? get timeUntilStart =>
+      isUpcoming ? startTime.difference(DateTime.now()) : null;
+  Duration? get timeRemaining =>
+      isActive ? endTime.difference(DateTime.now()) : null;
 
   Color get color {
     final colors = [
-      Colors.blue, Colors.green, Colors.orange, Colors.purple,
-      Colors.teal, Colors.pink, Colors.indigo, Colors.amber,
+      Colors.blue,
+      Colors.green,
+      Colors.orange,
+      Colors.purple,
+      Colors.teal,
+      Colors.pink,
+      Colors.indigo,
+      Colors.amber,
     ];
     return colors[moduleCode.hashCode.abs() % colors.length];
   }
 
   @override
   List<Object?> get props => [
-    id, timetableId, externalId, title, moduleCode, location,
-    latitude, longitude, startTime, endTime, recurrenceRule, createdAt, updatedAt
+    id,
+    timetableId,
+    externalId,
+    title,
+    moduleCode,
+    location,
+    latitude,
+    longitude,
+    startTime,
+    endTime,
+    recurrenceRule,
+    createdAt,
+    updatedAt,
   ];
 }
 
@@ -174,8 +195,10 @@ class LectureWithAttendance {
     return LectureWithAttendance(
       lecture: lecture,
       attended: hasAttendance,
-      attendanceId: hasAttendance ? attendanceList!.first['id'] as String? : null,
-      pointsEarned: hasAttendance ? attendanceList!.first['points_earned'] as int? : null,
+      attendanceId:
+          hasAttendance ? attendanceList.first['id'] as String? : null,
+      pointsEarned:
+          hasAttendance ? attendanceList.first['points_earned'] as int? : null,
     );
   }
 
