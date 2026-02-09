@@ -7,4 +7,5 @@
 7. Make freezes work and point milestones at streaks. 
 8. Buy freezes with points.
 9. Finish supabase
-10. Points decrease at check-in if you check-in during the lecture. 
+10. Points decrease at check-in if you check-in during the lecture.
+11. Ability to change profile picture, password

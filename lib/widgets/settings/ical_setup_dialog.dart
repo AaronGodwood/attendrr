@@ -52,7 +52,14 @@ class _ICalSetupDialogState extends State<ICalSetupDialog> {
                 hintText: 'https://...',
                 border: const OutlineInputBorder(),
                 errorText: _error,
-                suffixIcon: _isValidating ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)) : null,
+                suffixIcon:
+                    _isValidating
+                        ? const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                        : null,
               ),
               maxLines: 2,
             ),
@@ -69,14 +76,22 @@ class _ICalSetupDialogState extends State<ICalSetupDialog> {
                   children: [
                     const Icon(Icons.check_circle, color: Colors.green),
                     const SizedBox(width: 8),
-                    Expanded(child: Text(_success!, style: TextStyle(color: Colors.green.shade700))),
+                    Expanded(
+                      child: Text(
+                        _success!,
+                        style: TextStyle(color: Colors.green.shade700),
+                      ),
+                    ),
                   ],
                 ),
               ),
 
             const SizedBox(height: 16),
             ExpansionTile(
-              title: const Text('How to get your iCal URL', style: TextStyle(fontSize: 14)),
+              title: const Text(
+                'How to get your iCal URL',
+                style: TextStyle(fontSize: 14),
+              ),
               tilePadding: EdgeInsets.zero,
               children: [
                 Padding(
@@ -104,9 +119,14 @@ class _ICalSetupDialogState extends State<ICalSetupDialog> {
         ),
         ElevatedButton(
           onPressed: (_isValidating || _isSyncing) ? null : _handleSync,
-          child: _isSyncing
-              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-              : const Text('Import'),
+          child:
+              _isSyncing
+                  ? const SizedBox(
+                    width: 20,
+                    height: 20,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                  : const Text('Import'),
         ),
       ],
     );
@@ -118,7 +138,10 @@ class _ICalSetupDialogState extends State<ICalSetupDialog> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(radius: 10, child: Text(number, style: const TextStyle(fontSize: 10))),
+          CircleAvatar(
+            radius: 10,
+            child: Text(number, style: const TextStyle(fontSize: 10)),
+          ),
           const SizedBox(width: 8),
           Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
         ],
@@ -144,6 +167,8 @@ class _ICalSetupDialogState extends State<ICalSetupDialog> {
       _success = null;
     });
 
+    final provider = context.read<TimetableProvider>();
+
     // Validate URL
     final isValid = await _icalService.validateUrl(url);
     if (!isValid) {
@@ -160,7 +185,6 @@ class _ICalSetupDialogState extends State<ICalSetupDialog> {
     });
 
     // Sync
-    final provider = context.read<TimetableProvider>();
     final success = await provider.syncFromIcal(url);
 
     if (mounted) {

@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:attendr/repositories/user_repository.dart';
 import 'package:attendr/models/user.dart' as app_models;
 
-
 late String testUserEmail;
 late String testUserPassword;
 late String nonExistentId;
@@ -22,10 +21,9 @@ void main() {
     final envFile = File('.env.test');
 
     if (!envFile.existsSync()) {
-      print("CRITICAL ERROR: .env.test not found.");
-      print("Looking in: ${envFile.absolute.path}");
-      print("Current Working Directory: ${Directory.current.path}");
-      throw Exception("Could not find .env.test file. Please ensure it exists in the project root.");
+      throw Exception(
+        "Could not find .env.test file. Please ensure it exists in the project root.",
+      );
     }
 
     await dotenv.load(fileName: envFile.absolute.path);
@@ -66,18 +64,18 @@ void main() {
 
       final user = await userRepository.getCurrentUser();
 
-      expect(user, isA<app_models.User>(), reason: "Should return a valid User object");
+      expect(
+        user,
+        isA<app_models.User>(),
+        reason: "Should return a valid User object",
+      );
     });
   });
 
   // Security (RLS)
   group('RLS Policy Access Tests (NFR4 - Security)', () {
-
     test('RLS: Unauthenticated user cannot read profiles', () async {
-      expect(
-            () => userRepository.getCurrentUser(),
-        throwsA(isA<Exception>()),
-      );
+      expect(() => userRepository.getCurrentUser(), throwsA(isA<Exception>()));
     });
 
     test('RLS: Authenticated user CAN read OWN profile data', () async {
@@ -86,11 +84,7 @@ void main() {
         password: testUserPassword,
       );
 
-      expect(
-            () => userRepository.getCurrentUser(),
-        returnsNormally,
-      );
+      expect(() => userRepository.getCurrentUser(), returnsNormally);
     });
-
   });
 }
