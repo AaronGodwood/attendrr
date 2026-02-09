@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
 import '../pages/splash_page.dart';
 import '../pages/login_page.dart';
@@ -42,7 +41,8 @@ class AppRouter {
       refreshListenable: authProvider,
       redirect: (context, state) {
         final isAuthenticated = authProvider.isAuthenticated;
-        final isAuthRoute = state.matchedLocation == '/login' ||
+        final isAuthRoute =
+            state.matchedLocation == '/login' ||
             state.matchedLocation == '/signup' ||
             state.matchedLocation == '/forgot-password' ||
             state.matchedLocation == '/';
@@ -61,16 +61,10 @@ class AppRouter {
       },
       routes: [
         // Splash
-        GoRoute(
-          path: '/',
-          builder: (context, state) => const SplashPage(),
-        ),
+        GoRoute(path: '/', builder: (context, state) => const SplashPage()),
 
         // Auth routes
-        GoRoute(
-          path: '/login',
-          builder: (context, state) => const LoginPage(),
-        ),
+        GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
         GoRoute(
           path: '/signup',
           builder: (context, state) => const SignUpPage(),
@@ -87,11 +81,12 @@ class AppRouter {
           routes: [
             GoRoute(
               path: '/profile',
-              pageBuilder: (context, state) => _buildPageWithTransition(
-                context: context,
-                state: state,
-                child: const ProfilePage(),
-              ),
+              pageBuilder:
+                  (context, state) => _buildPageWithTransition(
+                    context: context,
+                    state: state,
+                    child: const ProfilePage(),
+                  ),
               routes: [
                 GoRoute(
                   path: 'settings',
@@ -101,37 +96,39 @@ class AppRouter {
             ),
             GoRoute(
               path: '/timetable',
-              pageBuilder: (context, state) => _buildPageWithTransition(
-                context: context,
-                state: state,
-                child: const TimetablePage(),
-              ),
+              pageBuilder:
+                  (context, state) => _buildPageWithTransition(
+                    context: context,
+                    state: state,
+                    child: const TimetablePage(),
+                  ),
             ),
             GoRoute(
               path: '/checkin',
-              pageBuilder: (context, state) => _buildPageWithTransition(
-                context: context,
-                state: state,
-                child: const CheckInPage(),
-              ),
+              pageBuilder:
+                  (context, state) => _buildPageWithTransition(
+                    context: context,
+                    state: state,
+                    child: const CheckInPage(),
+                  ),
             ),
             GoRoute(
               path: '/friends',
-              pageBuilder: (context, state) => _buildPageWithTransition(
-                context: context,
-                state: state,
-                child: const FriendsPage(),
-              ),
+              pageBuilder:
+                  (context, state) => _buildPageWithTransition(
+                    context: context,
+                    state: state,
+                    child: const FriendsPage(),
+                  ),
               routes: [
                 GoRoute(
                   path: 'user/:userId/:username',
                   builder: (context, state) {
                     final userId = state.pathParameters['userId']!;
-                    final username = Uri.decodeComponent(state.pathParameters['username']!);
-                    return UserProfilePage(
-                      userId: userId,
-                      username: username,
+                    final username = Uri.decodeComponent(
+                      state.pathParameters['username']!,
                     );
+                    return UserProfilePage(userId: userId, username: username);
                   },
                 ),
               ],
@@ -139,23 +136,24 @@ class AppRouter {
           ],
         ),
       ],
-      errorBuilder: (context, state) => Scaffold(
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 64, color: Colors.red),
-              const SizedBox(height: 16),
-              Text('Page not found: ${state.matchedLocation}'),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () => context.go('/timetable'),
-                child: const Text('Go Home'),
+      errorBuilder:
+          (context, state) => Scaffold(
+            body: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error_outline, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
+                  Text('Page not found: ${state.matchedLocation}'),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => context.go('/timetable'),
+                    child: const Text('Go Home'),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 }
