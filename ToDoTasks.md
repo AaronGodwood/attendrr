@@ -8,4 +8,4 @@
 8. Buy freezes with points.
 9. Finish supabase
 10. Points decrease at check-in if you check-in during the lecture.
-11. Ability to change profile picture, password
+11. Ability to change, password

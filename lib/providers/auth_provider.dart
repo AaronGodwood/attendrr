@@ -118,6 +118,17 @@ class AuthProvider extends ChangeNotifier {
     return true;
   }
 
+  Future<bool> updatePassword(String newPassword) async {
+    _error = null;
+    final result = await _authService.updatePassword(newPassword);
+    if (!result.success) {
+      _error = result.error;
+      notifyListeners();
+      return false;
+    }
+    return true;
+  }
+
   Future<void> signOut() async {
     await _authService.signOut();
     _user = null;
