@@ -111,13 +111,16 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
           children: [
             Padding(
               padding: const EdgeInsets.all(16),
-              child: SegmentedButton<bool>(
-                segments: const [
-                  ButtonSegment(value: true, label: Text('Global')),
-                  ButtonSegment(value: false, label: Text('Friends')),
-                ],
-                selected: {provider.showGlobal},
-                onSelectionChanged: (_) => provider.toggleLeaderboardType(),
+              child: FittedBox(
+                fit: BoxFit.scaleDown,
+                child: SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(value: true, label: Text('Global')),
+                    ButtonSegment(value: false, label: Text('Friends')),
+                  ],
+                  selected: {provider.showGlobal},
+                  onSelectionChanged: (_) => provider.toggleLeaderboardType(),
+                ),
               ),
             ),
 
