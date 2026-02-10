@@ -36,6 +36,12 @@ class SettingsPage extends StatelessWidget {
                       ),
                 ),
                 ListTile(
+                  title: const Text('Change Password'),
+                  subtitle: const Text('Update your account password'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showChangePasswordDialog(context),
+                ),
+                ListTile(
                   title: const Text('Link Timetable'),
                   subtitle: Text(
                     user?.hasIcalConnected == true
@@ -209,6 +215,104 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
+  void _showChangePasswordDialog(BuildContext context) {
+    final newPasswordController = TextEditingController();
+    final confirmPasswordController = TextEditingController();
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        bool isLoading = false;
+        bool obscureNew = true;
+        bool obscureConfirm = true;
+
+        return StatefulBuilder(
+          builder: (context, setState) => AlertDialog(
+            title: const Text('Change Password'),
+            content: Form(
+              key: formKey,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextFormField(
+                    controller: newPasswordController,
+                    obscureText: obscureNew,
+                    decoration: InputDecoration(
+                      labelText: 'New Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(obscureNew ? Icons.visibility_off : Icons.visibility),
+                        onPressed: () => setState(() => obscureNew = !obscureNew),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.length < 6) {
+                        return 'Password must be at least 6 characters';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  TextFormField(
+                    controller: confirmPasswordController,
+                    obscureText: obscureConfirm,
+                    decoration: InputDecoration(
+                      labelText: 'Confirm Password',
+                      suffixIcon: IconButton(
+                        icon: Icon(obscureConfirm ? Icons.visibility_off : Icons.visibility),
+                        onPressed: () => setState(() => obscureConfirm = !obscureConfirm),
+                      ),
+                    ),
+                    validator: (value) {
+                      if (value != newPasswordController.text) {
+                        return 'Passwords do not match';
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: isLoading ? null : () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        if (!formKey.currentState!.validate()) return;
+                        setState(() => isLoading = true);
+                        final success = await context
+                            .read<AuthProvider>()
+                            .updatePassword(newPasswordController.text);
+                        if (context.mounted) {
+                          Navigator.pop(context);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(success
+                                  ? 'Password updated successfully'
+                                  : 'Failed to update password'),
+                            ),
+                          );
+                        }
+                      },
+                child: isLoading
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Text('Save'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   void _handleSignOut(BuildContext context) {
     showDialog(
       context: context,
@@ -225,7 +329,6 @@ class SettingsPage extends StatelessWidget {
                 onPressed: () async {
                   await context.read<AuthProvider>().signOut();
                   if (context.mounted) {
-                    Navigator.pop(context);
                     context.go('/login');
                   }
                 },
