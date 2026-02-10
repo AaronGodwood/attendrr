@@ -142,12 +142,16 @@ class _CheckInPageState extends State<CheckInPage> {
 
   Widget _buildReady(CheckInProvider provider) {
     final isTooFar = provider.state == CheckInState.tooFarAway;
+    final lecture = provider.currentLecture!;
+    final hasCoords = lecture.hasValidCoordinates;
+    final canCheckIn = provider.canCheckIn;
+    final withinWindow = provider.isWithinWindow;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          _buildLectureCard(provider.currentLecture!),
+          _buildLectureCard(lecture),
           const SizedBox(height: 24),
 
           if (provider.distance != null)
@@ -174,18 +178,56 @@ class _CheckInPageState extends State<CheckInPage> {
                 ],
               ),
             ),
+          if (!hasCoords)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade50,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: const [
+                  Icon(Icons.location_off, color: Colors.orange),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      'Location unavailable; check-in allowed during lecture window',
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          if (!withinWindow)
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade50,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: const [
+                  Icon(Icons.access_time, color: Colors.blue),
+                  SizedBox(width: 12),
+                  Expanded(
+                    child: Text('Check-in opens 10 minutes before the lecture'),
+                  ),
+                ],
+              ),
+            ),
           const SizedBox(height: 24),
 
           SizedBox(
             width: double.infinity,
             height: 60,
             child: ElevatedButton(
-              onPressed: () => provider.checkIn(forceWithoutLocation: isTooFar),
+              onPressed: canCheckIn ? () => provider.checkIn() : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: isTooFar ? Colors.orange : Colors.green,
+                backgroundColor: canCheckIn ? Colors.green : Colors.grey,
               ),
               child: Text(
-                isTooFar ? 'Check In Anyway (5 pts)' : 'Check In (10 pts)',
+                canCheckIn
+                    ? 'Check In (${provider.projectedPoints} pts)'
+                    : 'Check In',
                 style: const TextStyle(fontSize: 18, color: Colors.white),
               ),
             ),
