@@ -77,7 +77,8 @@ class AttendanceRepository extends BaseRepository {
   Future<AttendanceStats> getStats() async {
     requireAuth();
     final now = DateTime.now();
-    final weekStart = now.subtract(Duration(days: now.weekday));
+    final weekStart = DateTime(now.year, now.month, now.day)
+        .subtract(Duration(days: now.weekday - 1));
     final monthStart = DateTime(now.year, now.month, 1);
 
     final timetable =
@@ -106,14 +107,14 @@ class AttendanceRepository extends BaseRepository {
 
     for (final a in attendanceList) {
       final date = DateTime.parse(a['check_in_time']);
-      if (date.isAfter(weekStart)) weeklyAttended++;
-      if (date.isAfter(monthStart)) monthlyAttended++;
+      if (!date.isBefore(weekStart)) weeklyAttended++;
+      if (!date.isBefore(monthStart)) monthlyAttended++;
     }
 
     for (final l in lectureList) {
       final date = DateTime.parse(l['start_time']);
-      if (date.isAfter(weekStart)) weeklyTotal++;
-      if (date.isAfter(monthStart)) monthlyTotal++;
+      if (!date.isBefore(weekStart)) weeklyTotal++;
+      if (!date.isBefore(monthStart)) monthlyTotal++;
     }
 
     return AttendanceStats(
@@ -158,7 +159,8 @@ class AttendanceRepository extends BaseRepository {
   Future<AttendanceStats> getUserStats(String userId) async {
     requireAuth();
     final now = DateTime.now();
-    final weekStart = now.subtract(Duration(days: now.weekday));
+    final weekStart = DateTime(now.year, now.month, now.day)
+        .subtract(Duration(days: now.weekday - 1));
     final monthStart = DateTime(now.year, now.month, 1);
 
     // Check if user has a timetable
@@ -200,14 +202,14 @@ class AttendanceRepository extends BaseRepository {
 
     for (final a in attendanceList) {
       final date = DateTime.parse(a['check_in_time']);
-      if (date.isAfter(weekStart)) weeklyAttended++;
-      if (date.isAfter(monthStart)) monthlyAttended++;
+      if (!date.isBefore(weekStart)) weeklyAttended++;
+      if (!date.isBefore(monthStart)) monthlyAttended++;
     }
 
     for (final l in lectureList) {
       final date = DateTime.parse(l['start_time']);
-      if (date.isAfter(weekStart)) weeklyTotal++;
-      if (date.isAfter(monthStart)) monthlyTotal++;
+      if (!date.isBefore(weekStart)) weeklyTotal++;
+      if (!date.isBefore(monthStart)) monthlyTotal++;
     }
 
     return AttendanceStats(
