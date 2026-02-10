@@ -12,9 +12,9 @@ class MockCheckInProvider extends ChangeNotifier implements CheckInProvider {
     required this.mockAttendance,
   });
 
-  final CheckInState mockState;
+  CheckInState mockState;
   final Lecture? mockLecture;
-  final Attendance? mockAttendance;
+  Attendance? mockAttendance;
 
   @override
   CheckInState get state => mockState;
@@ -37,14 +37,21 @@ class MockCheckInProvider extends ChangeNotifier implements CheckInProvider {
   @override
   Future<void> refresh() async {}
   @override
-  Future<void> checkOut() async {}
+  Future<void> checkOut() async {
+    if (mockAttendance == null) return;
+    mockAttendance = mockAttendance!.copyWith(pointsEarned: 5);
+    notifyListeners();
+  }
+
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 void main() {
   group('WT-05 Check-in auto checkout UI', () {
-    testWidgets('WT-05a: hides End Session Early after lecture ends', (tester) async {
+    testWidgets('WT-05a: hides End Session Early after lecture ends', (
+      tester,
+    ) async {
       final lecture = _lecture(ended: true);
       final attendance = _attendance(lecture);
 
@@ -64,7 +71,9 @@ void main() {
       expect(find.text('End Session Early'), findsNothing);
     });
 
-    testWidgets('WT-05b: shows End Session Early when lecture active', (tester) async {
+    testWidgets('WT-05b: shows End Session Early when lecture active', (
+      tester,
+    ) async {
       final lecture = _lecture(ended: false);
       final attendance = _attendance(lecture);
 
@@ -83,13 +92,43 @@ void main() {
 
       expect(find.text('End Session Early'), findsOneWidget);
     });
+
+    testWidgets('WT-05c: early checkout updates points in UI', (tester) async {
+      final lecture = _lecture(ended: false);
+      final attendance = _attendance(lecture);
+
+      await tester.pumpWidget(
+        ChangeNotifierProvider<CheckInProvider>.value(
+          value: MockCheckInProvider(
+            mockState: CheckInState.checkedIn,
+            mockLecture: lecture,
+            mockAttendance: attendance,
+          ),
+          child: const MaterialApp(home: CheckInPage()),
+        ),
+      );
+
+      await tester.pumpAndSettle();
+      expect(find.text('+10 points'), findsOneWidget);
+
+      await tester.tap(find.text('End Session Early'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('End Session'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('+5 points'), findsOneWidget);
+    });
   });
 }
 
 Lecture _lecture({required bool ended}) {
   final now = DateTime.now();
   final start = now.subtract(const Duration(minutes: 50));
-  final end = ended ? now.subtract(const Duration(minutes: 1)) : now.add(const Duration(minutes: 10));
+  final end =
+      ended
+          ? now.subtract(const Duration(minutes: 1))
+          : now.add(const Duration(minutes: 10));
 
   return Lecture(
     id: 'lec-1',
