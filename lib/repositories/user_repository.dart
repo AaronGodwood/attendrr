@@ -1,4 +1,3 @@
-import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 import 'base_repository.dart';
 import '../models/models.dart';
 
@@ -8,31 +7,34 @@ class UserRepository extends BaseRepository {
 
   Future<User> getCurrentUser() async {
     requireAuth();
-    final response = await client
-        .from('profiles')
-        .select()
-        .eq('id', currentUserId!)
-        .single();
+    final response =
+        await client
+            .from('profiles')
+            .select()
+            .eq('id', currentUserId!)
+            .single();
     return User.fromJson(response);
   }
 
   Future<Streak> getCurrentStreak() async {
     requireAuth();
-    final response = await client
-        .from('streaks')
-        .select()
-        .eq('user_id', currentUserId!)
-        .single();
+    final response =
+        await client
+            .from('streaks')
+            .select()
+            .eq('user_id', currentUserId!)
+            .single();
     return Streak.fromJson(response);
   }
 
   Future<Points> getCurrentPoints() async {
     requireAuth();
-    final response = await client
-        .from('points')
-        .select()
-        .eq('user_id', currentUserId!)
-        .single();
+    final response =
+        await client
+            .from('points')
+            .select()
+            .eq('user_id', currentUserId!)
+            .single();
     return Points.fromJson(response);
   }
 
@@ -44,13 +46,18 @@ class UserRepository extends BaseRepository {
       getCurrentPoints(),
     ]);
     return (
-    user: results[0] as User,
-    streak: results[1] as Streak,
-    points: results[2] as Points,
+      user: results[0] as User,
+      streak: results[1] as Streak,
+      points: results[2] as Points,
     );
   }
 
-  Future<void> updateProfile({String? username, String? avatarUrl, String? universityId, String? icalUrl}) async {
+  Future<void> updateProfile({
+    String? username,
+    String? avatarUrl,
+    String? universityId,
+    String? icalUrl,
+  }) async {
     requireAuth();
     final updates = <String, dynamic>{};
     if (username != null) updates['username'] = username;
@@ -76,21 +83,19 @@ class UserRepository extends BaseRepository {
   // Methods to get other users' profiles
   Future<User> getUserProfile(String userId) async {
     requireAuth();
-    final response = await client
-        .from('profiles')
-        .select()
-        .eq('id', userId)
-        .single();
+    final response =
+        await client.from('profiles').select().eq('id', userId).single();
     return User.fromJson(response);
   }
 
   Future<Streak> getUserStreak(String userId) async {
     requireAuth();
-    final response = await client
-        .from('streaks')
-        .select()
-        .eq('user_id', userId)
-        .maybeSingle();
+    final response =
+        await client
+            .from('streaks')
+            .select()
+            .eq('user_id', userId)
+            .maybeSingle();
 
     // If no streak record exists, return a default streak
     if (response == null) {
@@ -102,11 +107,12 @@ class UserRepository extends BaseRepository {
 
   Future<Points> getUserPoints(String userId) async {
     requireAuth();
-    final response = await client
-        .from('points')
-        .select()
-        .eq('user_id', userId)
-        .maybeSingle();
+    final response =
+        await client
+            .from('points')
+            .select()
+            .eq('user_id', userId)
+            .maybeSingle();
 
     // If no points record exists, return default points
     if (response == null) {
