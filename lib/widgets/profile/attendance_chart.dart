@@ -12,7 +12,7 @@ class AttendanceChart extends StatelessWidget {
     return BarChart(
       BarChartData(
         alignment: BarChartAlignment.spaceAround,
-        maxY: data.map((d) => d.count.toDouble()).reduce((a, b) => a > b ? a : b) + 1,
+        maxY: data.isEmpty ? 1 : data.map((d) => d.count.toDouble()).reduce((a, b) => a > b ? a : b) + 1,
         barTouchData: BarTouchData(enabled: false),
         titlesData: FlTitlesData(
           show: true,
