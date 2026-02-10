@@ -7,12 +7,13 @@ class AttendanceRepository extends BaseRepository {
 
   Future<Attendance?> getActiveAttendance() async {
     requireAuth();
-    final response = await client
-        .from('attendance')
-        .select('*, lectures(*)')
-        .eq('user_id', currentUserId!)
-        .isFilter('check_out_time', null)
-        .maybeSingle();
+    final response =
+        await client
+            .from('attendance')
+            .select('*, lectures(*)')
+            .eq('user_id', currentUserId!)
+            .isFilter('check_out_time', null)
+            .maybeSingle();
     return response != null ? Attendance.fromJson(response) : null;
   }
 
@@ -20,31 +21,57 @@ class AttendanceRepository extends BaseRepository {
     required String lectureId,
     required bool locationVerified,
     double? distanceMeters,
+    required int pointsEarned,
   }) async {
     requireAuth();
 
-    final points = locationVerified ? 10 : 5;
-
-    final response = await client.from('attendance').insert({
-      'user_id': currentUserId!,
-      'lecture_id': lectureId,
-      'check_in_time': DateTime.now().toIso8601String(),
-      'location_verified': locationVerified,
-      'distance_meters': distanceMeters,
-      'points_earned': points,
-    }).select().single();
+    final response =
+        await client
+            .from('attendance')
+            .insert({
+              'user_id': currentUserId!,
+              'lecture_id': lectureId,
+              'check_in_time': DateTime.now().toIso8601String(),
+              'location_verified': locationVerified,
+              'distance_meters': distanceMeters,
+              'points_earned': pointsEarned,
+            })
+            .select()
+            .single();
 
     // Update points and streak
-    await client.rpc('add_points', params: {'p_user_id': currentUserId!, 'p_points': points});
+    await client.rpc(
+      'add_points',
+      params: {'p_user_id': currentUserId!, 'p_points': pointsEarned},
+    );
     await client.rpc('update_streak', params: {'p_user_id': currentUserId!});
 
     return Attendance.fromJson(response);
   }
 
+  Future<void> updatePoints({
+    required String attendanceId,
+    required int pointsEarned,
+  }) async {
+    await client
+        .from('attendance')
+        .update({'points_earned': pointsEarned})
+        .eq('id', attendanceId);
+  }
+
+  Future<void> adjustUserPoints(int delta) async {
+    if (delta == 0) return;
+    await client.rpc(
+      'add_points',
+      params: {'p_user_id': currentUserId!, 'p_points': delta},
+    );
+  }
+
   Future<void> checkOut(String attendanceId) async {
-    await client.from('attendance').update({
-      'check_out_time': DateTime.now().toIso8601String(),
-    }).eq('id', attendanceId);
+    await client
+        .from('attendance')
+        .update({'check_out_time': DateTime.now().toIso8601String()})
+        .eq('id', attendanceId);
   }
 
   Future<AttendanceStats> getStats() async {
@@ -53,7 +80,12 @@ class AttendanceRepository extends BaseRepository {
     final weekStart = now.subtract(Duration(days: now.weekday));
     final monthStart = DateTime(now.year, now.month, 1);
 
-    final timetable = await client.from('timetables').select('id').eq('user_id', currentUserId!).single();
+    final timetable =
+        await client
+            .from('timetables')
+            .select('id')
+            .eq('user_id', currentUserId!)
+            .single();
 
     final allAttendance = await client
         .from('attendance')
@@ -107,14 +139,16 @@ class AttendanceRepository extends BaseRepository {
     final Map<String, int> byDate = {};
     for (final r in response as List) {
       final date = DateTime.parse(r['check_in_time']);
-      final key = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final key =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
       byDate[key] = (byDate[key] ?? 0) + 1;
     }
 
     final result = <DailyAttendance>[];
     for (int i = days - 1; i >= 0; i--) {
       final date = DateTime.now().subtract(Duration(days: i));
-      final key = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final key =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
       result.add(DailyAttendance(date: date, count: byDate[key] ?? 0));
     }
     return result;
@@ -128,11 +162,12 @@ class AttendanceRepository extends BaseRepository {
     final monthStart = DateTime(now.year, now.month, 1);
 
     // Check if user has a timetable
-    final timetableResponse = await client
-        .from('timetables')
-        .select('id')
-        .eq('user_id', userId)
-        .maybeSingle();
+    final timetableResponse =
+        await client
+            .from('timetables')
+            .select('id')
+            .eq('user_id', userId)
+            .maybeSingle();
 
     // If no timetable, return empty stats
     if (timetableResponse == null) {
@@ -198,14 +233,16 @@ class AttendanceRepository extends BaseRepository {
     final Map<String, int> byDate = {};
     for (final r in response as List) {
       final date = DateTime.parse(r['check_in_time']);
-      final key = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final key =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
       byDate[key] = (byDate[key] ?? 0) + 1;
     }
 
     final result = <DailyAttendance>[];
     for (int i = days - 1; i >= 0; i--) {
       final date = DateTime.now().subtract(Duration(days: i));
-      final key = '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+      final key =
+          '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
       result.add(DailyAttendance(date: date, count: byDate[key] ?? 0));
     }
     return result;
