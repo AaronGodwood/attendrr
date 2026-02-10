@@ -25,21 +25,23 @@ class TimetableSkeleton extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: List.generate(7, (index) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        SkeletonLoader(
-                          width: 40,
-                          height: 12,
-                          borderRadius: BorderRadius.circular(2),
-                        ),
-                        const SizedBox(height: 4),
-                        SkeletonLoader(
-                          width: 30,
-                          height: 20,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ],
+                    return Flexible(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SkeletonLoader(
+                            width: 40,
+                            height: 12,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                          const SizedBox(height: 4),
+                          SkeletonLoader(
+                            width: 30,
+                            height: 20,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                        ],
+                      ),
                     );
                   }),
                 ),

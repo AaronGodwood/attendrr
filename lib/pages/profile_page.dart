@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart' show kIsWeb, TargetPlatform;
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/profile_provider.dart';
@@ -67,10 +70,38 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 children: [
                   // Profile Header
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundImage: user.avatarUrl != null ? NetworkImage(user.avatarUrl!) : null,
-                    child: user.avatarUrl == null ? Text(user.initials, style: const TextStyle(fontSize: 32)) : null,
+                  GestureDetector(
+                    onTap: () => _showAvatarOptions(context, provider),
+                    child: Stack(
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundImage: user.avatarUrl != null && user.avatarUrl!.isNotEmpty ? NetworkImage(user.avatarUrl!) : null,
+                          child: user.avatarUrl == null || user.avatarUrl!.isEmpty ? Text(user.initials, style: const TextStyle(fontSize: 32)) : null,
+                        ),
+                        if (provider.isUploading)
+                          const Positioned.fill(
+                            child: CircleAvatar(
+                              radius: 50,
+                              backgroundColor: Colors.black38,
+                              child: CircularProgressIndicator(color: Colors.white),
+                            ),
+                          )
+                        else
+                          Positioned(
+                            bottom: 0,
+                            right: 0,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 12),
                   Text(user.username, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
@@ -126,6 +157,77 @@ class _ProfilePageState extends State<ProfilePage> {
         },
       ),
     );
+  }
+
+  bool get _isMobilePlatform {
+    if (kIsWeb) return false;
+    final platform = Theme.of(context).platform;
+    return platform == TargetPlatform.android || platform == TargetPlatform.iOS;
+  }
+
+  void _showAvatarOptions(BuildContext context, ProfileProvider provider) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_isMobilePlatform)
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('Take photo'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _pickImage(ImageSource.camera, provider);
+                },
+              ),
+            ListTile(
+              leading: const Icon(Icons.photo_library),
+              title: const Text('Choose from gallery'),
+              onTap: () {
+                Navigator.pop(context);
+                _pickImage(ImageSource.gallery, provider);
+              },
+            ),
+            if (provider.user?.avatarUrl != null && provider.user!.avatarUrl!.isNotEmpty)
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Remove photo', style: TextStyle(color: Colors.red)),
+                onTap: () {
+                  Navigator.pop(context);
+                  provider.removeAvatar();
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickImage(ImageSource source, ProfileProvider provider) async {
+    try {
+      if (_isMobilePlatform) {
+        final picker = ImagePicker();
+        final image = await picker.pickImage(source: source, maxWidth: 512, maxHeight: 512, imageQuality: 75);
+        if (image != null) {
+          provider.updateAvatar(image);
+        }
+      } else {
+        final result = await FilePicker.platform.pickFiles(
+          type: FileType.image,
+          allowMultiple: false,
+        );
+        if (result != null && result.files.single.path != null) {
+          provider.updateAvatar(XFile(result.files.single.path!));
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open image picker')),
+        );
+      }
+    }
   }
 
   Widget _buildStatRow(String label, int attended, int total, {bool showPercent = false}) {
