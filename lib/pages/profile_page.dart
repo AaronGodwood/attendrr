@@ -5,7 +5,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/profile_provider.dart';
-import '../widgets/profile/stats_card.dart';
+import '../theme/theme_extensions.dart';
+import '../widgets/common/grain_overlay.dart';
+import '../widgets/profile/tier_progress_card.dart';
+import '../widgets/profile/streak_card.dart';
+import '../widgets/profile/attendance_ring_card.dart';
 import '../widgets/profile/attendance_chart.dart';
 import '../widgets/profile/profile_skeleton.dart';
 
@@ -34,128 +38,176 @@ class _ProfilePageState extends State<ProfilePage> {
           IconButton(icon: const Icon(Icons.settings), onPressed: () => context.push('/profile/settings')),
         ],
       ),
-      body: Consumer<ProfileProvider>(
-        builder: (context, provider, _) {
-          if (provider.isLoading) {
-            return const ProfileSkeleton();
-          }
+      body: Stack(
+        children: [
+          Consumer<ProfileProvider>(
+            builder: (context, provider, _) {
+              if (provider.isLoading) {
+                return const ProfileSkeleton();
+              }
 
-          if (provider.error != null) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text(provider.error!),
-                  const SizedBox(height: 16),
-                  ElevatedButton(onPressed: provider.refresh, child: const Text('Retry')),
-                ],
-              ),
-            );
-          }
-
-          final user = provider.user;
-          final streak = provider.streak;
-          final points = provider.points;
-          final stats = provider.stats;
-
-          if (user == null) return const Center(child: Text('No profile data'));
-
-          return RefreshIndicator(
-            onRefresh: provider.refresh,
-            child: SingleChildScrollView(
-              physics: const AlwaysScrollableScrollPhysics(),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  // Profile Header
-                  GestureDetector(
-                    onTap: () => _showAvatarOptions(context, provider),
-                    child: Stack(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundImage: user.avatarUrl != null && user.avatarUrl!.isNotEmpty ? NetworkImage(user.avatarUrl!) : null,
-                          child: user.avatarUrl == null || user.avatarUrl!.isEmpty ? Text(user.initials, style: const TextStyle(fontSize: 32)) : null,
-                        ),
-                        if (provider.isUploading)
-                          const Positioned.fill(
-                            child: CircleAvatar(
-                              radius: 50,
-                              backgroundColor: Colors.black38,
-                              child: CircularProgressIndicator(color: Colors.white),
-                            ),
-                          )
-                        else
-                          Positioned(
-                            bottom: 0,
-                            right: 0,
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
-                            ),
-                          ),
-                      ],
-                    ),
+              if (provider.error != null) {
+                final ext = Theme.of(context).extension<TerraThemeExtension>();
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 48, color: ext?.danger),
+                      const SizedBox(height: 16),
+                      Text(provider.error!),
+                      const SizedBox(height: 16),
+                      ElevatedButton(onPressed: provider.refresh, child: const Text('Retry')),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  Text(user.username, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                  if (user.universityId != null) Text(user.universityId!, style: TextStyle(color: Colors.grey[600])),
-                  const SizedBox(height: 20),
+                );
+              }
 
-                  // Stats Card
-                  if (streak != null && points != null)
-                    StatsCard(streak: streak, points: points),
-                  const SizedBox(height: 20),
+              final user = provider.user;
+              final streak = provider.streak;
+              final points = provider.points;
+              final stats = provider.stats;
 
-                  // Attendance Stats
-                  if (stats != null) ...[
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('Attendance', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 16),
-                            _buildStatRow('This Week', stats.weeklyAttended, stats.weeklyTotal),
-                            const Divider(),
-                            _buildStatRow('This Month', stats.monthlyAttended, stats.monthlyTotal),
-                            const Divider(),
-                            _buildStatRow('Overall', stats.overallAttended, stats.overallTotal, showPercent: true),
-                          ],
+              if (user == null) return const Center(child: Text('No profile data'));
+
+              return RefreshIndicator(
+                onRefresh: provider.refresh,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      // Profile Header
+                      _buildProfileHeader(context, provider, user, points),
+                      const SizedBox(height: 20),
+
+                      // Tier Progress
+                      if (points != null)
+                        _animatedSection(
+                          index: 0,
+                          child: TierProgressCard(points: points),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 20),
-                  ],
+                      const SizedBox(height: 12),
 
-                  // Attendance Chart
-                  if (provider.history != null && provider.history!.isNotEmpty)
-                    Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text('Last 30 Days', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 16),
-                            SizedBox(height: 100, child: AttendanceChart(data: provider.history!)),
-                          ],
+                      // Streak
+                      if (streak != null)
+                        _animatedSection(
+                          index: 1,
+                          child: StreakCard(streak: streak),
                         ),
-                      ),
+                      const SizedBox(height: 12),
+
+                      // Attendance Rings
+                      if (stats != null)
+                        _animatedSection(
+                          index: 2,
+                          child: AttendanceRingCard(stats: stats),
+                        ),
+                      const SizedBox(height: 12),
+
+                      // Attendance Chart
+                      if (provider.history != null && provider.history!.isNotEmpty)
+                        _animatedSection(
+                          index: 3,
+                          child: AttendanceChart(data: provider.history!),
+                        ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+          const GrainOverlay(),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileHeader(BuildContext context, ProfileProvider provider, dynamic user, dynamic points) {
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+
+    return Column(
+      children: [
+        GestureDetector(
+          onTap: () => _showAvatarOptions(context, provider),
+          child: Stack(
+            children: [
+              CircleAvatar(
+                radius: 50,
+                backgroundImage: user.avatarUrl != null && user.avatarUrl!.isNotEmpty ? NetworkImage(user.avatarUrl!) : null,
+                child: user.avatarUrl == null || user.avatarUrl!.isEmpty ? Text(user.initials, style: const TextStyle(fontSize: 32)) : null,
+              ),
+              if (provider.isUploading)
+                const Positioned.fill(
+                  child: CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.black38,
+                    child: CircularProgressIndicator(color: Colors.white),
+                  ),
+                )
+              else
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary,
+                      shape: BoxShape.circle,
                     ),
-                ],
+                    child: Icon(Icons.camera_alt, size: 16, color: theme.colorScheme.onPrimary),
+                  ),
+                ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Text(
+          user.username,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        if (user.universityId != null)
+          Text(
+            user.universityId!,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: ext?.textSecondary,
+            ),
+          ),
+        if (points != null) ...[
+          const SizedBox(height: 6),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              gradient: ext?.tierGradient,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              points.tierName,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onPrimary,
               ),
             ),
-          );
-        },
-      ),
+          ),
+        ],
+      ],
+    );
+  }
+
+  Widget _animatedSection({required int index, required Widget child}) {
+    return TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0.0, end: 1.0),
+      duration: Duration(milliseconds: 400 + (index * 80)),
+      curve: Curves.easeOut,
+      builder: (context, value, _) {
+        return Transform.translate(
+          offset: Offset(0, 20 * (1 - value)),
+          child: Opacity(opacity: value, child: child),
+        );
+      },
     );
   }
 
@@ -166,6 +218,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showAvatarOptions(BuildContext context, ProfileProvider provider) {
+    final ext = Theme.of(context).extension<TerraThemeExtension>();
     showModalBottomSheet(
       context: context,
       builder: (context) => SafeArea(
@@ -191,8 +244,8 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             if (provider.user?.avatarUrl != null && provider.user!.avatarUrl!.isNotEmpty)
               ListTile(
-                leading: const Icon(Icons.delete, color: Colors.red),
-                title: const Text('Remove photo', style: TextStyle(color: Colors.red)),
+                leading: Icon(Icons.delete, color: ext?.danger),
+                title: Text('Remove photo', style: TextStyle(color: ext?.danger)),
                 onTap: () {
                   Navigator.pop(context);
                   provider.removeAvatar();
@@ -228,34 +281,5 @@ class _ProfilePageState extends State<ProfilePage> {
         );
       }
     }
-  }
-
-  Widget _buildStatRow(String label, int attended, int total, {bool showPercent = false}) {
-    final percent = total > 0 ? (attended / total * 100).round() : 0;
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(label),
-          Row(
-            children: [
-              Text('$attended / $total', style: const TextStyle(fontWeight: FontWeight.bold)),
-              if (showPercent) ...[
-                const SizedBox(width: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: percent >= 80 ? Colors.green : percent >= 60 ? Colors.orange : Colors.red,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Text('$percent%', style: const TextStyle(color: Colors.white, fontSize: 12)),
-                ),
-              ],
-            ],
-          ),
-        ],
-      ),
-    );
   }
 }

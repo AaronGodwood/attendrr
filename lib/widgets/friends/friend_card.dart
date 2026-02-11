@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/friendship.dart';
+import '../../theme/theme_extensions.dart';
 
 class FriendCard extends StatelessWidget {
   final FriendWithStats friend;
@@ -10,6 +11,9 @@ class FriendCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(
@@ -20,12 +24,12 @@ class FriendCard extends StatelessWidget {
           backgroundImage: friend.avatarUrl != null ? NetworkImage(friend.avatarUrl!) : null,
           child: friend.avatarUrl == null ? Text(friend.initials) : null,
         ),
-        title: Text(friend.username, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(friend.username, style: theme.textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.bold)),
         subtitle: Row(
           children: [
-            const Icon(Icons.local_fire_department, size: 14, color: Colors.orange),
+            Icon(Icons.local_fire_department, size: 14, color: ext?.warning),
             Text(' ${friend.currentStreak}  '),
-            const Icon(Icons.star, size: 14, color: Colors.amber),
+            Icon(Icons.star, size: 14, color: ext?.medalGold),
             Text(' ${friend.totalPoints}'),
           ],
         ),
@@ -33,11 +37,11 @@ class FriendCard extends StatelessWidget {
           itemBuilder: (context) => [
             PopupMenuItem(
               onTap: onRemove,
-              child: const Row(
+              child: Row(
                 children: [
-                  Icon(Icons.person_remove, color: Colors.red, size: 20),
-                  SizedBox(width: 8),
-                  Text('Remove'),
+                  Icon(Icons.person_remove, color: ext?.danger, size: 20),
+                  const SizedBox(width: 8),
+                  const Text('Remove'),
                 ],
               ),
             ),

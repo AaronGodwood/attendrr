@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../models/leaderboard_entry.dart';
+import '../../theme/theme_extensions.dart';
+import '../../widgets/common/gradient_text.dart';
 
 class LeaderboardEntryTile extends StatelessWidget {
   final LeaderboardEntry entry;
@@ -9,33 +11,29 @@ class LeaderboardEntryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
 
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
-      elevation: entry.isCurrentUser ? 4 : 1,
+      elevation: entry.isCurrentUser ? 2 : 0,
       child: Container(
         decoration: BoxDecoration(
           gradient: entry.isCurrentUser
               ? LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: isDark
-                      ? [
-                          Theme.of(context).primaryColor.withValues(alpha: 0.15),
-                          Theme.of(context).primaryColor.withValues(alpha: 0.05),
-                        ]
-                      : [
-                          Theme.of(context).primaryColor.withValues(alpha: 0.08),
-                          Theme.of(context).primaryColor.withValues(alpha: 0.02),
-                        ],
+                  colors: [
+                    theme.colorScheme.primary.withValues(alpha: 0.15),
+                    theme.colorScheme.primary.withValues(alpha: 0.05),
+                  ],
                 )
               : null,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(16),
           boxShadow: entry.isCurrentUser
               ? [
                   BoxShadow(
-                    color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
+                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
                     blurRadius: 8,
                     spreadRadius: 0,
                   ),
@@ -57,25 +55,18 @@ class LeaderboardEntryTile extends StatelessWidget {
                   : Container(
                       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: entry.isCurrentUser
-                              ? [
-                                  Theme.of(context).primaryColor,
-                                  Theme.of(context).primaryColor.withValues(alpha: 0.7),
-                                ]
-                              : [
-                                  Colors.grey.shade300,
-                                  Colors.grey.shade400,
-                                ],
-                        ),
+                        color: entry.isCurrentUser
+                            ? theme.colorScheme.primary.withValues(alpha: 0.2)
+                            : (ext?.surfaceTint ?? theme.colorScheme.surfaceContainerHighest),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Text(
                         '#${entry.rank}',
-                        style: TextStyle(
-                          fontSize: 14,
+                        style: theme.textTheme.labelMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: entry.isCurrentUser ? Colors.white : Colors.grey.shade700,
+                          color: entry.isCurrentUser
+                              ? theme.colorScheme.primary
+                              : ext?.textSecondary,
                         ),
                       ),
                     ),
@@ -89,7 +80,7 @@ class LeaderboardEntryTile extends StatelessWidget {
                   boxShadow: entry.isCurrentUser
                       ? [
                           BoxShadow(
-                            color: Theme.of(context).primaryColor.withValues(alpha: 0.4),
+                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
                             blurRadius: 8,
                             spreadRadius: 1,
                           ),
@@ -108,9 +99,8 @@ class LeaderboardEntryTile extends StatelessWidget {
               Expanded(
                 child: Text(
                   entry.username,
-                  style: TextStyle(
+                  style: theme.textTheme.bodyLarge?.copyWith(
                     fontWeight: entry.isCurrentUser ? FontWeight.bold : FontWeight.w500,
-                    fontSize: 16,
                   ),
                 ),
               ),
@@ -120,29 +110,26 @@ class LeaderboardEntryTile extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              ShaderMask(
-                shaderCallback: (bounds) => LinearGradient(
-                  colors: entry.isCurrentUser
-                      ? [
-                          Theme.of(context).primaryColor,
-                          Theme.of(context).primaryColor.withValues(alpha: 0.7),
-                        ]
-                      : [Colors.grey.shade700, Colors.grey.shade600],
-                ).createShader(bounds),
-                child: Text(
-                  '${entry.totalPoints}',
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
+              entry.isCurrentUser
+                  ? GradientText(
+                      '${entry.totalPoints}',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      gradient: ext?.pointsGradient,
+                    )
+                  : Text(
+                      '${entry.totalPoints}',
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: ext?.textSecondary,
+                      ),
+                    ),
               Text(
                 'points',
-                style: TextStyle(
-                  fontSize: 10,
-                  color: isDark ? Colors.grey[400] : Colors.grey[600],
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: ext?.textSecondary,
                 ),
               ),
             ],

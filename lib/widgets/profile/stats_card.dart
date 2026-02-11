@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/models.dart';
+import '../../theme/theme_extensions.dart';
 
 class StatsCard extends StatelessWidget {
   final Streak streak;
@@ -9,8 +10,9 @@ class StatsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = Theme.of(context).extension<TerraThemeExtension>();
+
     return Card(
-      elevation: 2,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -18,19 +20,19 @@ class StatsCard extends StatelessWidget {
           children: [
             _StatItem(
               icon: Icons.local_fire_department,
-              iconColor: Colors.orange,
+              iconColor: ext?.warning ?? Colors.orange,
               value: '${streak.currentStreak}',
               label: 'Day Streak',
             ),
             _StatItem(
               icon: Icons.star,
-              iconColor: Colors.amber,
+              iconColor: ext?.medalGold ?? Colors.amber,
               value: '${points.totalPoints}',
               label: 'Points',
             ),
             _StatItem(
               icon: Icons.ac_unit,
-              iconColor: Colors.blue,
+              iconColor: ext?.tierIntermediate ?? Colors.blue,
               value: '${streak.streakFreezes}',
               label: 'Freezes',
             ),
@@ -56,12 +58,15 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+
     return Column(
       children: [
         Icon(icon, color: iconColor, size: 28),
         const SizedBox(height: 4),
-        Text(value, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-        Text(label, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+        Text(value, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+        Text(label, style: theme.textTheme.bodySmall?.copyWith(color: ext?.textSecondary)),
       ],
     );
   }

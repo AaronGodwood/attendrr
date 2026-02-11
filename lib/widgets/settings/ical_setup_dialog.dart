@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/timetable_provider.dart';
 import '../../services/ical_service.dart';
+import '../../theme/theme_extensions.dart';
 
 class ICalSetupDialog extends StatefulWidget {
   final String? currentUrl;
@@ -66,24 +67,29 @@ class _ICalSetupDialogState extends State<ICalSetupDialog> {
             const SizedBox(height: 16),
 
             if (_success != null)
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.check_circle, color: Colors.green),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        _success!,
-                        style: TextStyle(color: Colors.green.shade700),
-                      ),
+              Builder(
+                builder: (context) {
+                  final ext = Theme.of(context).extension<TerraThemeExtension>();
+                  return Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: ext?.successContainer ?? Colors.green.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ],
-                ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: ext?.success),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Text(
+                            _success!,
+                            style: TextStyle(color: ext?.success),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
               ),
 
             const SizedBox(height: 16),
@@ -135,16 +141,31 @@ class _ICalSetupDialogState extends State<ICalSetupDialog> {
   Widget _buildStep(String number, String text) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          CircleAvatar(
-            radius: 10,
-            child: Text(number, style: const TextStyle(fontSize: 10)),
-          ),
-          const SizedBox(width: 8),
-          Expanded(child: Text(text, style: const TextStyle(fontSize: 13))),
-        ],
+      child: Builder(
+        builder: (context) {
+          final theme = Theme.of(context);
+          final ext = theme.extension<TerraThemeExtension>();
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                radius: 10,
+                backgroundColor: theme.colorScheme.primary,
+                foregroundColor: theme.colorScheme.onPrimary,
+                child: Text(number, style: const TextStyle(fontSize: 10)),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  text,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: ext?.textSecondary,
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

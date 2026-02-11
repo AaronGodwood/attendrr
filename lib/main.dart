@@ -52,7 +52,7 @@ class MyApp extends StatelessWidget {
       child: Consumer2<AuthProvider, ThemeProvider>(
         builder: (context, authProvider, themeProvider, _) {
           return MaterialApp.router(
-            title: 'Lecture Tracker',
+            title: 'Attendr',
             debugShowCheckedModeBanner: false,
             theme:
                 themeProvider.useHighContrast
