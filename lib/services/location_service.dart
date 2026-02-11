@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:geolocator/geolocator.dart';
 
 class LocationService {
@@ -7,7 +8,9 @@ class LocationService {
   Future<bool> checkPermissions() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      await Geolocator.openLocationSettings();
+      if (!kIsWeb) {
+        await Geolocator.openLocationSettings();
+      }
       return false;
     }
 
@@ -16,7 +19,9 @@ class LocationService {
       permission = await Geolocator.requestPermission();
     }
     if (permission == LocationPermission.deniedForever) {
-      await Geolocator.openAppSettings();
+      if (!kIsWeb) {
+        await Geolocator.openAppSettings();
+      }
       return false;
     }
 
@@ -55,7 +60,9 @@ class LocationService {
   }) async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      await Geolocator.openLocationSettings();
+      if (!kIsWeb) {
+        await Geolocator.openLocationSettings();
+      }
       return LocationResult(
         verified: false,
         distance: null,
@@ -69,7 +76,9 @@ class LocationService {
       permission = await Geolocator.requestPermission();
     }
     if (permission == LocationPermission.deniedForever) {
-      await Geolocator.openAppSettings();
+      if (!kIsWeb) {
+        await Geolocator.openAppSettings();
+      }
       return LocationResult(
         verified: false,
         distance: null,
