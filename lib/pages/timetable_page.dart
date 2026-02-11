@@ -144,10 +144,7 @@ class _TimetablePageState extends State<TimetablePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(DateFormat('MMMM yyyy').format(_selectedDate)),
-        ),
+        title: const Text('Timetable'),
         actions: [
           IconButton(
             icon: const Icon(Icons.today),
@@ -232,11 +229,9 @@ class _TimetablePageState extends State<TimetablePage>
                     final date = days[index];
                     final isSelected = _isSameDay(date, _selectedDate);
                     final isToday = _isToday(date);
-
                     return GestureDetector(
                       onTap: () {
                         HapticFeedback.selectionClick();
-
                         final dayDifference =
                             date.difference(_selectedDate).inDays;
                         if (dayDifference != 0) {
@@ -251,7 +246,6 @@ class _TimetablePageState extends State<TimetablePage>
                           );
                           _animationController.forward(from: 0.0);
                         }
-
                         setState(() {
                           _selectedDate = date;
                         });
@@ -286,7 +280,7 @@ class _TimetablePageState extends State<TimetablePage>
                                 fontWeight: FontWeight.w600,
                                 color:
                                     isSelected
-                                        ? Colors.white
+                                        ? theme.colorScheme.onPrimary
                                         : isToday
                                         ? theme.colorScheme.primary
                                         : ext?.textSecondary,
@@ -302,7 +296,7 @@ class _TimetablePageState extends State<TimetablePage>
                                 fontWeight: FontWeight.bold,
                                 color:
                                     isSelected
-                                        ? Colors.white
+                                        ? theme.colorScheme.onPrimary
                                         : isToday
                                         ? theme.colorScheme.primary
                                         : theme.colorScheme.onSurface,
