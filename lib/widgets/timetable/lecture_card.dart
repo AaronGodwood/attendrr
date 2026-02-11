@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/lecture.dart';
+import '../../theme/theme_extensions.dart';
 
 class LectureCard extends StatelessWidget {
   final LectureWithAttendance lectureWithAttendance;
@@ -10,14 +11,18 @@ class LectureCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final lecture = lectureWithAttendance.lecture;
     final status = lectureWithAttendance.status;
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
 
     return Container(
       margin: const EdgeInsets.all(2),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: _getBackgroundColor(status, lecture.color),
+        color: _getBackgroundColor(status, lecture.color, ext),
         borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: lecture.color, width: 1),
+        border: Border(
+          left: BorderSide(color: lecture.color, width: 3),
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -25,9 +30,9 @@ class LectureCard extends StatelessWidget {
           Row(
             children: [
               if (status == LectureStatus.attended)
-                const Icon(Icons.check_circle, size: 12, color: Colors.green)
+                Icon(Icons.check_circle, size: 12, color: ext?.success)
               else if (status == LectureStatus.missed)
-                const Icon(Icons.cancel, size: 12, color: Colors.red),
+                Icon(Icons.cancel, size: 12, color: ext?.danger),
               const SizedBox(width: 2),
               Expanded(
                 child: Text(
@@ -43,12 +48,12 @@ class LectureCard extends StatelessWidget {
           ),
           Text(
             lecture.timeRange,
-            style: TextStyle(fontSize: 9, color: Colors.grey[600]),
+            style: TextStyle(fontSize: 9, color: ext?.textSecondary),
           ),
           if (lecture.location.isNotEmpty)
             Text(
               lecture.location,
-              style: TextStyle(fontSize: 8, color: Colors.grey[600]),
+              style: TextStyle(fontSize: 8, color: ext?.textSecondary),
               overflow: TextOverflow.ellipsis,
             ),
         ],
@@ -56,12 +61,12 @@ class LectureCard extends StatelessWidget {
     );
   }
 
-  Color _getBackgroundColor(LectureStatus status, Color baseColor) {
+  Color _getBackgroundColor(LectureStatus status, Color baseColor, TerraThemeExtension? ext) {
     switch (status) {
       case LectureStatus.attended:
-        return Colors.green.withAlpha(38);
+        return (ext?.success ?? Colors.green).withAlpha(38);
       case LectureStatus.missed:
-        return Colors.red.withAlpha(38);
+        return (ext?.danger ?? Colors.red).withAlpha(38);
       case LectureStatus.inProgress:
         return baseColor.withAlpha(77);
       case LectureStatus.upcoming:

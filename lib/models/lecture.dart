@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import '../theme/colors.dart';
 
 class Lecture extends Equatable {
   final String id;
@@ -141,17 +142,7 @@ class Lecture extends Equatable {
       isActive ? endTime.difference(DateTime.now()) : null;
 
   Color get color {
-    final colors = [
-      Colors.blue,
-      Colors.green,
-      Colors.orange,
-      Colors.purple,
-      Colors.teal,
-      Colors.pink,
-      Colors.indigo,
-      Colors.amber,
-    ];
-    return colors[moduleCode.hashCode.abs() % colors.length];
+    return TerraColors.moduleColors[moduleCode.hashCode.abs() % TerraColors.moduleColors.length];
   }
 
   @override
