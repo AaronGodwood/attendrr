@@ -68,6 +68,7 @@ dependencies:
   # HTTP
   http: ^1.2.2
   timezone: ^0.10.1
+  flutter_timezone: ^4.1.1
 
 dev_dependencies:
   flutter_test:
@@ -79,6 +80,7 @@ dev_dependencies:
   freezed: ^3.2.3
   flutter_lints: ^6.0.0
   mockito: ^5.6.1
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -90,3 +92,14 @@ flutter:
     - assets/images/achievements/
     - assets/icons/
     - assets/fonts/
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  web:
+    generate: true
+    image_path: assets/icons/app_icon.png
+    background_color: "#ffffff"
+    theme_color: "#0175C2"
+  image_path: assets/icons/app_icon.png
+  remove_alpha_ios: true
