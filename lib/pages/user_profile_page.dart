@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../models/models.dart';
 import '../repositories/user_repository.dart';
 import '../repositories/attendance_repository.dart';
+import '../repositories/friends_repository.dart' as friends_repo;
+import '../repositories/friends_repository.dart';
 import '../theme/theme_extensions.dart';
 import '../widgets/common/grain_overlay.dart';
 import '../widgets/profile/tier_progress_card.dart';
@@ -27,6 +29,7 @@ class UserProfilePage extends StatefulWidget {
 class _UserProfilePageState extends State<UserProfilePage> {
   final _userRepo = UserRepository.instance;
   final _attendanceRepo = AttendanceRepository.instance;
+  final _friendsRepo = friends_repo.FriendsRepository.instance;
 
   User? _user;
   Streak? _streak;
@@ -35,6 +38,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
   List<DailyAttendance>? _history;
   bool _isLoading = true;
   String? _error;
+  bool _requestSending = false;
+  bool _requestSent = false;
+  friends_repo.FriendRelationshipStatus _friendStatus =
+      friends_repo.FriendRelationshipStatus.none;
+  String? _incomingRequestId;
 
   @override
   void initState() {
@@ -53,7 +61,17 @@ class _UserProfilePageState extends State<UserProfilePage> {
       final streakData = await _userRepo.getUserStreak(widget.userId);
       final pointsData = await _userRepo.getUserPoints(widget.userId);
       final statsData = await _attendanceRepo.getUserStats(widget.userId);
-      final historyData = await _attendanceRepo.getUserHistory(widget.userId, 30);
+      final historyData = await _attendanceRepo.getUserHistory(
+        widget.userId,
+        30,
+      );
+      final friendStatus = await _friendsRepo.getFriendRelationshipStatus(
+        widget.userId,
+      );
+      final incomingRequestId =
+          friendStatus == friends_repo.FriendRelationshipStatus.pendingIncoming
+              ? await _friendsRepo.getPendingRequestId(widget.userId)
+              : null;
 
       setState(() {
         _user = userData;
@@ -61,6 +79,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
         _points = pointsData;
         _stats = statsData;
         _history = historyData;
+        _friendStatus = friendStatus;
+        _requestSent = friendStatus == friends_repo.FriendRelationshipStatus.pending;
+        _incomingRequestId = incomingRequestId;
         _isLoading = false;
       });
     } catch (e) {
@@ -74,78 +95,79 @@ class _UserProfilePageState extends State<UserProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.username),
-      ),
+      appBar: AppBar(title: Text(widget.username)),
       body: Stack(
         children: [
           _isLoading
               ? const ProfileSkeleton()
               : _error != null
-                  ? Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            Icons.error_outline,
-                            size: 48,
-                            color: Theme.of(context).extension<TerraThemeExtension>()?.danger,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(_error!),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: _loadUserProfile,
-                            child: const Text('Retry'),
-                          ),
-                        ],
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadUserProfile,
-                      child: SingleChildScrollView(
-                        physics: const AlwaysScrollableScrollPhysics(),
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          children: [
-                            // Profile Header
-                            _buildProfileHeader(),
-                            const SizedBox(height: 20),
-
-                            // Tier Progress
-                            if (_points != null)
-                              _animatedSection(
-                                index: 0,
-                                child: TierProgressCard(points: _points!),
-                              ),
-                            const SizedBox(height: 12),
-
-                            // Streak
-                            if (_streak != null)
-                              _animatedSection(
-                                index: 1,
-                                child: StreakCard(streak: _streak!),
-                              ),
-                            const SizedBox(height: 12),
-
-                            // Attendance Rings
-                            if (_stats != null)
-                              _animatedSection(
-                                index: 2,
-                                child: AttendanceRingCard(stats: _stats!),
-                              ),
-                            const SizedBox(height: 12),
-
-                            // Attendance Chart
-                            if (_history != null && _history!.isNotEmpty)
-                              _animatedSection(
-                                index: 3,
-                                child: AttendanceChart(data: _history!),
-                              ),
-                          ],
-                        ),
-                      ),
+              ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      size: 48,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<TerraThemeExtension>()?.danger,
                     ),
+                    const SizedBox(height: 16),
+                    Text(_error!),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _loadUserProfile,
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              )
+              : RefreshIndicator(
+                onRefresh: _loadUserProfile,
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      // Profile Header
+                      _buildProfileHeader(),
+                      const SizedBox(height: 20),
+
+                      // Tier Progress
+                      if (_points != null)
+                        _animatedSection(
+                          index: 0,
+                          child: TierProgressCard(points: _points!),
+                        ),
+                      const SizedBox(height: 12),
+
+                      // Streak
+                      if (_streak != null)
+                        _animatedSection(
+                          index: 1,
+                          child: StreakCard(streak: _streak!),
+                        ),
+                      const SizedBox(height: 12),
+
+                      // Attendance Rings
+                      if (_stats != null)
+                        _animatedSection(
+                          index: 2,
+                          child: AttendanceRingCard(stats: _stats!),
+                        ),
+                      const SizedBox(height: 12),
+
+                      // Attendance Chart
+                      if (_history != null && _history!.isNotEmpty)
+                        _animatedSection(
+                          index: 3,
+                          child: AttendanceChart(data: _history!),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
           const GrainOverlay(),
         ],
       ),
@@ -156,15 +178,26 @@ class _UserProfilePageState extends State<UserProfilePage> {
     final theme = Theme.of(context);
     final ext = theme.extension<TerraThemeExtension>();
     final hasAvatar = _user?.avatarUrl != null && _user!.avatarUrl!.isNotEmpty;
+    final isCurrentUser = _friendsRepo.currentUserId == widget.userId;
+    final _canSendRequest =
+        !isCurrentUser &&
+        _friendStatus != friends_repo.FriendRelationshipStatus.accepted &&
+        _friendStatus != friends_repo.FriendRelationshipStatus.pending &&
+        _friendStatus != friends_repo.FriendRelationshipStatus.pendingIncoming &&
+        !_requestSent;
 
     return Column(
       children: [
         CircleAvatar(
           radius: 50,
           backgroundImage: hasAvatar ? NetworkImage(_user!.avatarUrl!) : null,
-          child: !hasAvatar
-              ? Text(_user?.initials ?? '?', style: const TextStyle(fontSize: 32))
-              : null,
+          child:
+              !hasAvatar
+                  ? Text(
+                    _user?.initials ?? '?',
+                    style: const TextStyle(fontSize: 32),
+                  )
+                  : null,
         ),
         const SizedBox(height: 12),
         Text(
@@ -194,6 +227,85 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
                 color: theme.colorScheme.onPrimary,
+              ),
+            ),
+          ),
+        ],
+        if (!isCurrentUser) ...[
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton.icon(
+              onPressed:
+                  _friendStatus == friends_repo.FriendRelationshipStatus.pendingIncoming
+                      ? () async {
+                        if (_incomingRequestId == null) return;
+                        try {
+                          await _friendsRepo.acceptRequest(_incomingRequestId!);
+                          if (!mounted) return;
+                          setState(() {
+                            _friendStatus =
+                                friends_repo.FriendRelationshipStatus.accepted;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Friend request accepted'),
+                            ),
+                          );
+                        } catch (e) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(e.toString())));
+                        }
+                      }
+                      : _canSendRequest && !_requestSending
+                      ? () async {
+                        setState(() => _requestSending = true);
+                        try {
+                          await _friendsRepo.sendRequest(widget.userId);
+                          if (!mounted) return;
+                          setState(() {
+                            _requestSent = true;
+                            _friendStatus =
+                                friends_repo.FriendRelationshipStatus.pending;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Friend request sent'),
+                            ),
+                          );
+                        } catch (e) {
+                          if (!mounted) return;
+                          ScaffoldMessenger.of(
+                            context,
+                          ).showSnackBar(SnackBar(content: Text(e.toString())));
+                        } finally {
+                          if (mounted) {
+                            setState(() => _requestSending = false);
+                          }
+                        }
+                      }
+                      : null,
+              icon: Icon(
+                _friendStatus == friends_repo.FriendRelationshipStatus.accepted
+                    ? Icons.check
+                    : _friendStatus == friends_repo.FriendRelationshipStatus.pending ||
+                        _friendStatus ==
+                            friends_repo.FriendRelationshipStatus.pendingIncoming ||
+                        _requestSent
+                    ? Icons.hourglass_bottom
+                    : Icons.person_add,
+              ),
+              label: Text(
+                _friendStatus == friends_repo.FriendRelationshipStatus.accepted
+                    ? 'Friends'
+                    : _friendStatus == friends_repo.FriendRelationshipStatus.pending
+                    ? 'Request Pending'
+                    : _friendStatus ==
+                        friends_repo.FriendRelationshipStatus.pendingIncoming
+                    ? 'Accept Request'
+                    : 'Add Friend',
               ),
             ),
           ),
