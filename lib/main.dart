@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -30,8 +31,10 @@ Future<void> main() async {
     ),
   );
 
-  // Initialize notifications and Android 13+ notification permission flow.
-  await NotificationService.instance.initialize();
+  // Initialize local notifications only on non-web platforms.
+  if (!kIsWeb) {
+    await NotificationService.instance.initialize();
+  }
 
   runApp(const MyApp());
 }
