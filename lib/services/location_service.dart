@@ -6,21 +6,32 @@ class LocationService {
 
   Future<bool> checkPermissions() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) return false;
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings();
+      return false;
+    }
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
+    }
+    if (permission == LocationPermission.deniedForever) {
+      await Geolocator.openAppSettings();
+      return false;
     }
 
     return permission == LocationPermission.always ||
         permission == LocationPermission.whileInUse;
   }
 
-  Future<Position?> getCurrentPosition() async {
+  Future<Position?> getCurrentPosition({
+    bool skipPermissionCheck = false,
+  }) async {
     try {
-      final hasPermission = await checkPermissions();
-      if (!hasPermission) return null;
+      if (!skipPermissionCheck) {
+        final hasPermission = await checkPermissions();
+        if (!hasPermission) return null;
+      }
 
       return await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
@@ -42,13 +53,46 @@ class LocationService {
     double targetLon, {
     double maxDistance = 100,
   }) async {
-    final position = await getCurrentPosition();
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      await Geolocator.openLocationSettings();
+      return LocationResult(
+        verified: false,
+        distance: null,
+        error:
+            'Location services are disabled. Please enable location services.',
+      );
+    }
+
+    var permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+    }
+    if (permission == LocationPermission.deniedForever) {
+      await Geolocator.openAppSettings();
+      return LocationResult(
+        verified: false,
+        distance: null,
+        error:
+            'Location permission is permanently denied. Enable it in app settings.',
+      );
+    }
+    if (permission != LocationPermission.always &&
+        permission != LocationPermission.whileInUse) {
+      return LocationResult(
+        verified: false,
+        distance: null,
+        error: 'Location permission is required to verify attendance.',
+      );
+    }
+
+    final position = await getCurrentPosition(skipPermissionCheck: true);
 
     if (position == null) {
       return LocationResult(
         verified: false,
         distance: null,
-        error: 'Could not get location',
+        error: 'Could not get location. Check GPS signal and try again.',
       );
     }
 
