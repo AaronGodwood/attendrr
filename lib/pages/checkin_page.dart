@@ -204,28 +204,36 @@ class _CheckInPageState extends State<CheckInPage>
           if (provider.distance != null)
             _buildStatusBanner(
               icon: isTooFar ? Icons.location_off : Icons.location_on,
-              text: isTooFar
-                  ? 'You are ${provider.distance!.toStringAsFixed(0)}m away'
-                  : 'Location verified (${provider.distance!.toStringAsFixed(0)}m)',
-              bgColor: isTooFar
-                  ? (ext?.warningContainer ?? theme.colorScheme.errorContainer)
-                  : (ext?.successContainer ?? theme.colorScheme.primaryContainer),
-              iconColor: isTooFar
-                  ? (ext?.warning ?? theme.colorScheme.error)
-                  : (ext?.success ?? theme.colorScheme.primary),
+              text:
+                  isTooFar
+                      ? 'You are ${provider.distance!.toStringAsFixed(0)}m away'
+                      : 'Location verified (${provider.distance!.toStringAsFixed(0)}m)',
+              bgColor:
+                  isTooFar
+                      ? (ext?.warningContainer ??
+                          theme.colorScheme.errorContainer)
+                      : (ext?.successContainer ??
+                          theme.colorScheme.primaryContainer),
+              iconColor:
+                  isTooFar
+                      ? (ext?.warning ?? theme.colorScheme.error)
+                      : (ext?.success ?? theme.colorScheme.primary),
             ),
           if (!hasCoords)
             _buildStatusBanner(
               icon: Icons.location_off,
-              text: 'Location unavailable; check-in allowed during lecture window',
-              bgColor: ext?.warningContainer ?? theme.colorScheme.errorContainer,
+              text:
+                  'Location unavailable; check-in allowed during lecture window',
+              bgColor:
+                  ext?.warningContainer ?? theme.colorScheme.errorContainer,
               iconColor: ext?.warning ?? theme.colorScheme.error,
             ),
           if (!withinWindow)
             _buildStatusBanner(
               icon: Icons.access_time,
               text: 'Check-in opens 10 minutes before the lecture',
-              bgColor: ext?.primaryContainer ?? theme.colorScheme.primaryContainer,
+              bgColor:
+                  ext?.primaryContainer ?? theme.colorScheme.primaryContainer,
               iconColor: theme.colorScheme.primary,
             ),
           const SizedBox(height: 24),
@@ -244,15 +252,16 @@ class _CheckInPageState extends State<CheckInPage>
               height: 60,
               child: DecoratedBox(
                 decoration: BoxDecoration(
-                  gradient: canCheckIn
-                      ? (ext?.checkinSuccessGradient ??
-                          LinearGradient(
-                            colors: [
-                              theme.colorScheme.primary,
-                              theme.colorScheme.secondary,
-                            ],
-                          ))
-                      : null,
+                  gradient:
+                      canCheckIn
+                          ? (ext?.checkinSuccessGradient ??
+                              LinearGradient(
+                                colors: [
+                                  theme.colorScheme.primary,
+                                  theme.colorScheme.secondary,
+                                ],
+                              ))
+                          : null,
                   color: canCheckIn ? null : (ext?.textDisabled ?? Colors.grey),
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -271,9 +280,10 @@ class _CheckInPageState extends State<CheckInPage>
                         ? 'Check In (${provider.projectedPoints} pts)'
                         : 'Check In',
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: canCheckIn
-                          ? Colors.white
-                          : (ext?.textSecondary ?? Colors.grey),
+                      color:
+                          canCheckIn
+                              ? Colors.white
+                              : (ext?.textSecondary ?? Colors.grey),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -305,10 +315,7 @@ class _CheckInPageState extends State<CheckInPage>
             Icon(icon, color: iconColor),
             const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                text,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
+              child: Text(text, style: Theme.of(context).textTheme.bodyMedium),
             ),
           ],
         ),
@@ -352,7 +359,8 @@ class _CheckInPageState extends State<CheckInPage>
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: ext?.primaryContainer ?? theme.colorScheme.primaryContainer,
+                color:
+                    ext?.primaryContainer ?? theme.colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Column(
@@ -393,8 +401,9 @@ class _CheckInPageState extends State<CheckInPage>
   Widget _buildLectureCard(Lecture lecture) {
     final theme = Theme.of(context);
     final ext = theme.extension<TerraThemeExtension>();
-    final moduleColor = TerraColors.moduleColors[
-        lecture.moduleCode.hashCode.abs() % TerraColors.moduleColors.length];
+    final moduleColor =
+        TerraColors.moduleColors[lecture.moduleCode.hashCode.abs() %
+            TerraColors.moduleColors.length];
 
     return Card(
       child: ClipRRect(
@@ -431,7 +440,11 @@ class _CheckInPageState extends State<CheckInPage>
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        Icon(Icons.access_time, size: 16, color: ext?.textSecondary),
+                        Icon(
+                          Icons.access_time,
+                          size: 16,
+                          color: ext?.textSecondary,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           lecture.timeRange,
@@ -444,7 +457,11 @@ class _CheckInPageState extends State<CheckInPage>
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.location_on, size: 16, color: ext?.textSecondary),
+                        Icon(
+                          Icons.location_on,
+                          size: 16,
+                          color: ext?.textSecondary,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           lecture.location,
@@ -482,9 +499,7 @@ class _CheckInPageState extends State<CheckInPage>
                   Navigator.pop(context);
                   provider.checkOut();
                 },
-                style: TextButton.styleFrom(
-                  foregroundColor: ext?.danger,
-                ),
+                style: TextButton.styleFrom(foregroundColor: ext?.danger),
                 child: const Text('End Session'),
               ),
             ],
