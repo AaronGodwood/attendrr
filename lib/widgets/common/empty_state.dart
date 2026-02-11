@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme_extensions.dart';
 
 class EmptyState extends StatelessWidget {
   final IconData icon;
@@ -16,18 +17,21 @@ class EmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final ext = Theme.of(context).extension<TerraThemeExtension>();
+    final theme = Theme.of(context);
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(icon, size: 64, color: Colors.grey[400]),
+            Icon(icon, size: 64, color: ext?.textDisabled ?? theme.colorScheme.onSurface.withValues(alpha: 0.4)),
             const SizedBox(height: 16),
-            Text(title, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+            Text(title, style: theme.textTheme.titleLarge, textAlign: TextAlign.center),
             if (subtitle != null) ...[
               const SizedBox(height: 8),
-              Text(subtitle!, style: TextStyle(color: Colors.grey[600]), textAlign: TextAlign.center),
+              Text(subtitle!, style: TextStyle(color: ext?.textSecondary), textAlign: TextAlign.center),
             ],
             if (action != null) ...[
               const SizedBox(height: 24),

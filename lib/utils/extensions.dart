@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../theme/theme_extensions.dart';
 
 extension DateTimeExtensions on DateTime {
   bool get isToday {
@@ -79,10 +80,11 @@ extension ContextExtensions on BuildContext {
   double get screenHeight => MediaQuery.of(this).size.height;
 
   void showSnackBar(String message, {bool isError = false}) {
+    final ext = Theme.of(this).extension<TerraThemeExtension>();
     ScaffoldMessenger.of(this).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError ? Colors.red : null,
+        backgroundColor: isError ? ext?.danger : null,
       ),
     );
   }

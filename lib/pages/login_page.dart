@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
+import '../theme/theme_extensions.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,6 +26,9 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -35,9 +39,19 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 const SizedBox(height: 40),
-                const Text('Welcome Back', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                Text(
+                  'Welcome Back',
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 8),
-                Text('Sign in to continue tracking your lectures', style: TextStyle(fontSize: 16, color: Colors.grey[600])),
+                Text(
+                  'Sign in to continue tracking your lectures',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: ext?.textSecondary,
+                  ),
+                ),
                 const SizedBox(height: 48),
 
                 Consumer<AuthProvider>(
@@ -47,15 +61,14 @@ class _LoginPageState extends State<LoginPage> {
                         margin: const EdgeInsets.only(bottom: 16),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: Colors.red.shade50,
+                          color: ext?.dangerContainer,
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.red.shade200),
                         ),
                         child: Row(
                           children: [
-                            const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                            Icon(Icons.error_outline, color: ext?.danger, size: 20),
                             const SizedBox(width: 8),
-                            Expanded(child: Text(auth.error!, style: TextStyle(color: Colors.red.shade700))),
+                            Expanded(child: Text(auth.error!, style: TextStyle(color: ext?.danger))),
                             IconButton(
                               icon: const Icon(Icons.close, size: 18),
                               onPressed: () => auth.clearError(),
@@ -73,10 +86,9 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Please enter your email';
@@ -96,7 +108,6 @@ class _LoginPageState extends State<LoginPage> {
                       icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
                       onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Please enter your password';
@@ -134,7 +145,12 @@ class _LoginPageState extends State<LoginPage> {
                     const Expanded(child: Divider()),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text('Or continue with', style: TextStyle(color: Colors.grey[600])),
+                      child: Text(
+                        'Or continue with',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: ext?.textSecondary,
+                        ),
+                      ),
                     ),
                     const Expanded(child: Divider()),
                   ],
@@ -151,8 +167,19 @@ class _LoginPageState extends State<LoginPage> {
                         Container(
                           width: 24,
                           height: 24,
-                          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                          child: const Center(child: Text('G', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold))),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surface,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Center(
+                            child: Text(
+                              'G',
+                              style: TextStyle(
+                                color: ext?.danger ?? Colors.red,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
                         ),
                         const SizedBox(width: 12),
                         const Text('Continue with Google'),

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:math' as math;
 import '../../models/leaderboard_entry.dart';
+import '../../theme/theme_extensions.dart';
+import '../../widgets/common/gradient_text.dart';
 
 class PodiumWidget extends StatelessWidget {
   final List<LeaderboardEntry> topThree;
@@ -10,7 +12,8 @@ class PodiumWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
 
     // Ensure we have exactly 3 entries (fill with nulls if needed)
     final first = topThree.isNotEmpty ? topThree[0] : null;
@@ -23,15 +26,10 @@ class PodiumWidget extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: isDark
-              ? [
-                  const Color(0xFF1A1A2E),
-                  const Color(0xFF16213E),
-                ]
-              : [
-                  const Color(0xFFF5F7FA),
-                  const Color(0xFFE8EAF6),
-                ],
+          colors: [
+            theme.colorScheme.surface,
+            (ext?.surfaceTint ?? theme.colorScheme.surfaceContainerHighest),
+          ],
         ),
       ),
       child: Column(
@@ -50,7 +48,7 @@ class PodiumWidget extends StatelessWidget {
                     second,
                     rank: 2,
                     height: 140,
-                    color: const Color(0xFFC0C0C0), // Silver
+                    color: ext?.medalSilver ?? const Color(0xFFB8A898),
                   ),
                 ),
               const SizedBox(width: 8),
@@ -62,7 +60,7 @@ class PodiumWidget extends StatelessWidget {
                     first,
                     rank: 1,
                     height: 180,
-                    color: const Color(0xFFFFD700), // Gold
+                    color: ext?.medalGold ?? const Color(0xFFE8D5B7),
                   ),
                 ),
               const SizedBox(width: 8),
@@ -74,7 +72,7 @@ class PodiumWidget extends StatelessWidget {
                     third,
                     rank: 3,
                     height: 120,
-                    color: const Color(0xFFCD7F32), // Bronze
+                    color: ext?.medalBronze ?? const Color(0xFFC67B4E),
                   ),
                 ),
             ],
@@ -91,7 +89,8 @@ class PodiumWidget extends StatelessWidget {
     required double height,
     required Color color,
   }) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -105,7 +104,7 @@ class PodiumWidget extends StatelessWidget {
               return Transform.translate(
                 offset: Offset(0, -10 * math.sin(value * math.pi)),
                 child: const Text(
-                  '👑',
+                  '\u{1F451}',
                   style: TextStyle(fontSize: 32),
                 ),
               );
@@ -150,7 +149,7 @@ class PodiumWidget extends StatelessWidget {
                             style: TextStyle(
                               fontSize: rank == 1 ? 24 : 20,
                               fontWeight: FontWeight.bold,
-                              color: Colors.white,
+                              color: theme.colorScheme.onPrimary,
                             ),
                           )
                         : null,
@@ -165,10 +164,9 @@ class PodiumWidget extends StatelessWidget {
         // Username
         Text(
           entry.username,
-          style: TextStyle(
+          style: theme.textTheme.bodyMedium?.copyWith(
             fontSize: rank == 1 ? 16 : 14,
             fontWeight: rank == 1 ? FontWeight.bold : FontWeight.w600,
-            color: isDark ? Colors.white : Colors.black87,
           ),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
@@ -177,28 +175,18 @@ class PodiumWidget extends StatelessWidget {
         const SizedBox(height: 4),
 
         // Points with gradient
-        ShaderMask(
-          shaderCallback: (bounds) => LinearGradient(
-            colors: rank == 1
-                ? [const Color(0xFFFFD700), const Color(0xFFFFA500)]
-                : rank == 2
-                    ? [const Color(0xFFC0C0C0), const Color(0xFFAAAAAA)]
-                    : [const Color(0xFFCD7F32), const Color(0xFFB87333)],
-          ).createShader(bounds),
-          child: Text(
-            '${entry.totalPoints}',
-            style: TextStyle(
-              fontSize: rank == 1 ? 24 : 20,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
+        GradientText(
+          '${entry.totalPoints}',
+          style: TextStyle(
+            fontSize: rank == 1 ? 24 : 20,
+            fontWeight: FontWeight.bold,
           ),
+          gradient: ext?.pointsGradient,
         ),
         Text(
           'points',
-          style: TextStyle(
-            fontSize: 10,
-            color: isDark ? Colors.grey[400] : Colors.grey[600],
+          style: theme.textTheme.labelSmall?.copyWith(
+            color: ext?.textSecondary,
           ),
         ),
         const SizedBox(height: 12),
@@ -215,20 +203,10 @@ class PodiumWidget extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: rank == 1
-                      ? [
-                          const Color(0xFFFFD700).withValues(alpha: 0.8),
-                          const Color(0xFFFFA500).withValues(alpha: 0.6),
-                        ]
-                      : rank == 2
-                          ? [
-                              const Color(0xFFC0C0C0).withValues(alpha: 0.7),
-                              const Color(0xFFAAAAAA).withValues(alpha: 0.5),
-                            ]
-                          : [
-                              const Color(0xFFCD7F32).withValues(alpha: 0.7),
-                              const Color(0xFFB87333).withValues(alpha: 0.5),
-                            ],
+                  colors: [
+                    color.withValues(alpha: 0.8),
+                    color.withValues(alpha: 0.4),
+                  ],
                 ),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(12),

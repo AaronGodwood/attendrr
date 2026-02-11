@@ -6,6 +6,7 @@ class TimetableSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Column(
       children: [
         // Day selector skeleton
@@ -13,9 +14,9 @@ class TimetableSkeleton extends StatelessWidget {
           height: 80,
           padding: const EdgeInsets.symmetric(vertical: 8),
           decoration: BoxDecoration(
-            color: Theme.of(context).cardColor,
+            color: theme.colorScheme.surface,
             border: Border(
-              bottom: BorderSide(color: Colors.grey[300]!, width: 1),
+              bottom: BorderSide(color: theme.colorScheme.outline, width: 1),
             ),
           ),
           child: Row(

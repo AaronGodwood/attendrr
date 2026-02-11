@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
+import '../theme/theme_extensions.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -52,8 +53,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+      appBar: AppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -62,9 +66,19 @@ class _SignUpPageState extends State<SignUpPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const Text('Create Account', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+                Text(
+                  'Create Account',
+                  style: theme.textTheme.headlineLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 8),
-                Text('Start tracking your lecture attendance today', style: TextStyle(fontSize: 16, color: Colors.grey[600])),
+                Text(
+                  'Start tracking your lecture attendance today',
+                  style: theme.textTheme.bodyLarge?.copyWith(
+                    color: ext?.textSecondary,
+                  ),
+                ),
                 const SizedBox(height: 32),
 
                 Consumer<AuthProvider>(
@@ -73,8 +87,11 @@ class _SignUpPageState extends State<SignUpPage> {
                       return Container(
                         margin: const EdgeInsets.only(bottom: 16),
                         padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(color: Colors.red.shade50, borderRadius: BorderRadius.circular(8)),
-                        child: Text(auth.error!, style: TextStyle(color: Colors.red.shade700)),
+                        decoration: BoxDecoration(
+                          color: ext?.dangerContainer,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(auth.error!, style: TextStyle(color: ext?.danger)),
                       );
                     }
                     return const SizedBox.shrink();
@@ -83,10 +100,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 TextFormField(
                   controller: _usernameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Username',
-                    prefixIcon: const Icon(Icons.person_outlined),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    prefixIcon: Icon(Icons.person_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Please enter a username';
@@ -100,10 +116,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
-                    prefixIcon: const Icon(Icons.email_outlined),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Please enter your email';
@@ -123,7 +138,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
                       onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) return 'Please enter a password';
@@ -135,9 +149,13 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: _passwordStrength,
-                    backgroundColor: Colors.grey[300],
+                    backgroundColor: ext?.surfaceTint ?? theme.colorScheme.outline.withValues(alpha: 0.3),
                     valueColor: AlwaysStoppedAnimation<Color>(
-                      _passwordStrength < 0.3 ? Colors.red : _passwordStrength < 0.6 ? Colors.orange : Colors.green,
+                      _passwordStrength < 0.3
+                          ? (ext?.danger ?? Colors.red)
+                          : _passwordStrength < 0.6
+                              ? (ext?.warning ?? Colors.orange)
+                              : (ext?.success ?? Colors.green),
                     ),
                   ),
                 ],
@@ -153,7 +171,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility),
                       onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
                     ),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                   ),
                   validator: (value) {
                     if (value != _passwordController.text) return 'Passwords do not match';
@@ -168,12 +185,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     Expanded(
                       child: RichText(
                         text: TextSpan(
-                          style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: ext?.textSecondary,
+                          ),
                           children: [
                             const TextSpan(text: 'I agree to the '),
                             TextSpan(
                               text: 'Terms of Service',
-                              style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold),
+                              style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
                               recognizer: TapGestureRecognizer()..onTap = () {},
                             ),
                           ],

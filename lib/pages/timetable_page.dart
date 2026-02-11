@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import '../providers/timetable_provider.dart';
 import '../models/lecture.dart';
+import '../theme/colors.dart';
+import '../theme/theme_extensions.dart';
 import '../widgets/timetable/timetable_skeleton.dart';
 
 class TimetablePage extends StatefulWidget {
@@ -192,12 +194,15 @@ class _TimetablePageState extends State<TimetablePage>
       (index) => weekStart.add(Duration(days: index)),
     );
 
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+
     return Container(
       height: 80,
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Theme.of(context).cardColor,
-        border: Border(bottom: BorderSide(color: Colors.grey[300]!, width: 1)),
+        color: theme.colorScheme.surface,
+        border: Border(bottom: BorderSide(color: theme.colorScheme.outline, width: 1)),
       ),
       child: Row(
         children: [
@@ -227,8 +232,6 @@ class _TimetablePageState extends State<TimetablePage>
                     final date = days[index];
                     final isSelected = _isSameDay(date, _selectedDate);
                     final isToday = _isToday(date);
-                    final isDark =
-                        Theme.of(context).brightness == Brightness.dark;
 
                     return GestureDetector(
                       onTap: () {
@@ -265,11 +268,9 @@ class _TimetablePageState extends State<TimetablePage>
                         decoration: BoxDecoration(
                           color:
                               isSelected
-                                  ? Theme.of(context).primaryColor
+                                  ? theme.colorScheme.primary
                                   : isToday
-                                  ? Theme.of(
-                                    context,
-                                  ).primaryColor.withValues(alpha: 0.18)
+                                  ? (ext?.primaryContainer ?? theme.colorScheme.primaryContainer)
                                   : Colors.transparent,
                           borderRadius: BorderRadius.circular(22),
                         ),
@@ -287,10 +288,8 @@ class _TimetablePageState extends State<TimetablePage>
                                     isSelected
                                         ? Colors.white
                                         : isToday
-                                        ? Theme.of(context).primaryColor
-                                        : isDark
-                                        ? Colors.grey[300]
-                                        : Colors.grey[600],
+                                        ? theme.colorScheme.primary
+                                        : ext?.textSecondary,
                               ),
                             ),
                             const SizedBox(height: 2),
@@ -305,10 +304,8 @@ class _TimetablePageState extends State<TimetablePage>
                                     isSelected
                                         ? Colors.white
                                         : isToday
-                                        ? Theme.of(context).primaryColor
-                                        : isDark
-                                        ? Colors.white
-                                        : Colors.black,
+                                        ? theme.colorScheme.primary
+                                        : theme.colorScheme.onSurface,
                               ),
                             ),
                           ],
@@ -340,18 +337,21 @@ class _TimetablePageState extends State<TimetablePage>
             .where((l) => _isSameDay(l.lecture.startTime, _selectedDate))
             .toList();
 
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+
     if (provider.lectures.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.calendar_today, size: 64, color: Colors.grey[400]),
+            Icon(Icons.calendar_today, size: 64, color: ext?.textDisabled),
             const SizedBox(height: 16),
-            const Text('No lectures this week', style: TextStyle(fontSize: 18)),
+            Text('No lectures this week', style: theme.textTheme.titleLarge),
             const SizedBox(height: 8),
             Text(
               'Import your timetable in Settings',
-              style: TextStyle(color: Colors.grey[600]),
+              style: TextStyle(color: ext?.textSecondary),
             ),
           ],
         ),
@@ -363,11 +363,11 @@ class _TimetablePageState extends State<TimetablePage>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.event_busy, size: 64, color: Colors.grey[400]),
+            Icon(Icons.event_busy, size: 64, color: ext?.textDisabled),
             const SizedBox(height: 16),
             Text(
               'No lectures on ${DateFormat('EEEE, MMM d').format(_selectedDate)}',
-              style: const TextStyle(fontSize: 16),
+              style: theme.textTheme.bodyLarge,
             ),
           ],
         ),
@@ -398,7 +398,7 @@ class _TimetablePageState extends State<TimetablePage>
                         _formatHour(hour),
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: ext?.textSecondary,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -437,10 +437,8 @@ class _TimetablePageState extends State<TimetablePage>
                         height: 1,
                         color:
                             isCurrentHour
-                                ? Theme.of(
-                                  context,
-                                ).primaryColor.withValues(alpha: 0.2)
-                                : Colors.grey[300]!,
+                                ? theme.colorScheme.primary.withValues(alpha: 0.2)
+                                : theme.colorScheme.outline.withValues(alpha: 0.3),
                       ),
                     );
                   }),
@@ -475,6 +473,8 @@ class _TimetablePageState extends State<TimetablePage>
 
     final topPosition = (minutesSinceMidnight - startMinutes).toDouble();
 
+    final dangerColor = Theme.of(context).extension<TerraThemeExtension>()?.danger ?? Theme.of(context).colorScheme.error;
+
     return Positioned(
       top: topPosition,
       left: 0,
@@ -485,11 +485,11 @@ class _TimetablePageState extends State<TimetablePage>
             width: 8,
             height: 8,
             decoration: BoxDecoration(
-              color: Colors.red,
+              color: dangerColor,
               shape: BoxShape.circle,
             ),
           ),
-          Expanded(child: Container(height: 2, color: Colors.red)),
+          Expanded(child: Container(height: 2, color: dangerColor)),
         ],
       ),
     );
@@ -515,16 +515,30 @@ class _TimetablePageState extends State<TimetablePage>
     final height = durationMinutes.toDouble();
 
     final status = lectureWithAttendance.status;
-    final primaryColor = Theme.of(context).primaryColor;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final themeData = Theme.of(context);
+    final ext = themeData.extension<TerraThemeExtension>();
 
-    // Get text color based on background
-    final textColor = _getLectureTextColor(status, primaryColor, isDark);
-    final secondaryTextColor = _getLectureSecondaryTextColor(
-      status,
-      primaryColor,
-      isDark,
-    );
+    // Module color for left-border accent
+    final moduleColor = TerraColors.moduleColors[
+        lecture.moduleCode.hashCode.abs() % TerraColors.moduleColors.length];
+
+    // Status-dependent background tint
+    final bgColor = switch (status) {
+      LectureStatus.attended => (ext?.success ?? themeData.colorScheme.secondary).withValues(alpha: 0.1),
+      LectureStatus.missed => (ext?.danger ?? themeData.colorScheme.error).withValues(alpha: 0.1),
+      LectureStatus.inProgress => moduleColor.withValues(alpha: 0.15),
+      LectureStatus.upcoming => moduleColor.withValues(alpha: 0.08),
+    };
+
+    final textColor = themeData.colorScheme.onSurface;
+    final secondaryTextColor = ext?.textSecondary ?? themeData.colorScheme.onSurface.withValues(alpha: 0.6);
+
+    // Status icon colors
+    final statusIconColor = switch (status) {
+      LectureStatus.attended => ext?.success,
+      LectureStatus.missed => ext?.danger,
+      _ => null,
+    };
 
     // Determine what to show based on height
     final showTime = height > 65;
@@ -538,122 +552,95 @@ class _TimetablePageState extends State<TimetablePage>
         color: Colors.transparent,
         child: InkWell(
           key: Key('lecture_${lecture.id}'),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(10),
           onTap: () => _showLectureDetails(lecture, lectureWithAttendance),
           child: Container(
             height: height,
             margin: const EdgeInsets.only(bottom: 2),
             decoration: BoxDecoration(
-              color: _getLectureBackgroundColor(status, primaryColor, isDark),
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: _getLectureBorderColor(status, primaryColor, isDark),
-                width: 2,
+              color: bgColor,
+              borderRadius: BorderRadius.circular(10),
+              border: Border(
+                left: BorderSide(color: moduleColor, width: 3),
               ),
             ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(6),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Module code and title on same line
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Module code and title on same line
+                  Row(
+                    children: [
+                      if (status == LectureStatus.attended)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Icon(Icons.check_circle, size: 14, color: statusIconColor),
+                        )
+                      else if (status == LectureStatus.missed)
+                        Padding(
+                          padding: const EdgeInsets.only(right: 4),
+                          child: Icon(Icons.cancel, size: 14, color: statusIconColor),
+                        ),
+                      Expanded(
+                        child: RichText(
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: titleMaxLines,
+                          text: TextSpan(
+                            style: TextStyle(fontSize: 12, color: textColor),
+                            children: [
+                              TextSpan(
+                                text: lecture.moduleCode,
+                                style: TextStyle(fontWeight: FontWeight.w700, color: moduleColor),
+                              ),
+                              TextSpan(
+                                text: ' ${lecture.title}',
+                                style: const TextStyle(fontWeight: FontWeight.normal),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // Location (always show if available)
+                  if (lecture.location.isNotEmpty) ...[
+                    const SizedBox(height: 3),
                     Row(
                       children: [
-                        if (status == LectureStatus.attended)
-                          const Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: Icon(
-                              Icons.check_circle,
-                              size: 14,
-                              color: Colors.green,
-                            ),
-                          )
-                        else if (status == LectureStatus.missed)
-                          const Padding(
-                            padding: EdgeInsets.only(right: 4),
-                            child: Icon(
-                              Icons.cancel,
-                              size: 14,
-                              color: Colors.red,
-                            ),
-                          ),
+                        Icon(Icons.location_on, size: 11, color: secondaryTextColor),
+                        const SizedBox(width: 3),
                         Expanded(
-                          child: RichText(
+                          child: Text(
+                            lecture.location,
+                            style: TextStyle(fontSize: 11, color: secondaryTextColor),
                             overflow: TextOverflow.ellipsis,
-                            maxLines: titleMaxLines,
-                            text: TextSpan(
-                              style: TextStyle(fontSize: 12, color: textColor),
-                              children: [
-                                TextSpan(
-                                  text: lecture.moduleCode,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: ' ${lecture.title}',
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.normal,
-                                  ),
-                                ),
-                              ],
-                            ),
+                            maxLines: 1,
                           ),
                         ),
                       ],
                     ),
-                    // Location (always show if available)
-                    if (lecture.location.isNotEmpty) ...[
-                      const SizedBox(height: 3),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.location_on,
-                            size: 11,
-                            color: secondaryTextColor,
-                          ),
-                          const SizedBox(width: 3),
-                          Expanded(
-                            child: Text(
-                              lecture.location,
-                              style: TextStyle(
-                                fontSize: 11,
-                                color: secondaryTextColor,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                              maxLines: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                    // Time
-                    if (showTime) ...[
-                      const SizedBox(height: 3),
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.access_time,
-                            size: 11,
-                            color: secondaryTextColor,
-                          ),
-                          const SizedBox(width: 3),
-                          Text(
-                            lecture.timeRange,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: secondaryTextColor,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
                   ],
-                ),
+                  // Time
+                  if (showTime) ...[
+                    const SizedBox(height: 3),
+                    Row(
+                      children: [
+                        Icon(Icons.access_time, size: 11, color: secondaryTextColor),
+                        const SizedBox(width: 3),
+                        Text(
+                          lecture.timeRange,
+                          style: TextStyle(
+                            fontSize: 10,
+                            color: secondaryTextColor,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
               ),
             ),
           ),
@@ -670,33 +657,104 @@ class _TimetablePageState extends State<TimetablePage>
     final points = lectureWithAttendance.pointsEarned;
     final isWide = MediaQuery.of(context).size.width >= 700;
 
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+    final moduleColor = TerraColors.moduleColors[
+        lecture.moduleCode.hashCode.abs() % TerraColors.moduleColors.length];
+
     final content = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          '${lecture.moduleCode} • ${lecture.title}',
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
         Row(
           children: [
-            const Icon(Icons.access_time, size: 16, color: Colors.grey),
+            Container(
+              width: 4,
+              height: 24,
+              decoration: BoxDecoration(
+                color: moduleColor,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                '${lecture.moduleCode} • ${lecture.title}',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Icon(Icons.access_time, size: 16, color: ext?.textSecondary),
             const SizedBox(width: 6),
-            Text(lecture.timeRange),
+            Text(
+              lecture.timeRange,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: ext?.textSecondary,
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 6),
         Row(
           children: [
-            const Icon(Icons.location_on, size: 16, color: Colors.grey),
+            Icon(Icons.location_on, size: 16, color: ext?.textSecondary),
             const SizedBox(width: 6),
-            Expanded(child: Text(lecture.location)),
+            Expanded(
+              child: Text(
+                lecture.location,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: ext?.textSecondary,
+                ),
+              ),
+            ),
           ],
         ),
-        const SizedBox(height: 10),
-        Text('Status: ${status.name}'),
-        if (points != null) Text('Points: $points'),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Icon(
+              status == LectureStatus.attended
+                  ? Icons.check_circle
+                  : status == LectureStatus.missed
+                      ? Icons.cancel
+                      : status == LectureStatus.inProgress
+                          ? Icons.play_circle
+                          : Icons.schedule,
+              size: 16,
+              color: status == LectureStatus.attended
+                  ? ext?.success
+                  : status == LectureStatus.missed
+                      ? ext?.danger
+                      : theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              'Status: ${status.name}',
+              style: theme.textTheme.bodyMedium,
+            ),
+          ],
+        ),
+        if (points != null) ...[
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              Icon(Icons.star, size: 16, color: ext?.warning),
+              const SizedBox(width: 6),
+              Text(
+                'Points: $points',
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
+        ],
       ],
     );
 
@@ -723,125 +781,6 @@ class _TimetablePageState extends State<TimetablePage>
             (context) =>
                 Padding(padding: const EdgeInsets.all(16), child: content),
       );
-    }
-  }
-
-  Color _getLectureBackgroundColor(
-    LectureStatus status,
-    Color primaryColor,
-    bool isDark,
-  ) {
-    if (isDark) {
-      // Use a nice green color for dark mode with slight translucency
-      switch (status) {
-        case LectureStatus.attended:
-          return const Color(0xE62D5F2E); // Dark green with 90% opacity
-        case LectureStatus.missed:
-          return const Color(0xE65F2D2D); // Dark red with 90% opacity
-        case LectureStatus.inProgress:
-          return const Color(0xE62E4F3D); // Medium green with 90% opacity
-        case LectureStatus.upcoming:
-          return const Color(0xE6264033); // Softer green with 90% opacity
-      }
-    } else {
-      // Light mode colors with slight translucency
-      switch (status) {
-        case LectureStatus.attended:
-          return Colors.green.withValues(alpha: 0.12);
-        case LectureStatus.missed:
-          return Colors.red.withValues(alpha: 0.12);
-        case LectureStatus.inProgress:
-          return primaryColor.withValues(alpha: 0.2);
-        case LectureStatus.upcoming:
-          return primaryColor.withValues(alpha: 0.08);
-      }
-    }
-  }
-
-  Color _getLectureBorderColor(
-    LectureStatus status,
-    Color primaryColor,
-    bool isDark,
-  ) {
-    if (isDark) {
-      // Brighter borders for dark mode
-      switch (status) {
-        case LectureStatus.attended:
-          return const Color(0xFF4CAF50); // Bright green
-        case LectureStatus.missed:
-          return const Color(0xFFEF5350); // Bright red
-        case LectureStatus.inProgress:
-          return const Color(0xFF66BB6A); // Light green
-        case LectureStatus.upcoming:
-          return const Color(0xFF4DB6AC); // Teal green
-      }
-    } else {
-      // Light mode uses primary color
-      return primaryColor;
-    }
-  }
-
-  Color _getLectureTextColor(
-    LectureStatus status,
-    Color primaryColor,
-    bool isDark,
-  ) {
-    if (isDark) {
-      // Darker shade of the background color for text in dark mode
-      switch (status) {
-        case LectureStatus.attended:
-          return const Color(0xFF93D693); // Lighter green
-        case LectureStatus.missed:
-          return const Color(0xFFE69393); // Lighter red
-        case LectureStatus.inProgress:
-          return const Color(0xFF7FD6A8); // Lighter medium green
-        case LectureStatus.upcoming:
-          return const Color(0xFF6BC9B8); // Lighter teal
-      }
-    } else {
-      // Darker shade of the background color for text in light mode
-      switch (status) {
-        case LectureStatus.attended:
-          return const Color(0xFF1B5E20); // Dark green
-        case LectureStatus.missed:
-          return const Color(0xFFB71C1C); // Dark red
-        case LectureStatus.inProgress:
-          return primaryColor.withValues(alpha: 0.9);
-        case LectureStatus.upcoming:
-          return primaryColor.withValues(alpha: 0.8);
-      }
-    }
-  }
-
-  Color _getLectureSecondaryTextColor(
-    LectureStatus status,
-    Color primaryColor,
-    bool isDark,
-  ) {
-    if (isDark) {
-      // Slightly muted version for secondary text in dark mode
-      switch (status) {
-        case LectureStatus.attended:
-          return const Color(0xFF7ABF7A); // Muted lighter green
-        case LectureStatus.missed:
-          return const Color(0xFFCC7A7A); // Muted lighter red
-        case LectureStatus.inProgress:
-          return const Color(0xFF66BB8F); // Muted lighter medium green
-        case LectureStatus.upcoming:
-          return const Color(0xFF52AFA0); // Muted lighter teal
-      }
-    } else {
-      // Muted darker shade for secondary text in light mode
-      switch (status) {
-        case LectureStatus.attended:
-          return const Color(0xFF2E7D32); // Slightly lighter dark green
-        case LectureStatus.missed:
-          return const Color(0xFFC62828); // Slightly lighter dark red
-        case LectureStatus.inProgress:
-          return primaryColor.withValues(alpha: 0.75);
-        case LectureStatus.upcoming:
-          return primaryColor.withValues(alpha: 0.65);
-      }
     }
   }
 
