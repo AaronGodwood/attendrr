@@ -19,57 +19,81 @@ class LeaderboardEntryTile extends StatelessWidget {
       elevation: entry.isCurrentUser ? 2 : 0,
       child: Container(
         decoration: BoxDecoration(
-          gradient: entry.isCurrentUser
-              ? LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [
-                    theme.colorScheme.primary.withValues(alpha: 0.15),
-                    theme.colorScheme.primary.withValues(alpha: 0.05),
-                  ],
-                )
-              : null,
+          gradient:
+              entry.isCurrentUser
+                  ? LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      theme.colorScheme.primary.withValues(alpha: 0.15),
+                      theme.colorScheme.primary.withValues(alpha: 0.05),
+                    ],
+                  )
+                  : null,
           borderRadius: BorderRadius.circular(16),
-          boxShadow: entry.isCurrentUser
-              ? [
-                  BoxShadow(
-                    color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                    blurRadius: 8,
-                    spreadRadius: 0,
-                  ),
-                ]
-              : null,
+          boxShadow:
+              entry.isCurrentUser
+                  ? [
+                    BoxShadow(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.2),
+                      blurRadius: 8,
+                      spreadRadius: 0,
+                    ),
+                  ]
+                  : null,
         ),
         child: ListTile(
-          onTap: entry.isCurrentUser
-              ? null
-              : () {
-                  context.push('/friends/user/${entry.userId}/${Uri.encodeComponent(entry.username)}');
-                },
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          onTap:
+              entry.isCurrentUser
+                  ? null
+                  : () {
+                    context.push(
+                      '/friends/user/${entry.userId}/${Uri.encodeComponent(entry.username)}',
+                    );
+                  },
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
           leading: SizedBox(
-            width: 40,
+            width: 48,
             child: Center(
-              child: entry.medal != null
-                  ? Text(entry.medal!, style: const TextStyle(fontSize: 24))
-                  : Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: entry.isCurrentUser
-                            ? theme.colorScheme.primary.withValues(alpha: 0.2)
-                            : (ext?.surfaceTint ?? theme.colorScheme.surfaceContainerHighest),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '#${entry.rank}',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: entry.isCurrentUser
-                              ? theme.colorScheme.primary
-                              : ext?.textSecondary,
+              child:
+                  entry.medal != null
+                      ? Text(entry.medal!, style: const TextStyle(fontSize: 24))
+                      : Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color:
+                              entry.isCurrentUser
+                                  ? theme.colorScheme.primary.withValues(
+                                    alpha: 0.2,
+                                  )
+                                  : (ext?.surfaceTint ??
+                                      theme
+                                          .colorScheme
+                                          .surfaceContainerHighest),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            '#${entry.rank}',
+                            maxLines: 1,
+                            softWrap: false,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  entry.isCurrentUser
+                                      ? theme.colorScheme.primary
+                                      : ext?.textSecondary,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
             ),
           ),
           title: Row(
@@ -77,22 +101,35 @@ class LeaderboardEntryTile extends StatelessWidget {
               Container(
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  boxShadow: entry.isCurrentUser
-                      ? [
-                          BoxShadow(
-                            color: theme.colorScheme.primary.withValues(alpha: 0.3),
-                            blurRadius: 8,
-                            spreadRadius: 1,
-                          ),
-                        ]
-                      : null,
+                  boxShadow:
+                      entry.isCurrentUser
+                          ? [
+                            BoxShadow(
+                              color: theme.colorScheme.primary.withValues(
+                                alpha: 0.3,
+                              ),
+                              blurRadius: 8,
+                              spreadRadius: 1,
+                            ),
+                          ]
+                          : null,
                 ),
                 child: CircleAvatar(
                   radius: 20,
-                  backgroundImage: entry.avatarUrl != null ? NetworkImage(entry.avatarUrl!) : null,
-                  child: entry.avatarUrl == null
-                      ? Text(entry.initials, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold))
-                      : null,
+                  backgroundImage:
+                      entry.avatarUrl != null
+                          ? NetworkImage(entry.avatarUrl!)
+                          : null,
+                  child:
+                      entry.avatarUrl == null
+                          ? Text(
+                            entry.initials,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )
+                          : null,
                 ),
               ),
               const SizedBox(width: 12),
@@ -100,7 +137,8 @@ class LeaderboardEntryTile extends StatelessWidget {
                 child: Text(
                   entry.username,
                   style: theme.textTheme.bodyLarge?.copyWith(
-                    fontWeight: entry.isCurrentUser ? FontWeight.bold : FontWeight.w500,
+                    fontWeight:
+                        entry.isCurrentUser ? FontWeight.bold : FontWeight.w500,
                   ),
                 ),
               ),
@@ -112,20 +150,20 @@ class LeaderboardEntryTile extends StatelessWidget {
             children: [
               entry.isCurrentUser
                   ? GradientText(
-                      '${entry.totalPoints}',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      gradient: ext?.pointsGradient,
-                    )
-                  : Text(
-                      '${entry.totalPoints}',
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: ext?.textSecondary,
-                      ),
+                    '${entry.totalPoints}',
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
+                    gradient: ext?.pointsGradient,
+                  )
+                  : Text(
+                    '${entry.totalPoints}',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: ext?.textSecondary,
+                    ),
+                  ),
               Text(
                 'points',
                 style: theme.textTheme.labelSmall?.copyWith(
