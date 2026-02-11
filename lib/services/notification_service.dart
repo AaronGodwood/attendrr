@@ -1,4 +1,6 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
+import 'package:timezone/data/latest.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 import '../models/lecture.dart';
 
@@ -6,11 +8,18 @@ class NotificationService {
   static final NotificationService instance = NotificationService._();
   NotificationService._();
 
-  final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notifications =
+      FlutterLocalNotificationsPlugin();
+  bool _isInitialized = false;
 
   Future<void> initialize() async {
-    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    if (_isInitialized) return;
 
+    await _configureLocalTimezone();
+
+    const androidSettings = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
 
     const iosSettings = DarwinInitializationSettings(
       requestAlertPermission: true,
@@ -19,19 +28,34 @@ class NotificationService {
     );
 
     await _notifications.initialize(
-      const InitializationSettings(android: androidSettings, iOS: iosSettings,
-      macOS: iosSettings),
+      const InitializationSettings(
+        android: androidSettings,
+        iOS: iosSettings,
+        macOS: iosSettings,
+      ),
     );
+
+    _isInitialized = true;
   }
 
-  Future<void> requestPermissions() async {
-    await _notifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestNotificationsPermission();
+  Future<bool> requestPermissions() async {
+    final result =
+        await _notifications
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >()
+            ?.requestNotificationsPermission();
+
+    return result ?? true;
   }
 
-  Future<void> scheduleLectureReminder(Lecture lecture, {int minutesBefore = 15}) async {
-    final reminderTime = lecture.startTime.subtract(Duration(minutes: minutesBefore));
+  Future<void> scheduleLectureReminder(
+    Lecture lecture, {
+    int minutesBefore = 15,
+  }) async {
+    final reminderTime = lecture.startTime.subtract(
+      Duration(minutes: minutesBefore),
+    );
     if (reminderTime.isBefore(DateTime.now())) return;
 
     await _notifications.zonedSchedule(
@@ -50,7 +74,7 @@ class NotificationService {
         iOS: const DarwinNotificationDetails(),
         macOS: const DarwinNotificationDetails(),
       ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
     );
   }
 
@@ -78,5 +102,17 @@ class NotificationService {
 
   Future<void> cancelAll() async {
     await _notifications.cancelAll();
+  }
+
+  Future<void> _configureLocalTimezone() async {
+    tz_data.initializeTimeZones();
+
+    try {
+      final timezoneName = await FlutterTimezone.getLocalTimezone();
+      final location = tz.getLocation(timezoneName);
+      tz.setLocalLocation(location);
+    } catch (_) {
+      // Keep default timezone if lookup fails on the current device.
+    }
   }
 }

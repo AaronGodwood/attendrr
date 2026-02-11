@@ -9,6 +9,7 @@ import 'providers/checkin_provider.dart';
 import 'providers/friends_provider.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
+import 'services/notification_service.dart';
 import 'theme/app_theme.dart';
 
 Future<void> main() async {
@@ -29,8 +30,8 @@ Future<void> main() async {
     ),
   );
 
-  // Initialize notifications
-  //await NotificationService.instance.initialize();
+  // Initialize notifications and Android 13+ notification permission flow.
+  await NotificationService.instance.initialize();
 
   runApp(const MyApp());
 }
