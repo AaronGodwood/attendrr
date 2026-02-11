@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:icalendar_parser/icalendar_parser.dart';
 import '../utils/location_lookup.dart';
@@ -8,23 +10,97 @@ class ICalService {
 
   Future<bool> validateUrl(String url) async {
     try {
-      final response = await http
-          .get(Uri.parse(url))
-          .timeout(const Duration(seconds: 10));
-      if (response.statusCode != 200) return false;
-      return response.body.contains('BEGIN:VCALENDAR') &&
-          response.body.contains('BEGIN:VEVENT');
-    } catch (e) {
+      final content = await _fetchICalContent(url);
+      return _looksLikeICal(content);
+    } catch (_) {
       return false;
     }
   }
 
   Future<List<ICalEvent>> fetchAndParse(String url) async {
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode != 200) {
-      throw Exception('Failed to fetch iCal: ${response.statusCode}');
+    final content = await _fetchICalContent(url);
+    if (!_looksLikeICal(content)) {
+      throw Exception('Failed to parse iCal data from the provided URL.');
     }
-    return _parseICalString(response.body);
+    return _parseICalString(content);
+  }
+
+  Future<String> _fetchICalContent(String url) async {
+    final directUri = Uri.parse(url);
+
+    // Native platforms can request the feed directly.
+    if (!kIsWeb) {
+      final response = await http
+          .get(directUri)
+          .timeout(const Duration(seconds: 15));
+      if (response.statusCode != 200) {
+        throw Exception('Failed to fetch iCal: HTTP ${response.statusCode}');
+      }
+      return response.body;
+    }
+
+    // Web often needs a CORS-friendly relay for remote iCal feeds.
+    final candidates = <Uri>[directUri, ..._buildWebProxyCandidates(url)];
+    final errors = <String>[];
+
+    for (final uri in candidates) {
+      try {
+        final response = await http
+            .get(uri)
+            .timeout(const Duration(seconds: 15));
+        if (response.statusCode == 200 && _looksLikeICal(response.body)) {
+          return response.body;
+        }
+        errors.add('${uri.host} -> HTTP ${response.statusCode}');
+      } catch (e) {
+        errors.add('${uri.host} -> $e');
+      }
+    }
+
+    throw Exception(
+      'Unable to fetch iCal feed on web (likely CORS blocked): ${errors.join(' | ')}',
+    );
+  }
+
+  List<Uri> _buildWebProxyCandidates(String targetUrl) {
+    final encoded = Uri.encodeComponent(targetUrl);
+    final uris = <Uri>[];
+
+    final configuredProxy = dotenv.env['ICAL_CORS_PROXY']?.trim();
+    if (configuredProxy != null && configuredProxy.isNotEmpty) {
+      final proxyUri = _buildConfiguredProxyUri(configuredProxy, targetUrl);
+      if (proxyUri != null) uris.add(proxyUri);
+    }
+
+    final fallbackRaw = 'https://api.allorigins.win/raw?url=$encoded';
+    final fallbackCorsProxy = 'https://corsproxy.io/?$encoded';
+
+    uris.add(Uri.parse(fallbackRaw));
+    uris.add(Uri.parse(fallbackCorsProxy));
+    return uris;
+  }
+
+  Uri? _buildConfiguredProxyUri(String configuredProxy, String targetUrl) {
+    try {
+      if (configuredProxy.contains('{url}')) {
+        return Uri.parse(
+          configuredProxy.replaceAll('{url}', Uri.encodeComponent(targetUrl)),
+        );
+      }
+      final separator = configuredProxy.contains('?') ? '&' : '?';
+      return Uri.parse(
+        '$configuredProxy${separator}url=${Uri.encodeComponent(targetUrl)}',
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  bool _looksLikeICal(String body) {
+    final normalized = body.toUpperCase();
+    return normalized.contains('BEGIN:VCALENDAR') &&
+        (normalized.contains('BEGIN:VEVENT') ||
+            normalized.contains('END:VCALENDAR'));
   }
 
   List<ICalEvent> _parseICalString(String content) {
