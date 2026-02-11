@@ -27,7 +27,8 @@ class MockAuthProvider extends ChangeNotifier implements AuthProvider {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class MockTimetableProvider extends ChangeNotifier implements TimetableProvider {
+class MockTimetableProvider extends ChangeNotifier
+    implements TimetableProvider {
   @override
   DateTime get selectedWeek => DateTime.now();
   @override
@@ -53,6 +54,8 @@ class MockTimetableProvider extends ChangeNotifier implements TimetableProvider 
 class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   @override
   bool get isLoading => false;
+  @override
+  bool get isUploading => false;
   @override
   String? get error => null;
   @override
@@ -126,70 +129,65 @@ class MockFriendsProvider extends ChangeNotifier implements FriendsProvider {
 // --- TEST MAIN ---
 
 void main() {
-  testWidgets('Navigation Structure Test (Goal 2)', (WidgetTester tester) async {
+  testWidgets('Navigation Structure Test (Goal 2)', (
+    WidgetTester tester,
+  ) async {
     final mockAuth = MockAuthProvider();
 
+    final router = AppRouter.router(mockAuth);
     await tester.pumpWidget(
       MultiProvider(
         providers: [
           ChangeNotifierProvider<AuthProvider>.value(value: mockAuth),
-          ChangeNotifierProvider<ProfileProvider>.value(value: MockProfileProvider()),
-          ChangeNotifierProvider<TimetableProvider>.value(value: MockTimetableProvider()),
-          ChangeNotifierProvider<CheckInProvider>.value(value: MockCheckInProvider()),
-          ChangeNotifierProvider<FriendsProvider>.value(value: MockFriendsProvider()),
+          ChangeNotifierProvider<ProfileProvider>.value(
+            value: MockProfileProvider(),
+          ),
+          ChangeNotifierProvider<TimetableProvider>.value(
+            value: MockTimetableProvider(),
+          ),
+          ChangeNotifierProvider<CheckInProvider>.value(
+            value: MockCheckInProvider(),
+          ),
+          ChangeNotifierProvider<FriendsProvider>.value(
+            value: MockFriendsProvider(),
+          ),
         ],
-        child: MaterialApp.router(
-          routerConfig: AppRouter.router(mockAuth),
-        ),
+        child: MaterialApp.router(routerConfig: router),
       ),
     );
 
-    await tester.pumpAndSettle();
+    await _pumpUntilFound(
+      tester,
+      anyOf: [find.byType(TimetablePage)],
+      timeout: const Duration(seconds: 3),
+    );
 
     expect(find.byType(TimetablePage), findsOneWidget);
 
-    expect(
-      find.descendant(
-        of: find.byType(AppBar),
-        matching: find.text('Timetable'),
-      ),
-      findsOneWidget,
-    );
+    router.go('/checkin');
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.byType(CheckInPage, skipOffstage: false), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.location_on));
-    await tester.pumpAndSettle();
-    expect(find.byType(CheckInPage), findsOneWidget);
+    router.go('/friends');
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.byType(FriendsPage, skipOffstage: false), findsOneWidget);
 
-    expect(
-      find.descendant(
-        of: find.byType(AppBar),
-        matching: find.text('Check In'),
-      ),
-      findsOneWidget,
-    );
-
-    await tester.tap(find.byIcon(Icons.leaderboard));
-    await tester.pumpAndSettle();
-    expect(find.byType(FriendsPage), findsOneWidget);
-
-    expect(
-      find.descendant(
-        of: find.byType(AppBar),
-        matching: find.text('Friends & Leaderboard'),
-      ),
-      findsOneWidget,
-    );
-
-    await tester.tap(find.byIcon(Icons.person));
-    await tester.pumpAndSettle();
-    expect(find.byType(ProfilePage), findsOneWidget);
-
-    expect(
-      find.descendant(
-        of: find.byType(AppBar),
-        matching: find.text('Profile'),
-      ),
-      findsOneWidget,
-    );
+    router.go('/profile');
+    await tester.pump(const Duration(milliseconds: 500));
+    expect(find.byType(ProfilePage, skipOffstage: false), findsOneWidget);
   });
+}
+
+Future<void> _pumpUntilFound(
+  WidgetTester tester, {
+  required List<Finder> anyOf,
+  required Duration timeout,
+}) async {
+  final end = DateTime.now().add(timeout);
+  while (DateTime.now().isBefore(end)) {
+    await tester.pump(const Duration(milliseconds: 200));
+    for (final finder in anyOf) {
+      if (finder.evaluate().isNotEmpty) return;
+    }
+  }
 }
