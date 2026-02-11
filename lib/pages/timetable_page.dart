@@ -144,10 +144,7 @@ class _TimetablePageState extends State<TimetablePage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Text(DateFormat('MMMM yyyy').format(_selectedDate)),
-        ),
+        title: const Text('Timetable'),
         actions: [
           IconButton(
             icon: const Icon(Icons.today),
@@ -230,95 +227,94 @@ class _TimetablePageState extends State<TimetablePage>
                   separatorBuilder: (_, __) => const SizedBox(width: 4),
                   itemBuilder: (context, index) {
                     final date = days[index];
-                    final isSelected = _isSameDay(date, _selectedDate);
-                    final isToday = _isToday(date);
-
-                    return GestureDetector(
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-
-                        final dayDifference =
-                            date.difference(_selectedDate).inDays;
-                        if (dayDifference != 0) {
-                          _slideAnimation = Tween<Offset>(
-                            begin: Offset(dayDifference > 0 ? 1.0 : -1.0, 0.0),
-                            end: Offset.zero,
-                          ).animate(
-                            CurvedAnimation(
-                              parent: _animationController,
-                              curve: Curves.easeInOut,
+                          return SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                ...List.generate(days.length, (index) {
+                                  final date = days[index];
+                                  final isSelected = _isSameDay(date, _selectedDate);
+                                  final isToday = _isToday(date);
+                                  return GestureDetector(
+                                    onTap: () {
+                                      HapticFeedback.selectionClick();
+                                      final dayDifference =
+                                          date.difference(_selectedDate).inDays;
+                                      if (dayDifference != 0) {
+                                        _slideAnimation = Tween<Offset>(
+                                          begin: Offset(dayDifference > 0 ? 1.0 : -1.0, 0.0),
+                                          end: Offset.zero,
+                                        ).animate(
+                                          CurvedAnimation(
+                                            parent: _animationController,
+                                            curve: Curves.easeInOut,
+                                          ),
+                                        );
+                                        _animationController.forward(from: 0.0);
+                                      }
+                                      setState(() {
+                                        _selectedDate = date;
+                                      });
+                                      _scrollToCurrentTime();
+                                      if (!_isSameWeek(
+                                        _selectedDate,
+                                        provider.selectedWeek,
+                                      )) {
+                                        provider.loadWeek(_selectedDate);
+                                      }
+                                    },
+                                    child: Container(
+                                      width: dayWidth,
+                                      decoration: BoxDecoration(
+                                        color:
+                                            isSelected
+                                                ? theme.colorScheme.primary
+                                                : isToday
+                                                ? (ext?.primaryContainer ?? theme.colorScheme.primaryContainer)
+                                                : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(22),
+                                      ),
+                                      child: Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            DateFormat('EEE').format(date).substring(0, 3),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                                  isSelected
+                                                      ? Colors.white
+                                                      : isToday
+                                                      ? theme.colorScheme.primary
+                                                      : ext?.textSecondary,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            '${date.day}',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color:
+                                                  isSelected
+                                                      ? Colors.white
+                                                      : isToday
+                                                      ? theme.colorScheme.primary
+                                                      : theme.colorScheme.onSurface,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  );
+                                }),
+                              ],
                             ),
-                          );
-                          _animationController.forward(from: 0.0);
-                        }
-
-                        setState(() {
-                          _selectedDate = date;
-                        });
-                        _scrollToCurrentTime();
-                        if (!_isSameWeek(
-                          _selectedDate,
-                          provider.selectedWeek,
-                        )) {
-                          provider.loadWeek(_selectedDate);
-                        }
-                      },
-                      child: Container(
-                        width: dayWidth,
-                        decoration: BoxDecoration(
-                          color:
-                              isSelected
-                                  ? theme.colorScheme.primary
-                                  : isToday
-                                  ? (ext?.primaryContainer ?? theme.colorScheme.primaryContainer)
-                                  : Colors.transparent,
-                          borderRadius: BorderRadius.circular(22),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              DateFormat('EEE').format(date).substring(0, 3),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color:
-                                    isSelected
-                                        ? Colors.white
-                                        : isToday
-                                        ? theme.colorScheme.primary
-                                        : ext?.textSecondary,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '${date.day}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    isSelected
-                                        ? Colors.white
-                                        : isToday
-                                        ? theme.colorScheme.primary
-                                        : theme.colorScheme.onSurface,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          // Right arrow
-          IconButton(
             icon: const Icon(Icons.chevron_right),
             onPressed: () {
               HapticFeedback.lightImpact();
