@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/friends_provider.dart';
 import '../repositories/user_repository.dart';
+import '../theme/theme_extensions.dart';
 import '../widgets/friends/friend_card.dart';
 import '../widgets/friends/friend_request_card.dart';
 import '../widgets/friends/leaderboard_entry_tile.dart';
@@ -57,6 +58,9 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
   Widget _buildFriendsTab() {
     return Consumer<FriendsProvider>(
       builder: (context, provider, _) {
+        final theme = Theme.of(context);
+        final ext = theme.extension<TerraThemeExtension>();
+
         if (provider.isLoading) return const Center(child: CircularProgressIndicator());
 
         return RefreshIndicator(
@@ -65,7 +69,12 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
             padding: const EdgeInsets.all(16),
             children: [
               if (provider.requests.isNotEmpty) ...[
-                Text('Friend Requests (${provider.requests.length})', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                Text(
+                  'Friend Requests (${provider.requests.length})',
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 ...provider.requests.map((r) => FriendRequestCard(
                   request: r,
@@ -75,7 +84,12 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
                 const SizedBox(height: 24),
               ],
 
-              Text('My Friends (${provider.friends.length})', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              Text(
+                'My Friends (${provider.friends.length})',
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               const SizedBox(height: 8),
 
               if (provider.friends.isEmpty)
@@ -84,9 +98,14 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
                     padding: const EdgeInsets.all(32),
                     child: Column(
                       children: [
-                        Icon(Icons.people_outline, size: 64, color: Colors.grey[400]),
+                        Icon(Icons.people_outline, size: 64, color: ext?.textDisabled),
                         const SizedBox(height: 16),
-                        const Text('No friends yet'),
+                        Text(
+                          'No friends yet',
+                          style: theme.textTheme.bodyLarge?.copyWith(
+                            color: ext?.textSecondary,
+                          ),
+                        ),
                         TextButton(onPressed: _showAddFriend, child: const Text('Add Friends')),
                       ],
                     ),
@@ -107,6 +126,9 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
   Widget _buildLeaderboardTab() {
     return Consumer<FriendsProvider>(
       builder: (context, provider, _) {
+        final theme = Theme.of(context);
+        final ext = theme.extension<TerraThemeExtension>();
+
         return Column(
           children: [
             Padding(
@@ -134,9 +156,14 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.leaderboard_outlined, size: 64, color: Colors.grey[400]),
+                      Icon(Icons.leaderboard_outlined, size: 64, color: ext?.textDisabled),
                       const SizedBox(height: 16),
-                      const Text('No leaderboard data yet'),
+                      Text(
+                        'No leaderboard data yet',
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          color: ext?.textSecondary,
+                        ),
+                      ),
                     ],
                   ),
                 )
@@ -159,7 +186,7 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
                                 (context, index) {
                               final actualIndex = index + 3;
                               return TweenAnimationBuilder<double>(
-                                duration: Duration(milliseconds: 300 + (index * 50)),
+                                duration: Duration(milliseconds: 400 + (index * 80)),
                                 tween: Tween(begin: 0.0, end: 1.0),
                                 curve: Curves.easeOut,
                                 builder: (context, value, child) {
