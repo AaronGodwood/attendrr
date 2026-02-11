@@ -199,7 +199,9 @@ class _TimetablePageState extends State<TimetablePage>
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
-        border: Border(bottom: BorderSide(color: theme.colorScheme.outline, width: 1)),
+        border: Border(
+          bottom: BorderSide(color: theme.colorScheme.outline, width: 1),
+        ),
       ),
       child: Row(
         children: [
@@ -218,95 +220,111 @@ class _TimetablePageState extends State<TimetablePage>
               builder: (context, constraints) {
                 final availableWidth = constraints.maxWidth;
                 final dayWidth = (availableWidth / 7).clamp(44.0, 72.0);
+                const spacing = 4.0;
+                final totalWidth = (dayWidth * 7) + (spacing * 6);
+
+                Widget buildDayTile(DateTime date) {
+                  final isSelected = _isSameDay(date, _selectedDate);
+                  final isToday = _isToday(date);
+                  return GestureDetector(
+                    onTap: () {
+                      HapticFeedback.selectionClick();
+                      final dayDifference =
+                          date.difference(_selectedDate).inDays;
+                      if (dayDifference != 0) {
+                        _slideAnimation = Tween<Offset>(
+                          begin: Offset(dayDifference > 0 ? 1.0 : -1.0, 0.0),
+                          end: Offset.zero,
+                        ).animate(
+                          CurvedAnimation(
+                            parent: _animationController,
+                            curve: Curves.easeInOut,
+                          ),
+                        );
+                        _animationController.forward(from: 0.0);
+                      }
+                      setState(() {
+                        _selectedDate = date;
+                      });
+                      _scrollToCurrentTime();
+                      if (!_isSameWeek(_selectedDate, provider.selectedWeek)) {
+                        provider.loadWeek(_selectedDate);
+                      }
+                    },
+                    child: Container(
+                      width: dayWidth,
+                      decoration: BoxDecoration(
+                        color:
+                            isSelected
+                                ? theme.colorScheme.primary
+                                : isToday
+                                ? (ext?.primaryContainer ??
+                                    theme.colorScheme.primaryContainer)
+                                : Colors.transparent,
+                        borderRadius: BorderRadius.circular(22),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            DateFormat('EEE').format(date).substring(0, 3),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color:
+                                  isSelected
+                                      ? theme.colorScheme.onPrimary
+                                      : isToday
+                                      ? theme.colorScheme.primary
+                                      : ext?.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            '${date.day}',
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color:
+                                  isSelected
+                                      ? theme.colorScheme.onPrimary
+                                      : isToday
+                                      ? theme.colorScheme.primary
+                                      : theme.colorScheme.onSurface,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+
+                if (totalWidth <= availableWidth) {
+                  return Center(
+                    child: SizedBox(
+                      width: totalWidth,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          for (int index = 0; index < days.length; index++)
+                            buildDayTile(days[index]),
+                        ],
+                      ),
+                    ),
+                  );
+                }
 
                 return ListView.separated(
                   scrollDirection: Axis.horizontal,
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   itemCount: days.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: 4),
-                  itemBuilder: (context, index) {
-                    final date = days[index];
-                    final isSelected = _isSameDay(date, _selectedDate);
-                    final isToday = _isToday(date);
-                    return GestureDetector(
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        final dayDifference =
-                            date.difference(_selectedDate).inDays;
-                        if (dayDifference != 0) {
-                          _slideAnimation = Tween<Offset>(
-                            begin: Offset(dayDifference > 0 ? 1.0 : -1.0, 0.0),
-                            end: Offset.zero,
-                          ).animate(
-                            CurvedAnimation(
-                              parent: _animationController,
-                              curve: Curves.easeInOut,
-                            ),
-                          );
-                          _animationController.forward(from: 0.0);
-                        }
-                        setState(() {
-                          _selectedDate = date;
-                        });
-                        _scrollToCurrentTime();
-                        if (!_isSameWeek(
-                          _selectedDate,
-                          provider.selectedWeek,
-                        )) {
-                          provider.loadWeek(_selectedDate);
-                        }
-                      },
-                      child: Container(
-                        width: dayWidth,
-                        decoration: BoxDecoration(
-                          color:
-                              isSelected
-                                  ? theme.colorScheme.primary
-                                  : isToday
-                                  ? (ext?.primaryContainer ?? theme.colorScheme.primaryContainer)
-                                  : Colors.transparent,
-                          borderRadius: BorderRadius.circular(22),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              DateFormat('EEE').format(date).substring(0, 3),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color:
-                                    isSelected
-                                        ? theme.colorScheme.onPrimary
-                                        : isToday
-                                        ? theme.colorScheme.primary
-                                        : ext?.textSecondary,
-                              ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              '${date.day}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color:
-                                    isSelected
-                                        ? theme.colorScheme.onPrimary
-                                        : isToday
-                                        ? theme.colorScheme.primary
-                                        : theme.colorScheme.onSurface,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                  separatorBuilder: (_, __) => const SizedBox(width: spacing),
+                  itemBuilder: (context, index) => buildDayTile(days[index]),
                 );
               },
             ),
@@ -431,8 +449,12 @@ class _TimetablePageState extends State<TimetablePage>
                         height: 1,
                         color:
                             isCurrentHour
-                                ? theme.colorScheme.primary.withValues(alpha: 0.2)
-                                : theme.colorScheme.outline.withValues(alpha: 0.3),
+                                ? theme.colorScheme.primary.withValues(
+                                  alpha: 0.2,
+                                )
+                                : theme.colorScheme.outline.withValues(
+                                  alpha: 0.3,
+                                ),
                       ),
                     );
                   }),
@@ -467,7 +489,9 @@ class _TimetablePageState extends State<TimetablePage>
 
     final topPosition = (minutesSinceMidnight - startMinutes).toDouble();
 
-    final dangerColor = Theme.of(context).extension<TerraThemeExtension>()?.danger ?? Theme.of(context).colorScheme.error;
+    final dangerColor =
+        Theme.of(context).extension<TerraThemeExtension>()?.danger ??
+        Theme.of(context).colorScheme.error;
 
     return Positioned(
       top: topPosition,
@@ -513,19 +537,25 @@ class _TimetablePageState extends State<TimetablePage>
     final ext = themeData.extension<TerraThemeExtension>();
 
     // Module color for left-border accent
-    final moduleColor = TerraColors.moduleColors[
-        lecture.moduleCode.hashCode.abs() % TerraColors.moduleColors.length];
+    final moduleColor =
+        TerraColors.moduleColors[lecture.moduleCode.hashCode.abs() %
+            TerraColors.moduleColors.length];
 
     // Status-dependent background tint
     final bgColor = switch (status) {
-      LectureStatus.attended => (ext?.success ?? themeData.colorScheme.secondary).withValues(alpha: 0.1),
-      LectureStatus.missed => (ext?.danger ?? themeData.colorScheme.error).withValues(alpha: 0.1),
+      LectureStatus.attended => (ext?.success ??
+              themeData.colorScheme.secondary)
+          .withValues(alpha: 0.1),
+      LectureStatus.missed => (ext?.danger ?? themeData.colorScheme.error)
+          .withValues(alpha: 0.1),
       LectureStatus.inProgress => moduleColor.withValues(alpha: 0.15),
       LectureStatus.upcoming => moduleColor.withValues(alpha: 0.08),
     };
 
     final textColor = themeData.colorScheme.onSurface;
-    final secondaryTextColor = ext?.textSecondary ?? themeData.colorScheme.onSurface.withValues(alpha: 0.6);
+    final secondaryTextColor =
+        ext?.textSecondary ??
+        themeData.colorScheme.onSurface.withValues(alpha: 0.6);
 
     // Status icon colors
     final statusIconColor = switch (status) {
@@ -554,9 +584,7 @@ class _TimetablePageState extends State<TimetablePage>
             decoration: BoxDecoration(
               color: bgColor,
               borderRadius: BorderRadius.circular(10),
-              border: Border(
-                left: BorderSide(color: moduleColor, width: 3),
-              ),
+              border: Border(left: BorderSide(color: moduleColor, width: 3)),
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
@@ -570,12 +598,20 @@ class _TimetablePageState extends State<TimetablePage>
                       if (status == LectureStatus.attended)
                         Padding(
                           padding: const EdgeInsets.only(right: 4),
-                          child: Icon(Icons.check_circle, size: 14, color: statusIconColor),
+                          child: Icon(
+                            Icons.check_circle,
+                            size: 14,
+                            color: statusIconColor,
+                          ),
                         )
                       else if (status == LectureStatus.missed)
                         Padding(
                           padding: const EdgeInsets.only(right: 4),
-                          child: Icon(Icons.cancel, size: 14, color: statusIconColor),
+                          child: Icon(
+                            Icons.cancel,
+                            size: 14,
+                            color: statusIconColor,
+                          ),
                         ),
                       Expanded(
                         child: RichText(
@@ -586,11 +622,16 @@ class _TimetablePageState extends State<TimetablePage>
                             children: [
                               TextSpan(
                                 text: lecture.moduleCode,
-                                style: TextStyle(fontWeight: FontWeight.w700, color: moduleColor),
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  color: moduleColor,
+                                ),
                               ),
                               TextSpan(
                                 text: ' ${lecture.title}',
-                                style: const TextStyle(fontWeight: FontWeight.normal),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.normal,
+                                ),
                               ),
                             ],
                           ),
@@ -603,12 +644,19 @@ class _TimetablePageState extends State<TimetablePage>
                     const SizedBox(height: 3),
                     Row(
                       children: [
-                        Icon(Icons.location_on, size: 11, color: secondaryTextColor),
+                        Icon(
+                          Icons.location_on,
+                          size: 11,
+                          color: secondaryTextColor,
+                        ),
                         const SizedBox(width: 3),
                         Expanded(
                           child: Text(
                             lecture.location,
-                            style: TextStyle(fontSize: 11, color: secondaryTextColor),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: secondaryTextColor,
+                            ),
                             overflow: TextOverflow.ellipsis,
                             maxLines: 1,
                           ),
@@ -621,7 +669,11 @@ class _TimetablePageState extends State<TimetablePage>
                     const SizedBox(height: 3),
                     Row(
                       children: [
-                        Icon(Icons.access_time, size: 11, color: secondaryTextColor),
+                        Icon(
+                          Icons.access_time,
+                          size: 11,
+                          color: secondaryTextColor,
+                        ),
                         const SizedBox(width: 3),
                         Text(
                           lecture.timeRange,
@@ -653,8 +705,9 @@ class _TimetablePageState extends State<TimetablePage>
 
     final theme = Theme.of(context);
     final ext = theme.extension<TerraThemeExtension>();
-    final moduleColor = TerraColors.moduleColors[
-        lecture.moduleCode.hashCode.abs() % TerraColors.moduleColors.length];
+    final moduleColor =
+        TerraColors.moduleColors[lecture.moduleCode.hashCode.abs() %
+            TerraColors.moduleColors.length];
 
     final content = Column(
       mainAxisSize: MainAxisSize.min,
@@ -716,22 +769,20 @@ class _TimetablePageState extends State<TimetablePage>
               status == LectureStatus.attended
                   ? Icons.check_circle
                   : status == LectureStatus.missed
-                      ? Icons.cancel
-                      : status == LectureStatus.inProgress
-                          ? Icons.play_circle
-                          : Icons.schedule,
+                  ? Icons.cancel
+                  : status == LectureStatus.inProgress
+                  ? Icons.play_circle
+                  : Icons.schedule,
               size: 16,
-              color: status == LectureStatus.attended
-                  ? ext?.success
-                  : status == LectureStatus.missed
+              color:
+                  status == LectureStatus.attended
+                      ? ext?.success
+                      : status == LectureStatus.missed
                       ? ext?.danger
                       : theme.colorScheme.primary,
             ),
             const SizedBox(width: 6),
-            Text(
-              'Status: ${status.name}',
-              style: theme.textTheme.bodyMedium,
-            ),
+            Text('Status: ${status.name}', style: theme.textTheme.bodyMedium),
           ],
         ),
         if (points != null) ...[
