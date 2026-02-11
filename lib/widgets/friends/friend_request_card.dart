@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/friendship.dart';
+import '../../theme/theme_extensions.dart';
 
 class FriendRequestCard extends StatelessWidget {
   final FriendRequest request;
@@ -15,6 +16,9 @@ class FriendRequestCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -30,17 +34,27 @@ class FriendRequestCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(request.senderUsername, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  Text(request.timeAgo, style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                  Text(
+                    request.senderUsername,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    request.timeAgo,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: ext?.textSecondary,
+                    ),
+                  ),
                 ],
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.check_circle, color: Colors.green),
+              icon: Icon(Icons.check_circle, color: ext?.success),
               onPressed: onAccept,
             ),
             IconButton(
-              icon: const Icon(Icons.cancel, color: Colors.red),
+              icon: Icon(Icons.cancel, color: ext?.danger),
               onPressed: onReject,
             ),
           ],

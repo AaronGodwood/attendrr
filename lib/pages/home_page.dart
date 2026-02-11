@@ -8,17 +8,24 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       body: child,
-      bottomNavigationBar: BottomNavigationBar(
-        type: BottomNavigationBarType.fixed,
-        currentIndex: _calculateIndex(GoRouterState.of(context).matchedLocation),
-        onTap: (index) => _onTap(context, index),
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Timetable'),
-          BottomNavigationBarItem(icon: Icon(Icons.location_on), label: 'Check In'),
-          BottomNavigationBarItem(icon: Icon(Icons.leaderboard), label: 'Friends'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Divider(height: 1, thickness: 1, color: theme.colorScheme.outline),
+          BottomNavigationBar(
+            currentIndex: _calculateIndex(GoRouterState.of(context).matchedLocation),
+            onTap: (index) => _onTap(context, index),
+            items: const [
+              BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Timetable'),
+              BottomNavigationBarItem(icon: Icon(Icons.location_on), label: 'Check In'),
+              BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Friends'),
+              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+            ],
+          ),
         ],
       ),
     );

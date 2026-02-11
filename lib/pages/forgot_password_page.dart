@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
+import '../theme/theme_extensions.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -25,7 +26,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(backgroundColor: Colors.transparent, elevation: 0),
+      appBar: AppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -36,35 +37,44 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   Widget _buildForm() {
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 20),
-          Container(
-            width: 80,
-            height: 80,
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor.withAlpha(26),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.lock_reset,
-              size: 40,
-              color: Theme.of(context).primaryColor,
+          Center(
+            child: Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.lock_reset,
+                size: 40,
+                color: theme.colorScheme.primary,
+              ),
             ),
           ),
           const SizedBox(height: 24),
-          const Text(
+          Text(
             'Forgot Password?',
-            style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            style: theme.textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
             "Enter your email and we'll send you a reset link.",
-            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            style: theme.textTheme.bodyLarge?.copyWith(
+              color: ext?.textSecondary,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 32),
@@ -72,12 +82,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Email',
-              prefixIcon: const Icon(Icons.email_outlined),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
+              prefixIcon: Icon(Icons.email_outlined),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -127,6 +134,9 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   }
 
   Widget _buildSuccess() {
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+
     return Column(
       children: [
         const SizedBox(height: 40),
@@ -134,31 +144,37 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           width: 100,
           height: 100,
           decoration: BoxDecoration(
-            color: Colors.green.withAlpha(26),
+            color: (ext?.success ?? Colors.green).withValues(alpha: 0.1),
             shape: BoxShape.circle,
           ),
-          child: const Icon(
+          child: Icon(
             Icons.mark_email_read,
             size: 50,
-            color: Colors.green,
+            color: ext?.success,
           ),
         ),
         const SizedBox(height: 32),
-        const Text(
+        Text(
           'Check Your Email',
-          style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 16),
         Text(
           'We\'ve sent a password reset link to:',
-          style: TextStyle(color: Colors.grey[600]),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: ext?.textSecondary,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 8),
         Text(
           _emailController.text,
-          style: const TextStyle(fontWeight: FontWeight.bold),
+          style: theme.textTheme.bodyLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: 32),

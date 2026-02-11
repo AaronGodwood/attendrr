@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 import '../providers/theme_provider.dart';
+import '../theme/theme_extensions.dart';
 import '../widgets/settings/ical_setup_dialog.dart';
 
 class SettingsPage extends StatelessWidget {
@@ -52,7 +53,7 @@ class SettingsPage extends StatelessWidget {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () => _showIcalSetup(context, user?.icalUrl),
                 ),
-              ]),
+              ], context),
 
               _buildSection('App', [
                 ListTile(
@@ -70,15 +71,15 @@ class SettingsPage extends StatelessWidget {
                     );
                   },
                 ),
-              ]),
+              ], context),
 
               _buildSection('Account Actions', [
                 ListTile(
                   title: const Text('Sign Out'),
-                  leading: const Icon(Icons.logout, color: Colors.red),
+                  leading: Icon(Icons.logout, color: Theme.of(context).extension<TerraThemeExtension>()?.danger),
                   onTap: () => _handleSignOut(context),
                 ),
-              ]),
+              ], context),
             ],
           );
         },
@@ -86,7 +87,10 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(String title, List<Widget> children) {
+  Widget _buildSection(String title, List<Widget> children, BuildContext context) {
+    final theme = Theme.of(context);
+    final ext = theme.extension<TerraThemeExtension>();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -94,10 +98,8 @@ class SettingsPage extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
           child: Text(
             title,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[600],
+            style: theme.textTheme.labelLarge?.copyWith(
+              color: ext?.textSecondary,
             ),
           ),
         ),
@@ -332,7 +334,9 @@ class SettingsPage extends StatelessWidget {
                     context.go('/login');
                   }
                 },
-                style: TextButton.styleFrom(foregroundColor: Colors.red),
+                style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).extension<TerraThemeExtension>()?.danger,
+                ),
                 child: const Text('Sign Out'),
               ),
             ],

@@ -15,104 +15,185 @@ class ProfileSkeleton extends StatelessWidget {
           const SizedBox(height: 12),
           const SkeletonLoader(width: 150, height: 24),
           const SizedBox(height: 8),
-          const SkeletonLoader(width: 100, height: 16),
-          const SizedBox(height: 20),
-
-          // Stats card skeleton
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  Column(
-                    children: [
-                      const SkeletonLoader(width: 50, height: 32),
-                      const SizedBox(height: 4),
-                      SkeletonLoader(
-                        width: 60,
-                        height: 14,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      const SkeletonLoader(width: 50, height: 32),
-                      const SizedBox(height: 4),
-                      SkeletonLoader(
-                        width: 60,
-                        height: 14,
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+          SkeletonLoader(
+            width: 80,
+            height: 22,
+            borderRadius: BorderRadius.circular(12),
           ),
           const SizedBox(height: 20),
 
-          // Attendance stats skeleton
+          // Tier progress card skeleton
           Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SkeletonLoader(width: 120, height: 18),
-                  const SizedBox(height: 16),
-                  _buildStatRowSkeleton(),
-                  const Divider(),
-                  _buildStatRowSkeleton(),
-                  const Divider(),
-                  _buildStatRowSkeleton(),
-                ],
-              ),
-            ),
-          ),
-          const SizedBox(height: 20),
-
-          // Chart skeleton
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SkeletonLoader(width: 100, height: 18),
+                  Row(
+                    children: [
+                      SkeletonLoader(
+                        width: 100,
+                        height: 28,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      const Spacer(),
+                      const SkeletonLoader(width: 80, height: 24),
+                    ],
+                  ),
                   const SizedBox(height: 16),
                   SkeletonLoader(
                     width: double.infinity,
-                    height: 100,
+                    height: 10,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  const SizedBox(height: 8),
+                  const SkeletonLoader(width: 120, height: 12),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      SkeletonLoader(
+                        width: 100,
+                        height: 28,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      const SizedBox(width: 8),
+                      SkeletonLoader(
+                        width: 110,
+                        height: 28,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Streak card skeleton
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Row(
+                    children: [
+                      const SkeletonCircle(size: 64),
+                      const SizedBox(width: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SkeletonLoader(width: 130, height: 20),
+                          const SizedBox(height: 8),
+                          SkeletonLoader(
+                            width: 70,
+                            height: 20,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  const Divider(height: 1),
+                  const SizedBox(height: 12),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Column(
+                        children: [
+                          const SkeletonLoader(width: 40, height: 22),
+                          const SizedBox(height: 4),
+                          const SkeletonLoader(width: 50, height: 12),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const SkeletonLoader(width: 40, height: 22),
+                          const SizedBox(height: 4),
+                          const SkeletonLoader(width: 50, height: 12),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Attendance rings skeleton
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SkeletonLoader(width: 100, height: 20),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Column(
+                        children: [
+                          const SkeletonCircle(size: 80),
+                          const SizedBox(height: 8),
+                          const SkeletonLoader(width: 50, height: 14),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const SkeletonCircle(size: 80),
+                          const SizedBox(height: 8),
+                          const SkeletonLoader(width: 50, height: 14),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          const SkeletonCircle(size: 80),
+                          const SizedBox(height: 8),
+                          const SkeletonLoader(width: 50, height: 14),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // Chart skeleton
+          Card(
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SkeletonLoader(width: 100, height: 20),
+                  const SizedBox(height: 4),
+                  const SkeletonLoader(width: 150, height: 12),
+                  const SizedBox(height: 20),
+                  SkeletonLoader(
+                    width: double.infinity,
+                    height: 140,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  const SizedBox(height: 24),
+                  const SkeletonLoader(width: 110, height: 14),
+                  const SizedBox(height: 12),
+                  SkeletonLoader(
+                    width: double.infinity,
+                    height: 60,
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ],
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatRowSkeleton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          const SkeletonLoader(width: 80, height: 16),
-          Row(
-            children: [
-              const SkeletonLoader(width: 60, height: 16),
-              const SizedBox(width: 8),
-              SkeletonLoader(
-                width: 50,
-                height: 20,
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ],
           ),
         ],
       ),
