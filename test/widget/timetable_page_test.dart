@@ -48,7 +48,7 @@ void main() {
         ),
       );
 
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 300));
 
       expect(
         find.byWidgetPredicate(
@@ -72,12 +72,12 @@ void main() {
         ),
       );
 
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 300));
 
       final lectureFinder = find.byKey(const Key('lecture_lec-1'));
       await tester.ensureVisible(lectureFinder);
       await tester.tap(lectureFinder);
-      await tester.pumpAndSettle();
+      await tester.pump(const Duration(milliseconds: 300));
 
       expect(find.text('CM1001 • Test Lecture'), findsOneWidget);
       expect(find.textContaining('Status:'), findsOneWidget);
