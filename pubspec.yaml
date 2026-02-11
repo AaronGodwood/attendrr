@@ -77,6 +77,7 @@ dev_dependencies:
   freezed: ^3.2.3
   flutter_lints: ^6.0.0
   mockito: ^5.6.1
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -88,3 +89,9 @@ flutter:
     - assets/images/achievements/
     - assets/icons/
     - assets/fonts/
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: assets/icons/app_icon.png
+  remove_alpha_ios: true

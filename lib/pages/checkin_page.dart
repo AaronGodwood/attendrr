@@ -508,8 +508,9 @@ class _CheckInPageState extends State<CheckInPage>
   }
 
   String _formatDuration(Duration duration) {
-    if (duration.inHours > 0)
+    if (duration.inHours > 0) {
       return '${duration.inHours}h ${duration.inMinutes.remainder(60)}m';
+    }
     return '${duration.inMinutes}m';
   }
 }
