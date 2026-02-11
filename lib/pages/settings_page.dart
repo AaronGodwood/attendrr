@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -40,6 +41,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
   Future<void> _onNotificationsToggled(bool enabled) async {
     try {
+      if (kIsWeb) {
+        return;
+      }
+
       if (enabled) {
         await NotificationService.instance.initialize();
         final granted = await NotificationService.instance.requestPermissions();
@@ -124,14 +129,16 @@ class _SettingsPageState extends State<SettingsPage> {
                 ListTile(
                   title: const Text('Notifications'),
                   subtitle: Text(
-                    _notificationsEnabled
+                    kIsWeb
+                        ? 'Not supported on web'
+                        : _notificationsEnabled
                         ? 'Lecture reminders enabled'
                         : 'Lecture reminders disabled',
                   ),
                   trailing: Switch(
                     value: _notificationsEnabled,
                     onChanged:
-                        _isLoadingNotificationPreference
+                        (kIsWeb || _isLoadingNotificationPreference)
                             ? null
                             : _onNotificationsToggled,
                   ),
