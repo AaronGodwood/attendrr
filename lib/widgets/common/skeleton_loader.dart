@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../theme/theme_extensions.dart';
 
 class SkeletonLoader extends StatefulWidget {
   final double? width;
@@ -42,9 +43,9 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final baseColor = isDark ? Colors.grey[800]! : Colors.grey[300]!;
-    final highlightColor = isDark ? Colors.grey[700]! : Colors.grey[100]!;
+    final ext = Theme.of(context).extension<TerraThemeExtension>();
+    final baseColor = ext?.shimmerBase ?? const Color(0xFF302A22);
+    final highlightColor = ext?.shimmerHighlight ?? const Color(0xFF3A322A);
 
     return AnimatedBuilder(
       animation: _animation,
