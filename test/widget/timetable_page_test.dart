@@ -41,6 +41,8 @@ void main() {
       tester,
     ) async {
       final lecture = _buildLecture('lec-1');
+      await tester.binding.setSurfaceSize(const Size(320, 700));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(
         ChangeNotifierProvider<TimetableProvider>.value(
           value: MockTimetableProvider([lecture]),
