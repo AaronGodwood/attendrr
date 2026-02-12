@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 import '../providers/theme_provider.dart';
@@ -107,6 +108,23 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                 ),
                 ListTile(
+                  title: const Text('Link Google Account'),
+                  subtitle: Text(
+                    _isGoogleLinked(context.read<AuthProvider>().user)
+                        ? 'Linked'
+                        : 'Sign in with Google',
+                  ),
+                  trailing: Icon(
+                    _isGoogleLinked(context.read<AuthProvider>().user)
+                        ? Icons.check_circle
+                        : Icons.link,
+                  ),
+                  onTap:
+                      _isGoogleLinked(context.read<AuthProvider>().user)
+                          ? null
+                          : () => _linkGoogleAccount(context),
+                ),
+                ListTile(
                   title: const Text('Change Password'),
                   subtitle: const Text('Update your account password'),
                   trailing: const Icon(Icons.chevron_right),
@@ -173,6 +191,23 @@ class _SettingsPageState extends State<SettingsPage> {
         },
       ),
     );
+  }
+
+  bool _isGoogleLinked(User? user) {
+    final identities = user?.identities;
+    if (identities == null) return false;
+    return identities.any((identity) => identity.provider == 'google');
+  }
+
+  Future<void> _linkGoogleAccount(BuildContext context) async {
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.linkGoogleIdentity();
+    if (!mounted) return;
+    if (!success && authProvider.error != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(authProvider.error!)));
+    }
   }
 
   Widget _buildSection(
