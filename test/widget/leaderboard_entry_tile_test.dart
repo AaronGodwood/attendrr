@@ -11,6 +11,8 @@ void main() {
         userId: 'u10',
         username: 'Ten',
         totalPoints: 10,
+        displayValue: '10',
+        displayUnit: 'pts',
       );
 
       await tester.pumpWidget(

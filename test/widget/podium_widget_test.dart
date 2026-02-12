@@ -12,18 +12,24 @@ void main() {
           userId: 'u1',
           username: 'VeryLongUsernameHere',
           totalPoints: 120,
+          displayValue: '120',
+          displayUnit: 'pts',
         ),
         const LeaderboardEntry(
           rank: 2,
           userId: 'u2',
           username: 'Alice',
           totalPoints: 100,
+          displayValue: '100',
+          displayUnit: 'pts',
         ),
         const LeaderboardEntry(
           rank: 3,
           userId: 'u3',
           username: 'Bob',
           totalPoints: 90,
+          displayValue: '90',
+          displayUnit: 'pts',
         ),
       ];
 
