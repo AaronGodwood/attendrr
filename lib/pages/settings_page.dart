@@ -185,6 +185,26 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   onTap: () => _handleSignOut(context),
                 ),
+                ListTile(
+                  title: Text(
+                    'Delete Account',
+                    style: TextStyle(
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<TerraThemeExtension>()?.danger,
+                    ),
+                  ),
+                  subtitle: const Text('Permanently delete your account'),
+                  leading: Icon(
+                    Icons.delete_forever,
+                    color:
+                        Theme.of(
+                          context,
+                        ).extension<TerraThemeExtension>()?.danger,
+                  ),
+                  onTap: () => _handleDeleteAccount(context),
+                ),
               ], context),
             ],
           );
@@ -485,6 +505,53 @@ class _SettingsPageState extends State<SettingsPage> {
                       ).extension<TerraThemeExtension>()?.danger,
                 ),
                 child: const Text('Sign Out'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _handleDeleteAccount(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Account'),
+            content: const Text(
+              'This will permanently delete your account and all related data. This action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  final authProvider = context.read<AuthProvider>();
+                  final success = await authProvider.deleteAccount();
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success
+                            ? 'Account deleted'
+                            : (authProvider.error ??
+                                'Failed to delete account'),
+                      ),
+                    ),
+                  );
+                  if (success) {
+                    context.go('/login');
+                  }
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor:
+                      Theme.of(
+                        context,
+                      ).extension<TerraThemeExtension>()?.danger,
+                ),
+                child: const Text('Delete'),
               ),
             ],
           ),
