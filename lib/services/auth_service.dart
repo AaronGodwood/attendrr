@@ -1,5 +1,9 @@
 import 'dart:async';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AuthService {
   static final AuthService instance = AuthService._();
@@ -27,11 +31,12 @@ class AuthService {
       }
 
       // Check if username is taken
-      final existing = await _client
-          .from('profiles')
-          .select('id')
-          .eq('username', username)
-          .maybeSingle();
+      final existing =
+          await _client
+              .from('profiles')
+              .select('id')
+              .eq('username', username)
+              .maybeSingle();
 
       if (existing != null) {
         return AuthResult.failure('Username is already taken');
@@ -87,9 +92,14 @@ class AuthService {
 
   Future<AuthResult> signInWithGoogle() async {
     try {
+      final launchMode =
+          (!kIsWeb && Platform.isIOS)
+              ? LaunchMode.externalApplication
+              : LaunchMode.platformDefault;
       await _client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'io.supabase.lecturetracker://login-callback',
+        redirectTo: _oauthRedirectUrl(),
+        authScreenLaunchMode: launchMode,
       );
       return AuthResult.pending();
     } catch (e) {
@@ -101,7 +111,7 @@ class AuthService {
     try {
       await _client.auth.resetPasswordForEmail(
         email,
-        redirectTo: 'io.supabase.lecturetracker://reset-password',
+        redirectTo: _passwordResetRedirectUrl(),
       );
       return AuthResult.success(message: 'Password reset email sent');
     } on AuthException catch (e) {
@@ -122,6 +132,28 @@ class AuthService {
 
   Future<void> signOut() async {
     await _client.auth.signOut();
+  }
+
+  String _oauthRedirectUrl() {
+    final configured = dotenv.env['OAUTH_REDIRECT_URL']?.trim();
+    if (configured != null && configured.isNotEmpty) {
+      return configured;
+    }
+    if (kIsWeb) {
+      return '${Uri.base.origin}/';
+    }
+    return 'com.example.attendr://login-callback';
+  }
+
+  String _passwordResetRedirectUrl() {
+    final configured = dotenv.env['PASSWORD_RESET_REDIRECT_URL']?.trim();
+    if (configured != null && configured.isNotEmpty) {
+      return configured;
+    }
+    if (kIsWeb) {
+      return '${Uri.base.origin}/reset-password';
+    }
+    return 'com.example.attendr://reset-password';
   }
 
   String _mapAuthError(String message) {
@@ -155,8 +187,17 @@ class AuthResult {
     this.isPending = false,
   });
 
-  factory AuthResult.success({User? user, String? message, bool requiresEmailVerification = false}) {
-    return AuthResult._(success: true, user: user, message: message, requiresEmailVerification: requiresEmailVerification);
+  factory AuthResult.success({
+    User? user,
+    String? message,
+    bool requiresEmailVerification = false,
+  }) {
+    return AuthResult._(
+      success: true,
+      user: user,
+      message: message,
+      requiresEmailVerification: requiresEmailVerification,
+    );
   }
 
   factory AuthResult.failure(String error) {
