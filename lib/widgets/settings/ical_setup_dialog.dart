@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import '../../providers/timetable_provider.dart';
 import '../../services/ical_service.dart';
@@ -69,11 +70,14 @@ class _ICalSetupDialogState extends State<ICalSetupDialog> {
             if (_success != null)
               Builder(
                 builder: (context) {
-                  final ext = Theme.of(context).extension<TerraThemeExtension>();
+                  final ext =
+                      Theme.of(context).extension<TerraThemeExtension>();
                   return Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: ext?.successContainer ?? Colors.green.withValues(alpha: 0.1),
+                      color:
+                          ext?.successContainer ??
+                          Colors.green.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Row(
@@ -176,6 +180,9 @@ class _ICalSetupDialogState extends State<ICalSetupDialog> {
       setState(() => _error = 'Please enter a URL');
       return;
     }
+    if (!url.contains('://')) {
+      url = 'https://$url';
+    }
 
     // Convert webcal to https
     if (url.startsWith('webcal://')) {
@@ -195,7 +202,10 @@ class _ICalSetupDialogState extends State<ICalSetupDialog> {
     if (!isValid) {
       setState(() {
         _isValidating = false;
-        _error = 'Invalid iCal URL. Please check and try again.';
+        _error =
+            kIsWeb
+                ? 'Could not access this iCal feed from browser (URL/CORS issue). Try a direct HTTPS feed URL or configure ICAL_CORS_PROXY.'
+                : 'Invalid iCal URL. Please check and try again.';
       });
       return;
     }
