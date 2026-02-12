@@ -24,9 +24,42 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<ProfileProvider>().loadProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final provider = context.read<ProfileProvider>();
+      await provider.loadProfile();
+      if (!mounted) return;
+      _showStreakNotification(provider);
     });
+  }
+
+  void _showStreakNotification(ProfileProvider provider) {
+    final eval = provider.lastEvaluation;
+    if (eval == null || !eval.hadChanges) return;
+
+    final ext = Theme.of(context).extension<TerraThemeExtension>();
+
+    if (eval.streakBroken) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Your streak was broken due to missed lectures.'),
+          backgroundColor: ext?.danger,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    } else if (eval.freezesConsumed > 0) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            '${eval.freezesConsumed} streak freeze${eval.freezesConsumed > 1 ? 's' : ''} '
+            'used to protect your streak!',
+          ),
+          backgroundColor: ext?.tierIntermediate,
+          duration: const Duration(seconds: 4),
+        ),
+      );
+    }
+
+    provider.clearEvaluation();
   }
 
   @override

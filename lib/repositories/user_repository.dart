@@ -105,6 +105,15 @@ class UserRepository extends BaseRepository {
     return Streak.fromJson(response);
   }
 
+  Future<StreakEvaluation> evaluateStreak() async {
+    requireAuth();
+    final result = await client.rpc(
+      'evaluate_streak',
+      params: {'p_user_id': currentUserId!},
+    );
+    return StreakEvaluation.fromJson(result as Map<String, dynamic>);
+  }
+
   Future<Points> getUserPoints(String userId) async {
     requireAuth();
     final response =
