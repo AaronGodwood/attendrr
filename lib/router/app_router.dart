@@ -12,6 +12,7 @@ import '../pages/timetable_page.dart';
 import '../pages/checkin_page.dart';
 import '../pages/friends_page.dart';
 import '../pages/user_profile_page.dart';
+import '../pages/shop_page.dart';
 
 class AppRouter {
   static final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -92,6 +93,10 @@ class AppRouter {
                 GoRoute(
                   path: 'settings',
                   builder: (context, state) => const SettingsPage(),
+                ),
+                GoRoute(
+                  path: 'shop',
+                  builder: (context, state) => const ShopPage(),
                 ),
               ],
             ),
