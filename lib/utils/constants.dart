@@ -9,6 +9,9 @@ class AppConstants {
   // Streaks
   static const int initialStreakFreezes = 3;
 
+  // Shop
+  static const int streakFreezeCost = 50;
+
   // Sync
   static const int syncIntervalHours = 12;
 
