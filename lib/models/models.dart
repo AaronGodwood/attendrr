@@ -6,3 +6,6 @@ export 'streak.dart';
 export 'points.dart';
 export 'friendship.dart';
 export 'leaderboard_entry.dart';
+export 'leaderboard_category.dart';
+export 'shop_item.dart';
+export 'purchase.dart';
