@@ -3,6 +3,7 @@ export 'timetable.dart';
 export 'lecture.dart';
 export 'attendance.dart';
 export 'streak.dart';
+export 'streak_evaluation.dart';
 export 'points.dart';
 export 'friendship.dart';
 export 'leaderboard_entry.dart';
