@@ -39,14 +39,51 @@ class NotificationService {
   }
 
   Future<bool> requestPermissions() async {
-    final result =
-        await _notifications
-            .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin
-            >()
-            ?.requestNotificationsPermission();
+    bool granted = false;
 
-    return result ?? true;
+    // Android permissions
+    final androidImplementation =
+        _notifications.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>();
+    if (androidImplementation != null) {
+      final androidResult =
+          await androidImplementation.requestNotificationsPermission();
+      if (androidResult != null) {
+        granted = granted || androidResult;
+      }
+    }
+
+    // iOS permissions
+    final iosImplementation =
+        _notifications.resolvePlatformSpecificImplementation<
+            IOSFlutterLocalNotificationsPlugin>();
+    if (iosImplementation != null) {
+      final iosResult = await iosImplementation.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      if (iosResult != null) {
+        granted = granted || iosResult;
+      }
+    }
+
+    // macOS permissions
+    final macImplementation =
+        _notifications.resolvePlatformSpecificImplementation<
+            MacOSFlutterLocalNotificationsPlugin>();
+    if (macImplementation != null) {
+      final macResult = await macImplementation.requestPermissions(
+        alert: true,
+        badge: true,
+        sound: true,
+      );
+      if (macResult != null) {
+        granted = granted || macResult;
+      }
+    }
+
+    return granted;
   }
 
   Future<void> scheduleLectureReminder(
