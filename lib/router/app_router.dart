@@ -5,6 +5,7 @@ import '../pages/splash_page.dart';
 import '../pages/login_page.dart';
 import '../pages/signup_page.dart';
 import '../pages/forgot_password_page.dart';
+import '../pages/reset_password_page.dart';
 import '../pages/home_page.dart';
 import '../pages/profile_page.dart';
 import '../pages/settings_page.dart';
@@ -43,11 +44,20 @@ class AppRouter {
       refreshListenable: authProvider,
       redirect: (context, state) {
         final isAuthenticated = authProvider.isAuthenticated;
+        final isPasswordRecovery =
+            authProvider.status == AuthStatus.passwordRecovery;
         final isAuthRoute =
             state.matchedLocation == '/login' ||
             state.matchedLocation == '/signup' ||
             state.matchedLocation == '/forgot-password' ||
+            state.matchedLocation == '/reset-password' ||
             state.matchedLocation == '/';
+
+        if (isPasswordRecovery) {
+          return state.matchedLocation == '/reset-password'
+              ? null
+              : '/reset-password';
+        }
 
         // Not authenticated and not on auth route -> redirect to login
         if (!isAuthenticated && !isAuthRoute) {
@@ -55,7 +65,10 @@ class AppRouter {
         }
 
         // Authenticated and on auth route (except splash) -> redirect to timetable
-        if (isAuthenticated && isAuthRoute && state.matchedLocation != '/') {
+        if (isAuthenticated &&
+            isAuthRoute &&
+            state.matchedLocation != '/' &&
+            state.matchedLocation != '/reset-password') {
           return '/timetable';
         }
 
@@ -74,6 +87,10 @@ class AppRouter {
         GoRoute(
           path: '/forgot-password',
           builder: (context, state) => const ForgotPasswordPage(),
+        ),
+        GoRoute(
+          path: '/reset-password',
+          builder: (context, state) => const ResetPasswordPage(),
         ),
 
         // Main app shell with bottom navigation
@@ -148,7 +165,11 @@ class AppRouter {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error_outline, size: 64, color: Theme.of(context).colorScheme.error),
+                  Icon(
+                    Icons.error_outline,
+                    size: 64,
+                    color: Theme.of(context).colorScheme.error,
+                  ),
                   const SizedBox(height: 16),
                   Text('Page not found: ${state.matchedLocation}'),
                   const SizedBox(height: 16),
