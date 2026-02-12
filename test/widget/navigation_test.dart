@@ -75,7 +75,11 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   @override
   List<app_models.DailyAttendance>? get history => [];
   @override
+  app_models.StreakEvaluation? get lastEvaluation => null;
+  @override
   Future<void> loadProfile() async {}
+  @override
+  void clearEvaluation() {}
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
