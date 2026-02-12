@@ -35,6 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
+          IconButton(icon: const Icon(Icons.storefront), onPressed: () => context.push('/profile/shop')),
           IconButton(icon: const Icon(Icons.settings), onPressed: () => context.push('/profile/settings')),
         ],
       ),

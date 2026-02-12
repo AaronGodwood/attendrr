@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/leaderboard_category.dart';
 import '../providers/friends_provider.dart';
 import '../repositories/user_repository.dart';
 import '../theme/theme_extensions.dart';
@@ -145,6 +146,29 @@ class _FriendsPageState extends State<FriendsPage> with SingleTickerProviderStat
                 ),
               ),
             ),
+
+            // Category selector
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: LeaderboardCategory.values.map((cat) {
+                    final isSelected = provider.category == cat;
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: ChoiceChip(
+                        avatar: Icon(cat.icon, size: 18),
+                        label: Text(cat.label),
+                        selected: isSelected,
+                        onSelected: (_) => provider.setCategory(cat),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
 
             Expanded(
               child: provider.isLoading
