@@ -174,9 +174,9 @@ class PodiumWidget extends StatelessWidget {
         ),
         const SizedBox(height: 4),
 
-        // Points with gradient
+        // Value with gradient
         GradientText(
-          '${entry.totalPoints}',
+          entry.displayValue,
           style: TextStyle(
             fontSize: rank == 1 ? 24 : 20,
             fontWeight: FontWeight.bold,
@@ -184,7 +184,7 @@ class PodiumWidget extends StatelessWidget {
           gradient: ext?.pointsGradient,
         ),
         Text(
-          'points',
+          entry.displayUnit,
           style: theme.textTheme.labelSmall?.copyWith(
             color: ext?.textSecondary,
           ),
