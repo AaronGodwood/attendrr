@@ -153,6 +153,22 @@ class AuthService {
     await _client.auth.signOut();
   }
 
+  Future<AuthResult> deleteAccount() async {
+    try {
+      final userId = currentUser?.id;
+      if (userId == null) {
+        return AuthResult.failure('No user logged in');
+      }
+      await _client.rpc('delete_user_account');
+      await signOut();
+      return AuthResult.success(message: 'Account deleted');
+    } on AuthException catch (e) {
+      return AuthResult.failure(_mapAuthError(e.message));
+    } catch (e) {
+      return AuthResult.failure('Failed to delete account');
+    }
+  }
+
   String _oauthRedirectUrl() {
     final configured = dotenv.env['OAUTH_REDIRECT_URL']?.trim();
     if (configured != null && configured.isNotEmpty) {
