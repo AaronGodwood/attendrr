@@ -9,6 +9,7 @@ class Streak extends Equatable {
   final int longestStreak;
   final int streakFreezes;
   final DateTime? lastAttendanceDate;
+  final DateTime? lastEvaluatedDate;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -19,6 +20,7 @@ class Streak extends Equatable {
     required this.longestStreak,
     required this.streakFreezes,
     this.lastAttendanceDate,
+    this.lastEvaluatedDate,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -32,6 +34,9 @@ class Streak extends Equatable {
       streakFreezes: json['streak_freezes'] as int? ?? 3,
       lastAttendanceDate: json['last_attendance_date'] != null
           ? DateTime.parse(json['last_attendance_date'] as String)
+          : null,
+      lastEvaluatedDate: json['last_evaluated_date'] != null
+          ? DateTime.parse(json['last_evaluated_date'] as String)
           : null,
       createdAt: json['created_at'] != null
           ? DateTime.parse(json['created_at'] as String)
@@ -60,6 +65,7 @@ class Streak extends Equatable {
     'longest_streak': longestStreak,
     'streak_freezes': streakFreezes,
     'last_attendance_date': lastAttendanceDate?.toIso8601String(),
+    'last_evaluated_date': lastEvaluatedDate?.toIso8601String(),
     'created_at': createdAt.toIso8601String(),
     'updated_at': updatedAt.toIso8601String(),
   };
@@ -71,6 +77,7 @@ class Streak extends Equatable {
     int? longestStreak,
     int? streakFreezes,
     DateTime? lastAttendanceDate,
+    DateTime? lastEvaluatedDate,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
@@ -81,6 +88,7 @@ class Streak extends Equatable {
       longestStreak: longestStreak ?? this.longestStreak,
       streakFreezes: streakFreezes ?? this.streakFreezes,
       lastAttendanceDate: lastAttendanceDate ?? this.lastAttendanceDate,
+      lastEvaluatedDate: lastEvaluatedDate ?? this.lastEvaluatedDate,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -109,6 +117,6 @@ class Streak extends Equatable {
   @override
   List<Object?> get props => [
     id, userId, currentStreak, longestStreak, streakFreezes,
-    lastAttendanceDate, createdAt, updatedAt
+    lastAttendanceDate, lastEvaluatedDate, createdAt, updatedAt
   ];
 }
