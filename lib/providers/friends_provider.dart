@@ -11,6 +11,7 @@ class FriendsProvider extends ChangeNotifier {
   List<FriendRequest> _requests = [];
   List<LeaderboardEntry> _leaderboard = [];
   bool _showGlobal = true;
+  LeaderboardCategory _category = LeaderboardCategory.totalPoints;
   bool _isLoading = false;
   String? _error;
 
@@ -18,6 +19,7 @@ class FriendsProvider extends ChangeNotifier {
   List<FriendRequest> get requests => _requests;
   List<LeaderboardEntry> get leaderboard => _leaderboard;
   bool get showGlobal => _showGlobal;
+  LeaderboardCategory get category => _category;
   bool get isLoading => _isLoading;
   String? get error => _error;
 
@@ -42,9 +44,10 @@ class FriendsProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      _leaderboard = _showGlobal
-          ? await _leaderboardRepo.getGlobalLeaderboard()
-          : await _leaderboardRepo.getFriendsLeaderboard();
+      _leaderboard = await _leaderboardRepo.getLeaderboard(
+        category: _category,
+        global: _showGlobal,
+      );
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -56,6 +59,12 @@ class FriendsProvider extends ChangeNotifier {
 
   void toggleLeaderboardType() {
     _showGlobal = !_showGlobal;
+    loadLeaderboard();
+  }
+
+  void setCategory(LeaderboardCategory category) {
+    if (_category == category) return;
+    _category = category;
     loadLeaderboard();
   }
 
