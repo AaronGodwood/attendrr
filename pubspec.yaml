@@ -94,6 +94,7 @@ flutter:
     - assets/fonts/
 
 flutter_launcher_icons:
+  image_path: assets/icons/app_icon.png
   android: true
   ios: false
   web:
@@ -101,5 +102,12 @@ flutter_launcher_icons:
     image_path: assets/icons/app_icon.png
     background_color: "#ffffff"
     theme_color: "#0175C2"
-  image_path: assets/icons/app_icon.png
+  macos:
+    generate: false
+  linux:
+    generate: false
+  windows:
+    generate: true
+    image_path: assets/icons/app_icon.png
+    icon_size: 256
   remove_alpha_ios: true
