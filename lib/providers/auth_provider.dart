@@ -3,7 +3,14 @@ import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/auth_service.dart';
 
-enum AuthStatus { initial, loading, authenticated, unauthenticated, emailVerificationRequired }
+enum AuthStatus {
+  initial,
+  loading,
+  authenticated,
+  unauthenticated,
+  emailVerificationRequired,
+  passwordRecovery,
+}
 
 class AuthProvider extends ChangeNotifier {
   final _authService = AuthService.instance;
@@ -25,7 +32,8 @@ class AuthProvider extends ChangeNotifier {
 
   void _init() {
     _user = _authService.currentUser;
-    _status = _user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+    _status =
+        _user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
 
     _subscription = _authService.authStateChanges.listen((state) {
       switch (state.event) {
@@ -38,6 +46,11 @@ class AuthProvider extends ChangeNotifier {
           _user = null;
           _status = AuthStatus.unauthenticated;
           break;
+        case AuthChangeEvent.passwordRecovery:
+          _user = state.session?.user;
+          _status = AuthStatus.passwordRecovery;
+          _error = null;
+          break;
         case AuthChangeEvent.userUpdated:
           _user = state.session?.user;
           break;
@@ -48,12 +61,20 @@ class AuthProvider extends ChangeNotifier {
     });
   }
 
-  Future<bool> signUp({required String email, required String password, required String username}) async {
+  Future<bool> signUp({
+    required String email,
+    required String password,
+    required String username,
+  }) async {
     _status = AuthStatus.loading;
     _error = null;
     notifyListeners();
 
-    final result = await _authService.signUp(email: email, password: password, username: username);
+    final result = await _authService.signUp(
+      email: email,
+      password: password,
+      username: username,
+    );
 
     if (result.success) {
       if (result.requiresEmailVerification) {
