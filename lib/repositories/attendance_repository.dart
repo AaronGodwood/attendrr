@@ -17,6 +17,20 @@ class AttendanceRepository extends BaseRepository {
     return response != null ? Attendance.fromJson(response) : null;
   }
 
+  Future<Attendance?> getAttendanceForLecture(String lectureId) async {
+    requireAuth();
+    final response =
+        await client
+            .from('attendance')
+            .select('*, lectures(*)')
+            .eq('user_id', currentUserId!)
+            .eq('lecture_id', lectureId)
+            .order('check_in_time', ascending: false)
+            .limit(1)
+            .maybeSingle();
+    return response != null ? Attendance.fromJson(response) : null;
+  }
+
   Future<Attendance> checkIn({
     required String lectureId,
     required bool locationVerified,
@@ -77,8 +91,11 @@ class AttendanceRepository extends BaseRepository {
   Future<AttendanceStats> getStats() async {
     requireAuth();
     final now = DateTime.now();
-    final weekStart = DateTime(now.year, now.month, now.day)
-        .subtract(Duration(days: now.weekday - 1));
+    final weekStart = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).subtract(Duration(days: now.weekday - 1));
     final monthStart = DateTime(now.year, now.month, 1);
 
     final timetable =
@@ -159,8 +176,11 @@ class AttendanceRepository extends BaseRepository {
   Future<AttendanceStats> getUserStats(String userId) async {
     requireAuth();
     final now = DateTime.now();
-    final weekStart = DateTime(now.year, now.month, now.day)
-        .subtract(Duration(days: now.weekday - 1));
+    final weekStart = DateTime(
+      now.year,
+      now.month,
+      now.day,
+    ).subtract(Duration(days: now.weekday - 1));
     final monthStart = DateTime(now.year, now.month, 1);
 
     // Check if user has a timetable

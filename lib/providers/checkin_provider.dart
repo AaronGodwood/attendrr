@@ -13,6 +13,7 @@ enum CheckInState {
   noLecture,
   readyToCheckIn,
   tooFarAway,
+  alreadyCheckedIn,
   checkingIn,
   checkedIn,
   error,
@@ -30,6 +31,7 @@ class CheckInProvider extends ChangeNotifier {
   double? _distance;
   String? _error;
   Timer? _checkoutTimer;
+  bool _alreadyCheckedIn = false;
 
   CheckInState get state => _state;
   Lecture? get currentLecture => _currentLecture;
@@ -37,6 +39,7 @@ class CheckInProvider extends ChangeNotifier {
   Attendance? get activeAttendance => _activeAttendance;
   double? get distance => _distance;
   String? get error => _error;
+  bool get alreadyCheckedIn => _alreadyCheckedIn;
 
   Duration? get timeUntilNext => _nextLecture?.timeUntilStart;
   Duration? get timeRemaining => _currentLecture?.timeRemaining;
@@ -49,12 +52,13 @@ class CheckInProvider extends ChangeNotifier {
 
   bool get canCheckIn {
     return canCheckInNow(
-      DateTime.now(),
-      _currentLecture,
-      distanceMeters: _distance,
-      maxDistanceMeters: AppConstants.checkInRadiusMeters,
-      earlyWindow: defaultEarlyCheckInWindow,
-    );
+          DateTime.now(),
+          _currentLecture,
+          distanceMeters: _distance,
+          maxDistanceMeters: AppConstants.checkInRadiusMeters,
+          earlyWindow: defaultEarlyCheckInWindow,
+        ) &&
+        !_alreadyCheckedIn;
   }
 
   @override
@@ -65,6 +69,10 @@ class CheckInProvider extends ChangeNotifier {
 
   Future<void> loadState() async {
     _state = CheckInState.loading;
+    _alreadyCheckedIn = false;
+    _distance = null;
+    _error = null;
+    _nextLecture = null;
     notifyListeners();
 
     try {
@@ -82,7 +90,14 @@ class CheckInProvider extends ChangeNotifier {
       _currentLecture = await _timetableRepo.getCurrentLecture();
 
       if (_currentLecture != null) {
-        await _checkLocation();
+        final existingAttendance = await _attendanceRepo
+            .getAttendanceForLecture(_currentLecture!.id);
+        if (existingAttendance != null) {
+          _alreadyCheckedIn = true;
+          _state = CheckInState.alreadyCheckedIn;
+        } else {
+          await _checkLocation();
+        }
       } else {
         _nextLecture = await _timetableRepo.getNextLecture();
         if (_nextLecture != null &&
@@ -90,7 +105,14 @@ class CheckInProvider extends ChangeNotifier {
                 defaultEarlyCheckInWindow) {
           _currentLecture = _nextLecture;
           _nextLecture = null;
-          await _checkLocation();
+          final existingAttendance = await _attendanceRepo
+              .getAttendanceForLecture(_currentLecture!.id);
+          if (existingAttendance != null) {
+            _alreadyCheckedIn = true;
+            _state = CheckInState.alreadyCheckedIn;
+          } else {
+            await _checkLocation();
+          }
         } else {
           _state = CheckInState.noLecture;
         }
