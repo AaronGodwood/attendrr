@@ -1,62 +1,119 @@
-# LectureTracker
 
-A gamified Flutter mobile app for tracking university lecture attendance at Bath University. Features location-based check-in, streaks, points, leaderboards, and iCal timetable import.
+# Attendr – Lecture Attendance Tracker
+
+A gamified Flutter app for tracking university lecture attendance. Features include location-based check-in, streaks, points, leaderboards, friends, and iCal timetable import. Built with Flutter and Supabase, and deployed automatically to GitHub Pages.
+
+---
 
 ## Features
 
-* **Authentication** - Email/password and Google OAuth via Supabase
-* **Timetable** - Import from university iCal URL, week view calendar
-* **Check-in** - Location-verified attendance with GPS validation
-* **Gamification** - Streaks, points, tiers, achievements
-* **Social** - Friends, friend requests, leaderboards
-* **Notifications** - Reminders before lectures
+- **Authentication**: Email/password and Google OAuth via Supabase
+- **Timetable**: Import from iCal URL, week view calendar
+- **Check-in**: Location-verified attendance with points and GPS validation
+- **Gamification**: Streaks, points, achievements, leaderboards
+- **Social**: Friends, friend requests, global and friends leaderboards
+- **Notifications**: Reminders before lectures
+- **Web & Mobile**: Runs on iOS, Android, and Web (deployed to GitHub Pages)
+
+---
 
 ## Architecture
 
-```
-┌─────────────────────────────────────────────────────────────┐
-│                        Flutter App                          │
-├─────────────┬─────────────┬─────────────┬──────────────────┤
-│   Pages     │  Providers  │ Repositories│    Services      │
-│   (UI)      │  (State)    │  (Data)     │   (Platform)     │
-└─────────────┴──────┬──────┴──────┬──────┴────────┬─────────┘
-                     │             │               │
-                     ▼             ▼               ▼
-              ┌──────────────────────┐      ┌───────────┐
-              │   Supabase Backend   │      │  Device   │
-              ├──────────────────────┤      ├───────────┤
-              │ • Auth               │      │ • GPS     │
-              │ • Database (Postgres)│      │ • Notifs  │
-              │ • RPC Functions      │      └───────────┘
-              │ • Row Level Security │
-              └──────────────────────┘
-```
+- **Frontend**: Flutter (Dart)
+- **Backend**: Supabase (PostgreSQL, Auth, Realtime, Storage)
+- **State Management**: Provider
+- **Navigation**: GoRouter
+- **Location Services**: Geolocator
+- **Local Storage**: SharedPreferences
+- **Repository Pattern**: Clean separation of data, logic, and UI
 
-### Server-Side Processing
-
-All business logic runs on Supabase via PostgreSQL RPC functions:
-
-| Function | Purpose |
-|----------|---------|
-| `check_in()` | Validates timing, calculates distance, awards points, updates streak |
-| `check_out()` | Records checkout time |
-| `use_streak_freeze()` | Consumes a freeze to protect streak |
-| `send_friend_request()` | Creates pending friend request |
-| `accept_friend_request()` | Accepts and activates friendship |
-| `reject_friend_request()` | Removes pending request |
-| `get_leaderboard()` | Returns ranked global leaderboard |
-| `get_friends_leaderboard()` | Returns ranked friends-only leaderboard |
-| `get_user_rank()` | Returns user's current rank |
-| `search_users()` | Searches users by username |
-
-### Client-Side Only
-
-- UI rendering and state management
-- GPS location retrieval (device hardware)
-- iCal parsing (fetches and parses timetable)
-- Local notifications (device scheduler)
+---
 
 ## Getting Started
+
+### Prerequisites
+
+- Flutter 3.0+
+- Supabase account
+- iOS/Android/Web development environment
+
+### 1. Clone & Install
+
+```bash
+git clone https://github.com/<your-username>/attendrr.git
+cd attendrr
+flutter pub get
+```
+
+### 2. Supabase Setup
+
+1. Create a new Supabase project at [supabase.com](https://supabase.com)
+2. Run the provided SQL files in order to set up tables, RLS, functions, and triggers.
+3. Enable Google OAuth (optional) and copy your project credentials.
+
+### 3. Configure Environment
+
+Create a `.env` file in your project root:
+
+```
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+### 4. Run
+
+```bash
+# iOS
+flutter run -d ios
+
+# Android
+flutter run -d android
+
+# Web
+flutter run -d web
+```
+
+---
+
+## Continuous Integration & Deployment
+
+This project uses GitHub Actions for CI/CD:
+
+- **Build**: Installs dependencies and checks that the project compiles.
+- **Analyze**: Runs static analysis for code quality.
+- **Test**: Runs all unit and widget tests.
+- **Deploy**: Builds the Flutter web app and deploys it to GitHub Pages.
+
+Every push or pull request to `main` triggers the pipeline. The latest web build is published to GitHub Pages at:
+
+```
+https://<your-github-username>.github.io/<your-repo-name>/
+```
+
+---
+
+## Project Structure
+
+```
+lib/
+  main.dart
+  config/
+  models/
+  services/
+  repositories/
+  providers/
+  pages/
+  widgets/
+  router/
+  theme/
+  utils/
+```
+
+---
+
+## License
+
+MIT License – see LICENSE file for details.
 
 ### Prerequisites
 
