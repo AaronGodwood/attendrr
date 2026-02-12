@@ -14,6 +14,7 @@ class ProfileProvider extends ChangeNotifier {
   Points? _points;
   AttendanceStats? _stats;
   List<DailyAttendance>? _history;
+  StreakEvaluation? _lastEvaluation;
   bool _isLoading = false;
   bool _isUploading = false;
   String? _error;
@@ -23,6 +24,7 @@ class ProfileProvider extends ChangeNotifier {
   Points? get points => _points;
   AttendanceStats? get stats => _stats;
   List<DailyAttendance>? get history => _history;
+  StreakEvaluation? get lastEvaluation => _lastEvaluation;
   bool get isLoading => _isLoading;
   bool get isUploading => _isUploading;
   String? get error => _error;
@@ -33,6 +35,9 @@ class ProfileProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Evaluate streak first (handles missed days, consumes freezes)
+      _lastEvaluation = await _userRepo.evaluateStreak();
+
       final profile = await _userRepo.getFullProfile();
       _user = profile.user;
       _streak = profile.streak;
@@ -102,6 +107,10 @@ class ProfileProvider extends ChangeNotifier {
       _isUploading = false;
       notifyListeners();
     }
+  }
+
+  void clearEvaluation() {
+    _lastEvaluation = null;
   }
 
   Future<void> refresh() => loadProfile();
