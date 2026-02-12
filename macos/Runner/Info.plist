@@ -30,6 +30,8 @@
 	<string>We use your location to verify lecture check-ins.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We use your location to verify lecture check-ins.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>We use your location to verify lecture check-ins.</string>
 	<key>NSUserNotificationUsageDescription</key>
 	<string>We use notifications to send check-in reminders.</string>
 	<key>NSHumanReadableCopyright</key>
