@@ -8,6 +8,7 @@ import 'providers/profile_provider.dart';
 import 'providers/timetable_provider.dart';
 import 'providers/checkin_provider.dart';
 import 'providers/friends_provider.dart';
+import 'providers/shop_provider.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
 import 'services/notification_service.dart';
@@ -32,9 +33,9 @@ Future<void> main() async {
   );
 
   // Initialize local notifications only on non-web platforms.
-  if (!kIsWeb) {
-    await NotificationService.instance.initialize();
-  }
+  //if (!kIsWeb) {
+  //  await NotificationService.instance.initialize();
+  //}
 
   runApp(const MyApp());
 }
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TimetableProvider()),
         ChangeNotifierProvider(create: (_) => CheckInProvider()),
         ChangeNotifierProvider(create: (_) => FriendsProvider()),
+        ChangeNotifierProvider(create: (_) => ShopProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: Consumer2<AuthProvider, ThemeProvider>(
