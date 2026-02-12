@@ -8,12 +8,15 @@ import '../theme/colors.dart';
 import '../theme/theme_extensions.dart';
 import '../widgets/timetable/timetable_skeleton.dart';
 
+
 class TimetablePage extends StatefulWidget {
   const TimetablePage({super.key});
+
 
   @override
   State<TimetablePage> createState() => _TimetablePageState();
 }
+
 
 class _TimetablePageState extends State<TimetablePage>
     with SingleTickerProviderStateMixin {
@@ -25,15 +28,18 @@ class _TimetablePageState extends State<TimetablePage>
   late AnimationController _animationController;
   late Animation<Offset> _slideAnimation;
 
+
   @override
   void initState() {
     super.initState();
+
 
     // Initialize animation controller
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
+
 
     _slideAnimation = Tween<Offset>(
       begin: Offset.zero,
@@ -42,14 +48,17 @@ class _TimetablePageState extends State<TimetablePage>
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TimetableProvider>().loadWeek(_selectedDate);
       _scrollToCurrentTime();
     });
 
+
     // Sync scroll controllers
     _timeScrollController.addListener(_syncScroll);
   }
+
 
   @override
   void dispose() {
@@ -60,17 +69,20 @@ class _TimetablePageState extends State<TimetablePage>
     super.dispose();
   }
 
+
   void _syncScroll() {
     if (_labelScrollController.hasClients && _timeScrollController.hasClients) {
       _labelScrollController.jumpTo(_timeScrollController.offset);
     }
   }
 
+
   void _scrollToCurrentTime() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_timeScrollController.hasClients) {
         final now = DateTime.now();
         double scrollPosition;
+
 
         if (_isToday(_selectedDate)) {
           // For today, scroll to current time minus 2 hours for context
@@ -91,6 +103,7 @@ class _TimetablePageState extends State<TimetablePage>
               60.0;
         }
 
+
         _timeScrollController.animateTo(
           scrollPosition,
           duration: const Duration(milliseconds: 300),
@@ -100,6 +113,7 @@ class _TimetablePageState extends State<TimetablePage>
     });
   }
 
+
   void _goToPreviousDay() {
     _slideAnimation = Tween<Offset>(
       begin: const Offset(-1.0, 0.0),
@@ -108,7 +122,9 @@ class _TimetablePageState extends State<TimetablePage>
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
+
     _animationController.forward(from: 0.0);
+
 
     setState(() {
       _selectedDate = _selectedDate.subtract(const Duration(days: 1));
@@ -120,6 +136,7 @@ class _TimetablePageState extends State<TimetablePage>
     _scrollToCurrentTime();
   }
 
+
   void _goToNextDay() {
     _slideAnimation = Tween<Offset>(
       begin: const Offset(1.0, 0.0),
@@ -128,7 +145,9 @@ class _TimetablePageState extends State<TimetablePage>
       CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
     );
 
+
     _animationController.forward(from: 0.0);
+
 
     setState(() {
       _selectedDate = _selectedDate.add(const Duration(days: 1));
@@ -139,6 +158,7 @@ class _TimetablePageState extends State<TimetablePage>
     }
     _scrollToCurrentTime();
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -164,9 +184,11 @@ class _TimetablePageState extends State<TimetablePage>
             return const TimetableSkeleton();
           }
 
+
           if (provider.error != null) {
             return Center(child: Text(provider.error!));
           }
+
 
           return Column(
             children: [
@@ -184,6 +206,7 @@ class _TimetablePageState extends State<TimetablePage>
     );
   }
 
+
   Widget _buildDaySelector(TimetableProvider provider) {
     final weekStart = _getWeekStart(_selectedDate);
     final days = List.generate(
@@ -191,8 +214,10 @@ class _TimetablePageState extends State<TimetablePage>
       (index) => weekStart.add(Duration(days: index)),
     );
 
+
     final theme = Theme.of(context);
     final ext = theme.extension<TerraThemeExtension>();
+
 
     return Container(
       height: 80,
@@ -222,6 +247,7 @@ class _TimetablePageState extends State<TimetablePage>
                 final dayWidth = (availableWidth / 7).clamp(44.0, 72.0);
                 const spacing = 4.0;
                 final totalWidth = (dayWidth * 7) + (spacing * 6);
+
 
                 Widget buildDayTile(DateTime date) {
                   final isSelected = _isSameDay(date, _selectedDate);
@@ -303,20 +329,17 @@ class _TimetablePageState extends State<TimetablePage>
                   );
                 }
 
+
                 if (totalWidth <= availableWidth) {
-                  return Center(
-                    child: SizedBox(
-                      width: totalWidth,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          for (int index = 0; index < days.length; index++)
-                            buildDayTile(days[index]),
-                        ],
-                      ),
-                    ),
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      for (int index = 0; index < days.length; index++)
+                        buildDayTile(days[index]),
+                    ],
                   );
                 }
+
 
                 return ListView.separated(
                   scrollDirection: Axis.horizontal,
@@ -343,14 +366,17 @@ class _TimetablePageState extends State<TimetablePage>
     );
   }
 
+
   Widget _buildDayView(TimetableProvider provider) {
     final dayLectures =
         provider.lectures
             .where((l) => _isSameDay(l.lecture.startTime, _selectedDate))
             .toList();
 
+
     final theme = Theme.of(context);
     final ext = theme.extension<TerraThemeExtension>();
+
 
     if (provider.lectures.isEmpty) {
       return Center(
@@ -370,6 +396,7 @@ class _TimetablePageState extends State<TimetablePage>
       );
     }
 
+
     if (dayLectures.isEmpty) {
       return Center(
         child: Column(
@@ -385,6 +412,7 @@ class _TimetablePageState extends State<TimetablePage>
         ),
       );
     }
+
 
     return Row(
       children: [
@@ -402,6 +430,7 @@ class _TimetablePageState extends State<TimetablePage>
                   (index) {
                     final hour = _visibleStartHour + index;
                     final top = (hour - _visibleStartHour) * 60.0;
+
 
                     return Positioned(
                       top: top,
@@ -422,6 +451,7 @@ class _TimetablePageState extends State<TimetablePage>
           ),
         ),
 
+
         // Time slots with lectures
         Expanded(
           child: SingleChildScrollView(
@@ -441,6 +471,7 @@ class _TimetablePageState extends State<TimetablePage>
                         _isToday(_selectedDate) && now.hour == hour;
                     final top = (hour - _visibleStartHour) * 60.0;
 
+
                     return Positioned(
                       top: top,
                       left: 0,
@@ -459,8 +490,10 @@ class _TimetablePageState extends State<TimetablePage>
                     );
                   }),
 
+
                   // Current time indicator
                   if (_isToday(_selectedDate)) _buildCurrentTimeIndicator(),
+
 
                   // Lectures
                   ...dayLectures.map((lectureWithAttendance) {
@@ -476,22 +509,27 @@ class _TimetablePageState extends State<TimetablePage>
     );
   }
 
+
   Widget _buildCurrentTimeIndicator() {
     final now = DateTime.now();
     final minutesSinceMidnight = now.hour * 60 + now.minute;
     final startMinutes = _visibleStartHour * 60;
     final endMinutes = _visibleEndHour * 60;
 
+
     if (minutesSinceMidnight < startMinutes ||
         minutesSinceMidnight > endMinutes) {
       return const SizedBox.shrink();
     }
 
+
     final topPosition = (minutesSinceMidnight - startMinutes).toDouble();
+
 
     final dangerColor =
         Theme.of(context).extension<TerraThemeExtension>()?.danger ??
         Theme.of(context).colorScheme.error;
+
 
     return Positioned(
       top: topPosition,
@@ -513,6 +551,7 @@ class _TimetablePageState extends State<TimetablePage>
     );
   }
 
+
   Widget _buildLectureBlock(
     Lecture lecture,
     LectureWithAttendance lectureWithAttendance,
@@ -525,21 +564,26 @@ class _TimetablePageState extends State<TimetablePage>
     final clippedEnd = endMinutes.clamp(visibleStart, visibleEnd);
     final durationMinutes = clippedEnd - clippedStart;
 
+
     if (durationMinutes <= 0) {
       return const SizedBox.shrink();
     }
 
+
     final topPosition = (clippedStart - visibleStart).toDouble();
     final height = durationMinutes.toDouble();
+
 
     final status = lectureWithAttendance.status;
     final themeData = Theme.of(context);
     final ext = themeData.extension<TerraThemeExtension>();
 
+
     // Module color for left-border accent
     final moduleColor =
         TerraColors.moduleColors[lecture.moduleCode.hashCode.abs() %
             TerraColors.moduleColors.length];
+
 
     // Status-dependent background tint
     final bgColor = switch (status) {
@@ -552,10 +596,12 @@ class _TimetablePageState extends State<TimetablePage>
       LectureStatus.upcoming => moduleColor.withValues(alpha: 0.08),
     };
 
+
     final textColor = themeData.colorScheme.onSurface;
     final secondaryTextColor =
         ext?.textSecondary ??
         themeData.colorScheme.onSurface.withValues(alpha: 0.6);
+
 
     // Status icon colors
     final statusIconColor = switch (status) {
@@ -564,9 +610,11 @@ class _TimetablePageState extends State<TimetablePage>
       _ => null,
     };
 
+
     // Determine what to show based on height
     final showTime = height > 65;
     final titleMaxLines = height > 72 ? 2 : 1;
+
 
     return Positioned(
       top: topPosition,
@@ -695,6 +743,7 @@ class _TimetablePageState extends State<TimetablePage>
     );
   }
 
+
   void _showLectureDetails(
     Lecture lecture,
     LectureWithAttendance lectureWithAttendance,
@@ -703,11 +752,13 @@ class _TimetablePageState extends State<TimetablePage>
     final points = lectureWithAttendance.pointsEarned;
     final isWide = MediaQuery.of(context).size.width >= 700;
 
+
     final theme = Theme.of(context);
     final ext = theme.extension<TerraThemeExtension>();
     final moduleColor =
         TerraColors.moduleColors[lecture.moduleCode.hashCode.abs() %
             TerraColors.moduleColors.length];
+
 
     final content = Column(
       mainAxisSize: MainAxisSize.min,
@@ -803,6 +854,7 @@ class _TimetablePageState extends State<TimetablePage>
       ],
     );
 
+
     if (isWide) {
       showDialog(
         context: context,
@@ -829,13 +881,16 @@ class _TimetablePageState extends State<TimetablePage>
     }
   }
 
+
   String _formatHour(int hour) {
     return '${hour.toString().padLeft(2, '0')}:00';
   }
 
+
   DateTime _getWeekStart(DateTime date) {
     return DateTime(date.year, date.month, date.day - (date.weekday - 1));
   }
+
 
   bool _isSameWeek(DateTime date1, DateTime date2) {
     final weekStart1 = _getWeekStart(date1);
@@ -845,11 +900,13 @@ class _TimetablePageState extends State<TimetablePage>
         weekStart1.day == weekStart2.day;
   }
 
+
   bool _isSameDay(DateTime date1, DateTime date2) {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
   }
+
 
   bool _isToday(DateTime date) {
     final now = DateTime.now();
@@ -858,3 +915,4 @@ class _TimetablePageState extends State<TimetablePage>
         date.day == now.day;
   }
 }
+
