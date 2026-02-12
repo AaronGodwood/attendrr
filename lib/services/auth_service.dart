@@ -107,6 +107,25 @@ class AuthService {
     }
   }
 
+  Future<AuthResult> linkGoogleIdentity() async {
+    try {
+      final launchMode =
+          (!kIsWeb && Platform.isIOS)
+              ? LaunchMode.externalApplication
+              : LaunchMode.platformDefault;
+      await _client.auth.linkIdentity(
+        OAuthProvider.google,
+        redirectTo: _oauthRedirectUrl(),
+        authScreenLaunchMode: launchMode,
+      );
+      return AuthResult.pending();
+    } on AuthException catch (e) {
+      return AuthResult.failure(_mapAuthError(e.message));
+    } catch (e) {
+      return AuthResult.failure('Google link failed');
+    }
+  }
+
   Future<AuthResult> sendPasswordResetEmail(String email) async {
     try {
       await _client.auth.resetPasswordForEmail(
