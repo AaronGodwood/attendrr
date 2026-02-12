@@ -1,5 +1,4 @@
 1. Timetable page look exactly like the apple calendar.
-2. Importing calendar on web.
 5. Calculate statistics and then different leaderboard options. 
 6. Profile statistics are wrong for attendance and last 30 days.
 7. Make freezes work and point milestones at streaks. 

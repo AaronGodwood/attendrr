@@ -86,6 +86,7 @@ class _CheckInPageState extends State<CheckInPage>
                   return _buildNoLecture(provider);
                 case CheckInState.readyToCheckIn:
                 case CheckInState.tooFarAway:
+                case CheckInState.alreadyCheckedIn:
                   return _buildReady(provider);
                 case CheckInState.checkingIn:
                   return Center(
@@ -189,9 +190,10 @@ class _CheckInPageState extends State<CheckInPage>
     final theme = Theme.of(context);
     final ext = theme.extension<TerraThemeExtension>();
     final isTooFar = provider.state == CheckInState.tooFarAway;
+    final alreadyCheckedIn = provider.state == CheckInState.alreadyCheckedIn;
     final lecture = provider.currentLecture!;
     final hasCoords = lecture.hasValidCoordinates;
-    final canCheckIn = provider.canCheckIn;
+    final canCheckIn = provider.canCheckIn && !alreadyCheckedIn;
     final withinWindow = provider.isWithinWindow;
 
     return SingleChildScrollView(
@@ -232,6 +234,14 @@ class _CheckInPageState extends State<CheckInPage>
             _buildStatusBanner(
               icon: Icons.access_time,
               text: 'Check-in opens 10 minutes before the lecture',
+              bgColor:
+                  ext?.primaryContainer ?? theme.colorScheme.primaryContainer,
+              iconColor: theme.colorScheme.primary,
+            ),
+          if (alreadyCheckedIn)
+            _buildStatusBanner(
+              icon: Icons.check_circle,
+              text: 'You already checked in for this lecture',
               bgColor:
                   ext?.primaryContainer ?? theme.colorScheme.primaryContainer,
               iconColor: theme.colorScheme.primary,
