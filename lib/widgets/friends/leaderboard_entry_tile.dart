@@ -150,7 +150,7 @@ class LeaderboardEntryTile extends StatelessWidget {
             children: [
               entry.isCurrentUser
                   ? GradientText(
-                    '${entry.totalPoints}',
+                    entry.displayValue,
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -158,14 +158,14 @@ class LeaderboardEntryTile extends StatelessWidget {
                     gradient: ext?.pointsGradient,
                   )
                   : Text(
-                    '${entry.totalPoints}',
+                    entry.displayValue,
                     style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: ext?.textSecondary,
                     ),
                   ),
               Text(
-                'points',
+                entry.displayUnit,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: ext?.textSecondary,
                 ),
