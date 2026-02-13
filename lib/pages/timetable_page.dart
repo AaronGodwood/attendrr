@@ -346,7 +346,7 @@ class _TimetablePageState extends State<TimetablePage>
                   physics: const BouncingScrollPhysics(),
                   padding: const EdgeInsets.symmetric(horizontal: 4),
                   itemCount: days.length,
-                  separatorBuilder: (_, __) => const SizedBox(width: spacing),
+                  separatorBuilder: (_, _) => const SizedBox(width: spacing),
                   itemBuilder: (context, index) => buildDayTile(days[index]),
                 );
               },

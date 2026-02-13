@@ -1,36 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/auth_provider.dart';
-import 'package:go_router/go_router.dart';
 
-class SplashPage extends StatefulWidget {
+class SplashPage extends StatelessWidget {
   const SplashPage({super.key});
 
   @override
-  State<SplashPage> createState() => _SplashPageState();
-}
-
-class _SplashPageState extends State<SplashPage> {
-  @override
-  void initState() {
-    super.initState();
-    _navigate();
-  }
-
-  Future<void> _navigate() async {
-    await Future.delayed(const Duration(milliseconds: 1500));
-    if (!mounted) return;
-
-    final auth = context.read<AuthProvider>();
-    if (auth.isAuthenticated) {
-      context.go('/timetable');
-    } else {
-      context.go('/login');
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
+    // Navigation handled by GoRouter redirect.
     return Scaffold(
       body: Container(
         decoration: const BoxDecoration(

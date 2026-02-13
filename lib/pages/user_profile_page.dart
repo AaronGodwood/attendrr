@@ -3,7 +3,6 @@ import '../models/models.dart';
 import '../repositories/user_repository.dart';
 import '../repositories/attendance_repository.dart';
 import '../repositories/friends_repository.dart' as friends_repo;
-import '../repositories/friends_repository.dart';
 import '../theme/theme_extensions.dart';
 import '../widgets/common/grain_overlay.dart';
 import '../widgets/profile/tier_progress_card.dart';
@@ -179,7 +178,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     final ext = theme.extension<TerraThemeExtension>();
     final hasAvatar = _user?.avatarUrl != null && _user!.avatarUrl!.isNotEmpty;
     final isCurrentUser = _friendsRepo.currentUserId == widget.userId;
-    final _canSendRequest =
+    final canSendRequest =
         !isCurrentUser &&
         _friendStatus != friends_repo.FriendRelationshipStatus.accepted &&
         _friendStatus != friends_repo.FriendRelationshipStatus.pending &&
@@ -259,7 +258,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                           ).showSnackBar(SnackBar(content: Text(e.toString())));
                         }
                       }
-                      : _canSendRequest && !_requestSending
+                      : canSendRequest && !_requestSending
                       ? () async {
                         setState(() => _requestSending = true);
                         try {

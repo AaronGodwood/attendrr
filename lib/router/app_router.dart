@@ -16,9 +16,6 @@ import '../pages/user_profile_page.dart';
 import '../pages/shop_page.dart';
 
 class AppRouter {
-  static final _rootNavigatorKey = GlobalKey<NavigatorState>();
-  static final _shellNavigatorKey = GlobalKey<NavigatorState>();
-
   static Page _buildPageWithTransition({
     required BuildContext context,
     required GoRouterState state,
@@ -38,8 +35,11 @@ class AppRouter {
   }
 
   static GoRouter router(AuthProvider authProvider) {
+    final rootNavigatorKey = GlobalKey<NavigatorState>();
+    final shellNavigatorKey = GlobalKey<NavigatorState>();
+
     return GoRouter(
-      navigatorKey: _rootNavigatorKey,
+      navigatorKey: rootNavigatorKey,
       initialLocation: '/',
       refreshListenable: authProvider,
       redirect: (context, state) {
@@ -57,6 +57,10 @@ class AppRouter {
           return state.matchedLocation == '/reset-password'
               ? null
               : '/reset-password';
+        }
+
+        if (state.matchedLocation == '/') {
+          return isAuthenticated ? '/timetable' : '/login';
         }
 
         // Not authenticated and not on auth route -> redirect to login
@@ -95,7 +99,7 @@ class AppRouter {
 
         // Main app shell with bottom navigation
         ShellRoute(
-          navigatorKey: _shellNavigatorKey,
+          navigatorKey: shellNavigatorKey,
           builder: (context, state, child) => HomePage(child: child),
           routes: [
             GoRoute(
