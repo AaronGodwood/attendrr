@@ -68,8 +68,14 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
-          IconButton(icon: const Icon(Icons.storefront), onPressed: () => context.push('/profile/shop')),
-          IconButton(icon: const Icon(Icons.settings), onPressed: () => context.push('/profile/settings')),
+          IconButton(
+            icon: const Icon(Icons.storefront),
+            onPressed: () => context.push('/profile/shop'),
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () => context.push('/profile/settings'),
+          ),
         ],
       ),
       body: Stack(
@@ -90,7 +96,10 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 16),
                       Text(provider.error!),
                       const SizedBox(height: 16),
-                      ElevatedButton(onPressed: provider.refresh, child: const Text('Retry')),
+                      ElevatedButton(
+                        onPressed: provider.refresh,
+                        child: const Text('Retry'),
+                      ),
                     ],
                   ),
                 );
@@ -101,7 +110,8 @@ class _ProfilePageState extends State<ProfilePage> {
               final points = provider.points;
               final stats = provider.stats;
 
-              if (user == null) return const Center(child: Text('No profile data'));
+              if (user == null)
+                return const Center(child: Text('No profile data'));
 
               return RefreshIndicator(
                 onRefresh: provider.refresh,
@@ -139,7 +149,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 12),
 
                       // Attendance Chart
-                      if (provider.history != null && provider.history!.isNotEmpty)
+                      if (provider.history != null &&
+                          provider.history!.isNotEmpty)
                         _animatedSection(
                           index: 3,
                           child: AttendanceChart(data: provider.history!),
@@ -156,7 +167,12 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _buildProfileHeader(BuildContext context, ProfileProvider provider, dynamic user, dynamic points) {
+  Widget _buildProfileHeader(
+    BuildContext context,
+    ProfileProvider provider,
+    dynamic user,
+    dynamic points,
+  ) {
     final theme = Theme.of(context);
     final ext = theme.extension<TerraThemeExtension>();
 
@@ -168,8 +184,17 @@ class _ProfilePageState extends State<ProfilePage> {
             children: [
               CircleAvatar(
                 radius: 50,
-                backgroundImage: user.avatarUrl != null && user.avatarUrl!.isNotEmpty ? NetworkImage(user.avatarUrl!) : null,
-                child: user.avatarUrl == null || user.avatarUrl!.isEmpty ? Text(user.initials, style: const TextStyle(fontSize: 32)) : null,
+                backgroundImage:
+                    user.avatarUrl != null && user.avatarUrl!.isNotEmpty
+                        ? NetworkImage(user.avatarUrl!)
+                        : null,
+                child:
+                    user.avatarUrl == null || user.avatarUrl!.isEmpty
+                        ? Text(
+                          user.initials,
+                          style: const TextStyle(fontSize: 32),
+                        )
+                        : null,
               ),
               if (provider.isUploading)
                 const Positioned.fill(
@@ -189,7 +214,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       color: theme.colorScheme.primary,
                       shape: BoxShape.circle,
                     ),
-                    child: Icon(Icons.camera_alt, size: 16, color: theme.colorScheme.onPrimary),
+                    child: Icon(
+                      Icons.camera_alt,
+                      size: 16,
+                      color: theme.colorScheme.onPrimary,
+                    ),
                   ),
                 ),
             ],
@@ -226,6 +255,28 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
+          const SizedBox(height: 10),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              border: Border.all(color: theme.colorScheme.outlineVariant),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.monetization_on, size: 16, color: ext?.warning),
+                const SizedBox(width: 6),
+                Text(
+                  '${points.totalPoints} coins',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ],
     );
@@ -255,39 +306,44 @@ class _ProfilePageState extends State<ProfilePage> {
     final ext = Theme.of(context).extension<TerraThemeExtension>();
     showModalBottomSheet(
       context: context,
-      builder: (context) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (_isMobilePlatform)
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('Take photo'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _pickImage(ImageSource.camera, provider);
-                },
-              ),
-            ListTile(
-              leading: const Icon(Icons.photo_library),
-              title: const Text('Choose from gallery'),
-              onTap: () {
-                Navigator.pop(context);
-                _pickImage(ImageSource.gallery, provider);
-              },
+      builder:
+          (context) => SafeArea(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (_isMobilePlatform)
+                  ListTile(
+                    leading: const Icon(Icons.camera_alt),
+                    title: const Text('Take photo'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _pickImage(ImageSource.camera, provider);
+                    },
+                  ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Choose from gallery'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.gallery, provider);
+                  },
+                ),
+                if (provider.user?.avatarUrl != null &&
+                    provider.user!.avatarUrl!.isNotEmpty)
+                  ListTile(
+                    leading: Icon(Icons.delete, color: ext?.danger),
+                    title: Text(
+                      'Remove photo',
+                      style: TextStyle(color: ext?.danger),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      provider.removeAvatar();
+                    },
+                  ),
+              ],
             ),
-            if (provider.user?.avatarUrl != null && provider.user!.avatarUrl!.isNotEmpty)
-              ListTile(
-                leading: Icon(Icons.delete, color: ext?.danger),
-                title: Text('Remove photo', style: TextStyle(color: ext?.danger)),
-                onTap: () {
-                  Navigator.pop(context);
-                  provider.removeAvatar();
-                },
-              ),
-          ],
-        ),
-      ),
+          ),
     );
   }
 
@@ -295,7 +351,12 @@ class _ProfilePageState extends State<ProfilePage> {
     try {
       if (_isMobilePlatform) {
         final picker = ImagePicker();
-        final image = await picker.pickImage(source: source, maxWidth: 512, maxHeight: 512, imageQuality: 75);
+        final image = await picker.pickImage(
+          source: source,
+          maxWidth: 512,
+          maxHeight: 512,
+          imageQuality: 75,
+        );
         if (image != null) {
           provider.updateAvatar(image);
         }
