@@ -52,7 +52,7 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Profile shows coin balance', (tester) async {
+  testWidgets('WT-08 Profile shows coin balance', (tester) async {
     final now = DateTime(2025, 1, 1);
     final user = app_models.User(
       id: 'user-1',
