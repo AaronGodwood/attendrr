@@ -11,7 +11,7 @@ class FriendsProvider extends ChangeNotifier {
   List<FriendRequest> _requests = [];
   List<LeaderboardEntry> _leaderboard = [];
   bool _showGlobal = true;
-  LeaderboardCategory _category = LeaderboardCategory.totalPoints;
+  LeaderboardCategory _category = LeaderboardCategory.weeklyPoints;
   bool _isLoading = false;
   String? _error;
 
