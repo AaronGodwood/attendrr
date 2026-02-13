@@ -98,8 +98,8 @@ class _ShopPageState extends State<ShopPage> {
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(
-                Icons.stars,
-                color: theme.colorScheme.primary,
+                Icons.monetization_on,
+                color: ext?.warning ?? theme.colorScheme.primary,
                 size: 28,
               ),
             ),
@@ -126,7 +126,7 @@ class _ShopPageState extends State<ShopPage> {
               ),
             ),
             Text(
-              'pts',
+              'coins',
               style: theme.textTheme.titleMedium?.copyWith(
                 color: ext?.textSecondary,
               ),
@@ -227,15 +227,15 @@ class _ShopPageState extends State<ShopPage> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
-                        Icons.stars,
+                        Icons.monetization_on,
                         size: 14,
-                        color: theme.colorScheme.primary,
+                        color: ext?.warning ?? theme.colorScheme.primary,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '${item.cost}',
                         style: theme.textTheme.labelLarge?.copyWith(
-                          color: theme.colorScheme.primary,
+                          color: ext?.warning ?? theme.colorScheme.primary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -245,16 +245,18 @@ class _ShopPageState extends State<ShopPage> {
                 const SizedBox(width: 8),
                 // Buy button
                 FilledButton(
-                  onPressed: (canAfford && !provider.isPurchasing)
-                      ? () => _confirmPurchase(context, item, provider)
-                      : null,
-                  child: provider.isPurchasing
-                      ? const SizedBox(
-                          width: 16,
-                          height: 16,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        )
-                      : const Text('Buy'),
+                  onPressed:
+                      (canAfford && !provider.isPurchasing)
+                          ? () => _confirmPurchase(context, item, provider)
+                          : null,
+                  child:
+                      provider.isPurchasing
+                          ? const SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                          : const Text('Buy'),
                 ),
               ],
             ),
@@ -274,44 +276,45 @@ class _ShopPageState extends State<ShopPage> {
 
     showDialog(
       context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text('Buy ${item.name}?'),
-        content: Text(
-          'This will cost ${item.cost} points. You currently have ${provider.userPoints} points.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(dialogContext),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              Navigator.pop(dialogContext);
-              final success = await provider.purchaseStreakFreeze();
-              if (!context.mounted) return;
+      builder:
+          (dialogContext) => AlertDialog(
+            title: Text('Buy ${item.name}?'),
+            content: Text(
+              'This will cost ${item.cost} coins. You currently have ${provider.userPoints} coins.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(dialogContext),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: () async {
+                  Navigator.pop(dialogContext);
+                  final success = await provider.purchaseStreakFreeze();
+                  if (!context.mounted) return;
 
-              if (success) {
-                context.read<ProfileProvider>().refresh();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${item.name} purchased!'),
-                    backgroundColor: ext?.success,
-                  ),
-                );
-              } else if (provider.error != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(provider.error!),
-                    backgroundColor: ext?.danger,
-                  ),
-                );
-                provider.clearError();
-              }
-            },
-            child: const Text('Buy'),
+                  if (success) {
+                    context.read<ProfileProvider>().refresh();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('${item.name} purchased!'),
+                        backgroundColor: ext?.success,
+                      ),
+                    );
+                  } else if (provider.error != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(provider.error!),
+                        backgroundColor: ext?.danger,
+                      ),
+                    );
+                    provider.clearError();
+                  }
+                },
+                child: const Text('Buy'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }
