@@ -12,7 +12,6 @@ import 'providers/friends_provider.dart';
 import 'providers/shop_provider.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
-import 'services/notification_service.dart';
 import 'theme/app_theme.dart';
 
 Future<void> main() async {
