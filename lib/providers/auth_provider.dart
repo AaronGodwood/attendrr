@@ -128,6 +128,30 @@ class AuthProvider extends ChangeNotifier {
     return true;
   }
 
+  Future<bool> linkGoogleIdentity() async {
+    if (_user == null) {
+      _error = 'Please sign in first to link Google.';
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+      return false;
+    }
+    _status = AuthStatus.loading;
+    _error = null;
+    notifyListeners();
+
+    final result = await _authService.linkGoogleIdentity();
+    if (!result.success && !result.isPending) {
+      _error = result.error;
+      _status = AuthStatus.unauthenticated;
+      notifyListeners();
+      return false;
+    }
+    _status =
+        _user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+    notifyListeners();
+    return true;
+  }
+
   Future<bool> sendPasswordResetEmail(String email) async {
     _error = null;
     final result = await _authService.sendPasswordResetEmail(email);
@@ -155,6 +179,26 @@ class AuthProvider extends ChangeNotifier {
     _user = null;
     _status = AuthStatus.unauthenticated;
     notifyListeners();
+  }
+
+  Future<bool> deleteAccount() async {
+    _status = AuthStatus.loading;
+    _error = null;
+    notifyListeners();
+
+    final result = await _authService.deleteAccount();
+    if (!result.success) {
+      _error = result.error ?? 'Failed to delete account';
+      _status =
+          _user != null ? AuthStatus.authenticated : AuthStatus.unauthenticated;
+      notifyListeners();
+      return false;
+    }
+
+    _user = null;
+    _status = AuthStatus.unauthenticated;
+    notifyListeners();
+    return true;
   }
 
   void clearError() {
