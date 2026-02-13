@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AuthService {
   static final AuthService instance = AuthService._();
@@ -90,13 +92,37 @@ class AuthService {
 
   Future<AuthResult> signInWithGoogle() async {
     try {
+      final launchMode =
+          (!kIsWeb && Platform.isIOS)
+              ? LaunchMode.externalApplication
+              : LaunchMode.platformDefault;
       await _client.auth.signInWithOAuth(
         OAuthProvider.google,
-        redirectTo: 'io.supabase.lecturetracker://login-callback',
+        redirectTo: _oauthRedirectUrl(),
+        authScreenLaunchMode: launchMode,
       );
       return AuthResult.pending();
     } catch (e) {
       return AuthResult.failure('Google sign in failed');
+    }
+  }
+
+  Future<AuthResult> linkGoogleIdentity() async {
+    try {
+      final launchMode =
+          (!kIsWeb && Platform.isIOS)
+              ? LaunchMode.externalApplication
+              : LaunchMode.platformDefault;
+      await _client.auth.linkIdentity(
+        OAuthProvider.google,
+        redirectTo: _oauthRedirectUrl(),
+        authScreenLaunchMode: launchMode,
+      );
+      return AuthResult.pending();
+    } on AuthException catch (e) {
+      return AuthResult.failure(_mapAuthError(e.message));
+    } catch (e) {
+      return AuthResult.failure('Google link failed');
     }
   }
 
@@ -127,6 +153,33 @@ class AuthService {
     await _client.auth.signOut();
   }
 
+  Future<AuthResult> deleteAccount() async {
+    try {
+      final userId = currentUser?.id;
+      if (userId == null) {
+        return AuthResult.failure('No user logged in');
+      }
+      await _client.rpc('delete_user_account');
+      await signOut();
+      return AuthResult.success(message: 'Account deleted');
+    } on AuthException catch (e) {
+      return AuthResult.failure(_mapAuthError(e.message));
+    } catch (e) {
+      return AuthResult.failure('Failed to delete account');
+    }
+  }
+
+  String _oauthRedirectUrl() {
+    final configured = dotenv.env['OAUTH_REDIRECT_URL']?.trim();
+    if (configured != null && configured.isNotEmpty) {
+      return configured;
+    }
+    if (kIsWeb) {
+      return '${Uri.base.origin}/';
+    }
+    return 'com.example.attendr://login-callback';
+  }
+
   String _passwordResetRedirectUrl() {
     final configured = dotenv.env['PASSWORD_RESET_REDIRECT_URL']?.trim();
     if (configured != null && configured.isNotEmpty) {
@@ -135,7 +188,7 @@ class AuthService {
     if (kIsWeb) {
       return '${Uri.base.origin}/reset-password';
     }
-    return 'io.supabase.lecturetracker://reset-password';
+    return 'com.example.attendr://reset-password';
   }
 
   String _mapAuthError(String message) {
