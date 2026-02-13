@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../providers/auth_provider.dart';
 import '../providers/profile_provider.dart';
 import '../providers/theme_provider.dart';
@@ -107,6 +108,23 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                 ),
                 ListTile(
+                  title: const Text('Link Google Account'),
+                  subtitle: Text(
+                    _isGoogleLinked(context.read<AuthProvider>().user)
+                        ? 'Linked'
+                        : 'Sign in with Google',
+                  ),
+                  trailing: Icon(
+                    _isGoogleLinked(context.read<AuthProvider>().user)
+                        ? Icons.check_circle
+                        : Icons.link,
+                  ),
+                  onTap:
+                      _isGoogleLinked(context.read<AuthProvider>().user)
+                          ? null
+                          : () => _linkGoogleAccount(context),
+                ),
+                ListTile(
                   title: const Text('Change Password'),
                   subtitle: const Text('Update your account password'),
                   trailing: const Icon(Icons.chevron_right),
@@ -167,12 +185,49 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   onTap: () => _handleSignOut(context),
                 ),
+                ListTile(
+                  title: Text(
+                    'Delete Account',
+                    style: TextStyle(
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<TerraThemeExtension>()?.danger,
+                    ),
+                  ),
+                  subtitle: const Text('Permanently delete your account'),
+                  leading: Icon(
+                    Icons.delete_forever,
+                    color:
+                        Theme.of(
+                          context,
+                        ).extension<TerraThemeExtension>()?.danger,
+                  ),
+                  onTap: () => _handleDeleteAccount(context),
+                ),
               ], context),
             ],
           );
         },
       ),
     );
+  }
+
+  bool _isGoogleLinked(User? user) {
+    final identities = user?.identities;
+    if (identities == null) return false;
+    return identities.any((identity) => identity.provider == 'google');
+  }
+
+  Future<void> _linkGoogleAccount(BuildContext context) async {
+    final authProvider = context.read<AuthProvider>();
+    final success = await authProvider.linkGoogleIdentity();
+    if (!mounted) return;
+    if (!success && authProvider.error != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(authProvider.error!)));
+    }
   }
 
   Widget _buildSection(
@@ -450,6 +505,53 @@ class _SettingsPageState extends State<SettingsPage> {
                       ).extension<TerraThemeExtension>()?.danger,
                 ),
                 child: const Text('Sign Out'),
+              ),
+            ],
+          ),
+    );
+  }
+
+  void _handleDeleteAccount(BuildContext context) {
+    showDialog(
+      context: context,
+      builder:
+          (context) => AlertDialog(
+            title: const Text('Delete Account'),
+            content: const Text(
+              'This will permanently delete your account and all related data. This action cannot be undone.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  final authProvider = context.read<AuthProvider>();
+                  final success = await authProvider.deleteAccount();
+                  if (!context.mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        success
+                            ? 'Account deleted'
+                            : (authProvider.error ??
+                                'Failed to delete account'),
+                      ),
+                    ),
+                  );
+                  if (success) {
+                    context.go('/login');
+                  }
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor:
+                      Theme.of(
+                        context,
+                      ).extension<TerraThemeExtension>()?.danger,
+                ),
+                child: const Text('Delete'),
               ),
             ],
           ),
