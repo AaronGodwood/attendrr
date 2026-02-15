@@ -194,7 +194,7 @@ class _ShopPageState extends State<ShopPage> {
             const SizedBox(height: 16),
             Row(
               children: [
-                // Owned count
+                // Owned / Active badge
                 if (item.userQuantity != null)
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -206,7 +206,9 @@ class _ShopPageState extends State<ShopPage> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      'Owned: ${item.userQuantity}',
+                      item.type == ShopItemType.weeklyPointsBoost
+                          ? (item.userQuantity! > 0 ? 'Active' : 'Inactive')
+                          : 'Owned: ${item.userQuantity}',
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: ext?.textSecondary,
                       ),
@@ -290,7 +292,10 @@ class _ShopPageState extends State<ShopPage> {
               FilledButton(
                 onPressed: () async {
                   Navigator.pop(dialogContext);
-                  final success = await provider.purchaseStreakFreeze();
+                  final success =
+                      item.type == ShopItemType.weeklyPointsBoost
+                          ? await provider.purchaseWeeklyBoost()
+                          : await provider.purchaseStreakFreeze();
                   if (!context.mounted) return;
 
                   if (success) {
