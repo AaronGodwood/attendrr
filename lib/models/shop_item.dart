@@ -2,12 +2,15 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 
 enum ShopItemType {
-  streakFreeze;
+  streakFreeze,
+  weeklyPointsBoost;
 
   String get label {
     switch (this) {
       case streakFreeze:
         return 'Streak Freeze';
+      case weeklyPointsBoost:
+        return 'Weekly Points Boost';
     }
   }
 
@@ -16,6 +19,8 @@ enum ShopItemType {
       case streakFreeze:
         return 'Protect your streak when you miss a day. '
             'One freeze is consumed automatically when you would lose your streak.';
+      case weeklyPointsBoost:
+        return 'Boosts points earned by 10% for the rest of the week.';
     }
   }
 
@@ -23,6 +28,8 @@ enum ShopItemType {
     switch (this) {
       case streakFreeze:
         return Icons.ac_unit;
+      case weeklyPointsBoost:
+        return Icons.trending_up;
     }
   }
 }
@@ -32,11 +39,7 @@ class ShopItem extends Equatable {
   final int cost;
   final int? userQuantity;
 
-  const ShopItem({
-    required this.type,
-    required this.cost,
-    this.userQuantity,
-  });
+  const ShopItem({required this.type, required this.cost, this.userQuantity});
 
   String get name => type.label;
   String get description => type.description;
