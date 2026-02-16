@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 enum LeaderboardCategory {
-  totalPoints,
   weeklyPoints,
+  totalPoints,
   currentStreak,
   attendanceRate;
 
   String get label {
     switch (this) {
-      case totalPoints:
-        return 'Total Points';
       case weeklyPoints:
         return 'Weekly Points';
+      case totalPoints:
+        return 'Total Points';
       case currentStreak:
         return 'Current Streak';
       case attendanceRate:
@@ -21,9 +21,9 @@ enum LeaderboardCategory {
 
   String get unit {
     switch (this) {
-      case totalPoints:
-        return 'pts';
       case weeklyPoints:
+        return 'pts';
+      case totalPoints:
         return 'pts';
       case currentStreak:
         return 'days';
@@ -34,10 +34,10 @@ enum LeaderboardCategory {
 
   IconData get icon {
     switch (this) {
-      case totalPoints:
-        return Icons.stars;
       case weeklyPoints:
         return Icons.trending_up;
+      case totalPoints:
+        return Icons.stars;
       case currentStreak:
         return Icons.local_fire_department;
       case attendanceRate:
