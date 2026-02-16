@@ -11,6 +11,8 @@ class AppConstants {
 
   // Shop
   static const int streakFreezeCost = 50;
+  static const int weeklyBoostCost = 50;
+  static const double weeklyBoostMultiplier = 1.1;
 
   // Sync
   static const int syncIntervalHours = 12;
@@ -26,7 +28,8 @@ class AppConstants {
   // Deep links
   static const String deepLinkScheme = 'io.supabase.lecturetracker';
   static const String loginCallback = '$deepLinkScheme://login-callback';
-  static const String resetPasswordCallback = '$deepLinkScheme://reset-password';
+  static const String resetPasswordCallback =
+      '$deepLinkScheme://reset-password';
 }
 
 class StorageKeys {
