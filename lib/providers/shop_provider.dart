@@ -38,12 +38,18 @@ class ShopProvider extends ChangeNotifier {
       _userPoints = points.totalPoints;
       _userFreezes = streak.streakFreezes;
 
-      _items = _shopRepo.getCatalog().map((item) {
-        if (item.type == ShopItemType.streakFreeze) {
-          return item.copyWith(userQuantity: _userFreezes);
-        }
-        return item;
-      }).toList();
+      _items =
+          _shopRepo.getCatalog().map((item) {
+            if (item.type == ShopItemType.streakFreeze) {
+              return item.copyWith(userQuantity: _userFreezes);
+            }
+            if (item.type == ShopItemType.weeklyPointsBoost) {
+              return item.copyWith(
+                userQuantity: points.weeklyBoostActive ? 1 : 0,
+              );
+            }
+            return item;
+          }).toList();
 
       _isLoading = false;
       notifyListeners();
@@ -65,21 +71,48 @@ class ShopProvider extends ChangeNotifier {
       _userFreezes = result.newFreezes;
 
       // Refresh items with new quantity
-      _items = _shopRepo.getCatalog().map((item) {
-        if (item.type == ShopItemType.streakFreeze) {
-          return item.copyWith(userQuantity: _userFreezes);
-        }
-        return item;
-      }).toList();
+      _items =
+          _shopRepo.getCatalog().map((item) {
+            if (item.type == ShopItemType.streakFreeze) {
+              return item.copyWith(userQuantity: _userFreezes);
+            }
+            return item;
+          }).toList();
 
       _isPurchasing = false;
       notifyListeners();
       return true;
     } catch (e) {
       _isPurchasing = false;
-      _error = e.toString().contains('Insufficient points')
-          ? 'Not enough points!'
-          : 'Purchase failed. Please try again.';
+      _error =
+          e.toString().contains('Insufficient points')
+              ? 'Not enough points!'
+              : 'Purchase failed. Please try again.';
+      notifyListeners();
+      return false;
+    }
+  }
+
+  Future<bool> purchaseWeeklyBoost() async {
+    _isPurchasing = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final result = await _shopRepo.purchaseWeeklyBoost();
+      _userPoints = result.newPoints;
+
+      await loadShop();
+
+      _isPurchasing = false;
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _isPurchasing = false;
+      _error =
+          e.toString().contains('Insufficient points')
+              ? 'Not enough coins!'
+              : 'Purchase failed. Please try again.';
       notifyListeners();
       return false;
     }

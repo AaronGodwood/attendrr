@@ -67,6 +67,8 @@ void main() {
       totalPoints: 120,
       weeklyPoints: 30,
       monthlyPoints: 60,
+      weeklyBoostMultiplier: 1.0,
+      weeklyBoostExpiresAt: null,
       createdAt: now,
       updatedAt: now,
     );
