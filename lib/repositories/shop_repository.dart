@@ -7,7 +7,14 @@ class ShopRepository extends BaseRepository {
   ShopRepository._();
 
   static const List<ShopItem> _catalog = [
-    ShopItem(type: ShopItemType.streakFreeze, cost: AppConstants.streakFreezeCost),
+    ShopItem(
+      type: ShopItemType.streakFreeze,
+      cost: AppConstants.streakFreezeCost,
+    ),
+    ShopItem(
+      type: ShopItemType.weeklyPointsBoost,
+      cost: AppConstants.weeklyBoostCost,
+    ),
   ];
 
   List<ShopItem> getCatalog() => _catalog;
@@ -27,6 +34,26 @@ class ShopRepository extends BaseRepository {
       newPoints: map['new_points'] as int,
       newFreezes: map['new_freezes'] as int,
     );
+  }
+
+  Future<({int newPoints, DateTime? boostExpiresAt})>
+  purchaseWeeklyBoost() async {
+    requireAuth();
+    final result = await client.rpc(
+      'purchase_weekly_boost',
+      params: {
+        'p_user_id': currentUserId!,
+        'p_cost': AppConstants.weeklyBoostCost,
+        'p_multiplier': AppConstants.weeklyBoostMultiplier,
+      },
+    );
+
+    final map = result as Map<String, dynamic>;
+    final expiresAt =
+        map['boost_expires_at'] != null
+            ? DateTime.parse(map['boost_expires_at'] as String)
+            : null;
+    return (newPoints: map['new_points'] as int, boostExpiresAt: expiresAt);
   }
 
   Future<List<Purchase>> getPurchaseHistory() async {
