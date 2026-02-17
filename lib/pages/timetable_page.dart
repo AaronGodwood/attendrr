@@ -50,8 +50,10 @@ class _TimetablePageState extends State<TimetablePage>
 
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TimetableProvider>().loadWeek(_selectedDate);
-      _scrollToCurrentTime();
+      if (mounted) {
+        context.read<TimetableProvider>().loadWeek(_selectedDate);
+        _scrollToCurrentTime();
+      }
     });
 
 
