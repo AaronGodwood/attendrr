@@ -17,6 +17,7 @@ bool canCheckInNow(
 
   if (!lecture.hasValidCoordinates) return true;
   if (distanceMeters == null) return false;
+  if (distanceMeters < 0) return false;
   return distanceMeters <= maxDistanceMeters;
 }
 
@@ -36,15 +37,15 @@ int calculateCheckInPoints(
   Lecture lecture, {
   int maxPoints = defaultMaxCheckInPoints,
 }) {
+  final totalMinutes = lecture.endTime.difference(lecture.startTime).inMinutes;
+  if (totalMinutes <= 0) return 0;
+
   if (now.isBefore(lecture.startTime) ||
       now.isAtSameMomentAs(lecture.startTime)) {
     return maxPoints;
   }
 
   if (now.isAfter(lecture.endTime)) return 0;
-
-  final totalMinutes = lecture.endTime.difference(lecture.startTime).inMinutes;
-  if (totalMinutes <= 0) return 0;
 
   final remainingMinutes = lecture.endTime.difference(now).inMinutes;
   final ratio = remainingMinutes / totalMinutes;
