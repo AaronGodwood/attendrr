@@ -169,10 +169,10 @@ void main() {
     expect(link.isPending || !link.success, isTrue);
 
     final reset = await svc.sendPasswordResetEmail('invalid-email');
-    expect(reset.success || !reset.success, isTrue);
+    expect(reset.success, isFalse);
 
     final update = await svc.updatePassword('123456');
-    expect(update.success || !update.success, isTrue);
+    expect(update.success, isFalse);
 
     await svc.signOut();
   });
@@ -242,10 +242,6 @@ void main() {
     await friends.loadLeaderboard();
     friends.toggleLeaderboardType();
     friends.setCategory(LeaderboardCategory.currentStreak);
-    expect(friends.friends, isA<List<FriendWithStats>>());
-    expect(friends.requests, isA<List<FriendRequest>>());
-    expect(friends.leaderboard, isA<List<LeaderboardEntry>>());
-    expect(friends.showGlobal || !friends.showGlobal, isTrue);
     expect(friends.isLoading || !friends.isLoading, isTrue);
     expect(() => friends.acceptRequest('f1'), throwsA(isA<Object>()));
     expect(() => friends.rejectRequest('f1'), throwsA(isA<Object>()));
@@ -259,7 +255,7 @@ void main() {
     expect(shop.items, isA<List<ShopItem>>());
     expect(shop.userPoints, isA<int>());
     expect(shop.userFreezes, isA<int>());
-    expect(shop.isPurchasing || !shop.isPurchasing, isTrue);
+    expect(shop.isPurchasing, isA<bool>());
     shop.clearError();
 
     final profile = ProfileProvider();
@@ -270,8 +266,8 @@ void main() {
     expect(profile.points, isNull);
     expect(profile.stats, isNull);
     expect(profile.history, isNull);
-    expect(profile.isLoading || !profile.isLoading, isTrue);
-    expect(profile.isUploading || !profile.isUploading, isTrue);
+    expect(profile.isLoading, isFalse);
+    expect(profile.isUploading, isFalse);
     await profile.updateUsername('changed_name');
     await profile.removeAvatar();
     profile.clearEvaluation();
@@ -286,8 +282,7 @@ void main() {
     );
     expect(timetable.error, isNotNull);
     expect(timetable.lastSyncResult, isNull);
-    expect(timetable.isSyncing || !timetable.isSyncing, isTrue);
-    expect(timetable.isLoading || !timetable.isLoading, isTrue);
+    expect(timetable.isSyncing, isA<bool>());
     timetable.goToToday();
     timetable.nextWeek();
     timetable.previousWeek();
