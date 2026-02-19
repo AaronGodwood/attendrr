@@ -76,17 +76,19 @@ Evidence:
 
 ### 3.7 Coverage Reached
 Current automated suite inventory:
-- 26 test files
-- 80 test cases (`test` + `testWidgets`)
+- 31 test files
+- 105 test cases (`test` + `testWidgets`)
 - Unit tests are majority:
-  - Unit files: 14
-  - Functional files: 8
+  - Unit files: 17
+  - Functional files: 10
   - Integration files: 1
   - System files: 1
   - Acceptance files: 2
-  - Unit proportion: 54%
+  - Unit proportion: 54.8%
 
 Latest run evidence:
+- `flutter test --coverage` -> pass
+- Unfiltered line coverage (`DA` records): `63.75%` (`3072/4819`)
 - `flutter test test` -> pass
 - `flutter test integration_test/acceptance/core_navigation_acceptance_test.dart` -> pass
 - System test (`integration_test/system/location_permission_system_test.dart`) is environment-dependent on simulator/device location permission and mocked/available GPS state.
@@ -152,6 +154,9 @@ Top-down vs bottom-up note:
 - `test/unit/leaderboard_defaults_test.dart`
 - `test/unit/points_boost_test.dart`
 - `test/unit/streak_evaluation_test.dart`
+- `test/unit/models_comprehensive_test.dart`
+- `test/unit/theme_and_shop_repository_test.dart`
+- `test/unit/providers_services_repositories_test.dart`
 
 ### Functional (`test/functional`)
 - `test/functional/auth_test.dart`
@@ -162,6 +167,8 @@ Top-down vs bottom-up note:
 - `test/functional/timetable_page_test.dart`
 - `test/functional/profile_page_test.dart`
 - `test/functional/settings_page_test.dart`
+- `test/functional/auth_and_shop_pages_test.dart`
+- `test/functional/ui_components_test.dart`
 
 ### Integration (`test/integration`)
 - `test/integration/security_test.dart`
@@ -180,3 +187,9 @@ Top-down vs bottom-up note:
 - Acceptance: `flutter test integration_test/acceptance`
 - System: `flutter test integration_test/system`
 - Full local suite: `flutter test test && flutter test integration_test`
+- Coverage data (lcov): `flutter test --coverage`
+- Coverage HTML (single command): `./scripts/generate_coverage_report.sh`
+- Coverage HTML (manual steps):
+  - `flutter test --coverage`
+  - `python3 scripts/augment_lcov_functions.py --in coverage/lcov.info --out coverage/lcov.info --root .`
+  - `genhtml --ignore-errors category coverage/lcov.info -o coverage/html`
