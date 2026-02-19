@@ -57,7 +57,8 @@ Driver/stub examples:
 ### 5.1 Acceptance Testing
 Evidence:
 - `integration_test/acceptance/core_navigation_acceptance_test.dart`
-- Scenario `AT-01 Core authenticated navigation flow` validates a key end-user journey across timetable -> check-in -> friends -> profile.
+- `integration_test/acceptance/settings_actions_acceptance_test.dart`
+- Acceptance coverage includes a core authenticated navigation journey and account settings actions.
 
 Note:
 - This is acceptance-proxy automation (team-defined acceptance path). Formal stakeholder UAT can be added separately.
@@ -98,19 +99,20 @@ Evidence:
 - `test/unit/checkin_rules_invalid_boundary_test.dart`
 - `test/unit/checkin_refresh_boundary_invalid_test.dart`
 - `test/unit/location_lookup_invalid_input_test.dart`
-- Negative/border examples include invalid duration, invalid timing, negative distance, null/empty/symbol-only location input.
+- `test/integration/security_test.dart`
+- Negative/border examples include invalid duration, invalid timing, negative distance, null/empty/symbol-only location input, and unauthenticated access rejection.
 
 ### 5.7 Coverage Reached
 Current automated suite inventory:
-- 20 test files
-- 60 test cases (`test` + `testWidgets`)
+- 26 test files
+- 80 test cases (`test` + `testWidgets`)
 - Unit tests are majority:
-  - Unit files: 11
-  - Functional files: 6
+  - Unit files: 14
+  - Functional files: 8
   - Integration files: 1
   - System files: 1
-  - Acceptance files: 1
-  - Unit proportion: 55%
+  - Acceptance files: 2
+  - Unit proportion: 54%
 
 Latest run evidence:
 - `flutter test test` -> pass
@@ -123,6 +125,7 @@ Requirements-based tests:
 - Example mapping:
   - Authentication requirement -> `test/functional/auth_test.dart`, `test/integration/security_test.dart`
   - Check-in requirement -> `test/unit/checkin_rules_test.dart`, `test/functional/checkin_page_test.dart`
+  - Leaderboard/profile requirement -> `test/unit/leaderboard_defaults_test.dart`, `test/functional/leaderboard_entry_tile_test.dart`, `test/functional/profile_page_test.dart`
 
 Equivalence partitioning tests:
 - Inputs/outputs split into equivalent groups; each case targets a partition.
@@ -153,7 +156,7 @@ System and integration testing come after unit-tested modules, so integration er
 Current integration/system approach:
 - Integration tests validate module interactions (e.g., app <-> Supabase auth/RLS) in `test/integration/security_test.dart`.
 - System test validates whole-app behavior with external runtime dependency (location) in `integration_test/system/location_permission_system_test.dart`.
-- Acceptance-proxy test validates end-user navigation flow in `integration_test/acceptance/core_navigation_acceptance_test.dart`.
+- Acceptance-proxy tests validate end-user journeys in `integration_test/acceptance/core_navigation_acceptance_test.dart` and `integration_test/acceptance/settings_actions_acceptance_test.dart`.
 
 Top-down vs bottom-up note:
 - Top-down integration requires stubs for called modules.
@@ -187,6 +190,9 @@ During each development iteration we followed a clear testing cycle:
 - `test/unit/checkin_rules_invalid_boundary_test.dart`
 - `test/unit/checkin_refresh_boundary_invalid_test.dart`
 - `test/unit/location_lookup_invalid_input_test.dart`
+- `test/unit/leaderboard_defaults_test.dart`
+- `test/unit/points_boost_test.dart`
+- `test/unit/streak_evaluation_test.dart`
 
 ### Functional (`test/functional`)
 - `test/functional/auth_test.dart`
@@ -195,6 +201,8 @@ During each development iteration we followed a clear testing cycle:
 - `test/functional/navigation_test.dart`
 - `test/functional/podium_widget_test.dart`
 - `test/functional/timetable_page_test.dart`
+- `test/functional/profile_page_test.dart`
+- `test/functional/settings_page_test.dart`
 
 ### Integration (`test/integration`)
 - `test/integration/security_test.dart`
@@ -204,11 +212,12 @@ During each development iteration we followed a clear testing cycle:
 
 ### Acceptance (`integration_test/acceptance`)
 - `integration_test/acceptance/core_navigation_acceptance_test.dart`
+- `integration_test/acceptance/settings_actions_acceptance_test.dart`
 
 ## 12. Commands
 - Unit: `flutter test test/unit`
 - Functional: `flutter test test/functional`
 - Integration: `flutter test test/integration`
-- Acceptance: `flutter test integration_test/acceptance/core_navigation_acceptance_test.dart`
-- System: `flutter test integration_test/system/location_permission_system_test.dart`
+- Acceptance: `flutter test integration_test/acceptance`
+- System: `flutter test integration_test/system`
 - Full local suite: `flutter test test && flutter test integration_test`
