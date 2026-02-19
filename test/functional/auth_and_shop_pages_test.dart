@@ -22,6 +22,9 @@ class MockAuthProvider extends ChangeNotifier implements AuthProvider {
   AuthStatus status = AuthStatus.unauthenticated;
 
   bool resetCalled = false;
+  bool signUpCalled = false;
+  String? lastSignUpEmail;
+  String? lastSignUpUsername;
 
   @override
   Future<bool> sendPasswordResetEmail(String email) async {
@@ -35,6 +38,9 @@ class MockAuthProvider extends ChangeNotifier implements AuthProvider {
     required String password,
     required String username,
   }) async {
+    signUpCalled = true;
+    lastSignUpEmail = email;
+    lastSignUpUsername = username;
     return false;
   }
 
@@ -135,10 +141,11 @@ void main() {
   testWidgets('Signup validations render and trigger submit path', (
     tester,
   ) async {
+    final auth = MockAuthProvider();
     await tester.pumpWidget(
       MaterialApp(
         home: ChangeNotifierProvider<AuthProvider>.value(
-          value: MockAuthProvider(),
+          value: auth,
           child: const SignUpPage(),
         ),
       ),
@@ -166,13 +173,19 @@ void main() {
       find.widgetWithText(TextFormField, 'Confirm Password'),
       'StrongPass1!',
     );
-    await tester.tap(find.byType(Checkbox));
-    await tester.pump();
+    final createAccountButton = find.widgetWithText(
+      ElevatedButton,
+      'Create Account',
+    );
+    await tester.ensureVisible(createAccountButton);
+    final submitButton = tester.widget<ElevatedButton>(createAccountButton);
+    expect(submitButton.onPressed, isNotNull);
+    await tester.tap(createAccountButton);
+    await tester.pumpAndSettle();
 
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Create Account'));
-    await tester.pump();
-
-    expect(find.text('Create Account'), findsWidgets);
+    expect(auth.signUpCalled, isTrue);
+    expect(auth.lastSignUpEmail, 'user@example.com');
+    expect(auth.lastSignUpUsername, 'valid_user');
   });
 
   testWidgets('Shop page renders items and allows opening purchase dialog', (
