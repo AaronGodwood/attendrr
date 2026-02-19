@@ -163,16 +163,33 @@ void main() {
     expect(signIn.success, isFalse);
 
     final google = await svc.signInWithGoogle();
-    expect(google.isPending || !google.success, isTrue);
+    expect(google.success, isFalse);
+    if (google.isPending) {
+      expect(google.error, isNull);
+    } else {
+      expect(google.error, isNotNull);
+    }
 
     final link = await svc.linkGoogleIdentity();
-    expect(link.isPending || !link.success, isTrue);
+    expect(link.success, isFalse);
+    if (link.isPending) {
+      expect(link.error, isNull);
+    } else {
+      expect(link.error, isNotNull);
+    }
 
     final reset = await svc.sendPasswordResetEmail('invalid-email');
-    expect(reset.success || !reset.success, isTrue);
+    if (reset.success) {
+      expect(reset.message, 'Password reset email sent');
+      expect(reset.error, isNull);
+    } else {
+      expect(reset.error, isNotNull);
+      expect(reset.message, isNull);
+    }
 
     final update = await svc.updatePassword('123456');
-    expect(update.success || !update.success, isTrue);
+    expect(update.success, isFalse);
+    expect(update.error, isNotNull);
 
     await svc.signOut();
   });
@@ -245,8 +262,9 @@ void main() {
     expect(friends.friends, isA<List<FriendWithStats>>());
     expect(friends.requests, isA<List<FriendRequest>>());
     expect(friends.leaderboard, isA<List<LeaderboardEntry>>());
-    expect(friends.showGlobal || !friends.showGlobal, isTrue);
-    expect(friends.isLoading || !friends.isLoading, isTrue);
+    expect(friends.error, isNotNull);
+    expect(friends.showGlobal, isFalse);
+    expect(friends.category, LeaderboardCategory.currentStreak);
     expect(() => friends.acceptRequest('f1'), throwsA(isA<Object>()));
     expect(() => friends.rejectRequest('f1'), throwsA(isA<Object>()));
     expect(() => friends.removeFriend('f1'), throwsA(isA<Object>()));
@@ -259,7 +277,7 @@ void main() {
     expect(shop.items, isA<List<ShopItem>>());
     expect(shop.userPoints, isA<int>());
     expect(shop.userFreezes, isA<int>());
-    expect(shop.isPurchasing || !shop.isPurchasing, isTrue);
+    expect(shop.isPurchasing, isFalse);
     shop.clearError();
 
     final profile = ProfileProvider();
@@ -270,8 +288,8 @@ void main() {
     expect(profile.points, isNull);
     expect(profile.stats, isNull);
     expect(profile.history, isNull);
-    expect(profile.isLoading || !profile.isLoading, isTrue);
-    expect(profile.isUploading || !profile.isUploading, isTrue);
+    expect(profile.isLoading, isFalse);
+    expect(profile.isUploading, isFalse);
     await profile.updateUsername('changed_name');
     await profile.removeAvatar();
     profile.clearEvaluation();
@@ -286,13 +304,13 @@ void main() {
     );
     expect(timetable.error, isNotNull);
     expect(timetable.lastSyncResult, isNull);
-    expect(timetable.isSyncing || !timetable.isSyncing, isTrue);
-    expect(timetable.isLoading || !timetable.isLoading, isTrue);
+    expect(timetable.isSyncing, isFalse);
+    expect(timetable.isLoading, isFalse);
     timetable.goToToday();
     timetable.nextWeek();
     timetable.previousWeek();
 
-    expect(shop.isLoading || !shop.isLoading, isTrue);
+    expect(shop.isLoading, isFalse);
   });
 
   test('Repository auth-guard branches execute', () async {
