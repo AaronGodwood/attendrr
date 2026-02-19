@@ -12,7 +12,16 @@ Following on from our requirement-based TDD, we planned 5 key testing levels:
 
 This gives a concrete foundation to map requirements to tests.
 
-## 2. Exact Lecture Taxonomy Used
+## 2. Test Levels at a Glance
+| Level | Lecture classification | Primary goal | Main location | Representative files |
+|---|---|---|---|---|
+| Unit | White-box | Verify smallest components/logic branches | `test/unit/` | `test/unit/checkin_rules_test.dart`, `test/unit/white_box_checkin_rules_test.dart`, `test/unit/providers_services_repositories_test.dart` |
+| Functional | Black-box | Verify page/component interface behavior | `test/functional/` | `test/functional/auth_test.dart`, `test/functional/checkin_page_test.dart`, `test/functional/navigation_test.dart` |
+| Integration | Black-box | Verify module interactions (Flutter <-> Supabase) | `test/integration/` | `test/integration/security_test.dart` |
+| System | Black-box | Verify whole app in controlled environment | `integration_test/system/` | `integration_test/system/location_permission_system_test.dart` |
+| Acceptance | Black-box | Verify end-user journeys against acceptance intent | `integration_test/acceptance/` | `integration_test/acceptance/core_navigation_acceptance_test.dart`, `integration_test/acceptance/settings_actions_acceptance_test.dart` |
+
+## 3. Test Level Definitions
 - Unit Testing -> white-box, verifies the smallest component.
 - Functional Testing -> black-box, tests interface behavior of a component/page.
 - Integration Testing -> black-box, tests module interactions (e.g., Flutter <-> Supabase).
@@ -26,16 +35,20 @@ Validation levels in this plan:
 - Integration, System, Acceptance (proxy)
 
 Why this matters:
-- This directly reflects the lecture taxonomy and makes marker alignment explicit.
+- This uses the same test-level model from lectures, while keeping wording practical for day-to-day development.
 
-## 3. Directory Organization (Matches Testing Levels)
+## 4. Directory Organization
 - `test/unit/` -> Unit tests
 - `test/functional/` -> Functional tests
 - `test/integration/` -> Integration tests
 - `integration_test/system/` -> System tests
 - `integration_test/acceptance/` -> Acceptance tests
 
-## 4. Testing Environment (Controlled and Repeatable)
+Why there is a separate `integration_test/` folder:
+- `test/` is for fast local test runner execution (unit/functional/integration checks that can run in test harness mode).
+- `integration_test/` is reserved for full-app runtime tests that are executed on a simulator/device, where platform/runtime services (navigation stack, permissions, plugin/platform channels) are exercised end-to-end.
+
+## 5. Testing Environment
 The environment provides the software under test what it needs to run. It is stabilised to make tests repeatable and to allow expected and unexpected behavior to be tested in a controlled way.
 
 Environment controls used:
@@ -52,9 +65,24 @@ Driver/stub examples:
   - `test/functional/checkin_page_test.dart`
   - `integration_test/acceptance/core_navigation_acceptance_test.dart`
 
-## 5. Evidence of Required Techniques
+## 6. Unit Strategy: Top-Down
+Our unit testing approach is top-down in intent: higher-level logic is tested first, then smaller subcomponents and boundary cases.
 
-### 5.1 Acceptance Testing
+Top-down examples:
+- Higher-level logic: `test/unit/providers_services_repositories_test.dart`
+- Mid-level rule logic: `test/unit/checkin_rules_test.dart`, `test/unit/white_box_checkin_rules_test.dart`
+- Low-level boundaries/negative cases: `test/unit/checkin_rules_invalid_boundary_test.dart`, `test/unit/checkin_refresh_boundary_invalid_test.dart`, `test/unit/location_lookup_invalid_input_test.dart`
+
+Three stages used per test case:
+| Stage | What we do | Example |
+|---|---|---|
+| Setting inputs | Prepare deterministic inputs/mock/session state | Fixed `DateTime`, IDs, mock SharedPreferences |
+| Running software | Execute the unit under realistic branch conditions | Call provider/repository/rule methods |
+| Checking outputs | Verify expected outcomes | `expect(...)` on return values, states, errors, and branch behavior |
+
+## 7. Evidence of Required Techniques
+
+### 7.1 Acceptance Testing
 Evidence:
 - `integration_test/acceptance/core_navigation_acceptance_test.dart`
 - `integration_test/acceptance/settings_actions_acceptance_test.dart`
@@ -63,12 +91,12 @@ Evidence:
 Note:
 - This is acceptance-proxy automation (team-defined acceptance path). Formal stakeholder UAT can be added separately.
 
-### 5.2 System Testing
+### 7.2 System Testing
 Evidence:
 - `integration_test/system/location_permission_system_test.dart`
 - Tests whole-app behavior with runtime location service in controlled simulator/device setup.
 
-### 5.3 Equivalence Partition Testing
+### 7.3 Equivalence Partition Testing
 Evidence:
 - `test/unit/black_box_checkin_rules_test.dart`
 - Partitions include:
@@ -76,7 +104,7 @@ Evidence:
   - valid time + invalid distance -> reject
   - out-of-window timing -> reject
 
-### 5.4 Branch Testing
+### 7.4 Branch Testing
 Evidence:
 - `test/unit/white_box_checkin_rules_test.dart`
 - Branches covered in `canCheckInNow`:
@@ -86,7 +114,7 @@ Evidence:
   - missing distance path
   - distance threshold pass/fail
 
-### 5.5 Critical Cases
+### 7.5 Critical Cases
 Evidence:
 - `test/unit/performance_core_logic_test.dart`
 - Critical-path runtime guards for:
@@ -94,7 +122,7 @@ Evidence:
   - `canCheckInNow`
   - `LocationLookup.resolve`
 
-### 5.6 Negative Test Cases
+### 7.6 Negative Test Cases
 Evidence:
 - `test/unit/checkin_rules_invalid_boundary_test.dart`
 - `test/unit/checkin_refresh_boundary_invalid_test.dart`
@@ -102,24 +130,26 @@ Evidence:
 - `test/integration/security_test.dart`
 - Negative/border examples include invalid duration, invalid timing, negative distance, null/empty/symbol-only location input, and unauthenticated access rejection.
 
-### 5.7 Coverage Reached
+### 7.7 Coverage Reached
 Current automated suite inventory:
-- 26 test files
-- 80 test cases (`test` + `testWidgets`)
+- 31 test files
+- 105 test cases (`test` + `testWidgets`)
 - Unit tests are majority:
-  - Unit files: 14
-  - Functional files: 8
+  - Unit files: 17
+  - Functional files: 10
   - Integration files: 1
   - System files: 1
   - Acceptance files: 2
-  - Unit proportion: 54%
+  - Unit proportion: 54.8%
 
 Latest run evidence:
+- `flutter test --coverage` -> pass
+- Unfiltered line coverage (`DA` records): `63.75%` (`3072/4819`)
 - `flutter test test` -> pass
 - `flutter test integration_test/acceptance/core_navigation_acceptance_test.dart` -> pass
 - System test (`integration_test/system/location_permission_system_test.dart`) is environment-dependent on simulator/device location permission and mocked/available GPS state.
 
-## 6. Requirement-Based Tests, Partitioning, Boundaries (Lecture Notes Applied)
+## 8. Requirement-Based Tests, Partitioning, Boundaries (Lecture Notes Applied)
 Requirements-based tests:
 - Specification-derived tests are used to map requirement statements to test cases.
 - Example mapping:
@@ -142,15 +172,7 @@ Condition testing and internal boundary testing evidence:
 - Condition-focused behavior in `test/unit/white_box_checkin_rules_test.dart` (boolean gates).
 - Internal boundary behavior in scoring/time-window tests under `test/unit/checkin_rules_test.dart` and boundary suites above.
 
-## 7. Unit Testing Method and 3 Test Stages
-Our unit testing approach is top-down in intent: we first verify higher-level logic behaviors, then progressively verify smaller/edge sub-behaviors.
-
-Three stages of test cases used in the suite:
-- Setting inputs: prepare deterministic times/distances/mock states
-- Running the software: execute utility/provider/page logic under test
-- Checking outputs: assert expected values, states, and UI outcomes
-
-## 8. Integration and System Strategy
+## 9. Integration and System Strategy
 System and integration testing come after unit-tested modules, so integration errors are typically interaction errors.
 
 Current integration/system approach:
@@ -163,20 +185,20 @@ Top-down vs bottom-up note:
 - Bottom-up integration requires drivers for invoking modules.
 - This suite currently uses a top-down leaning approach in functional/acceptance tests via provider stubs.
 
-## 9. Completion Criteria (When Code Is Fully Tested)
+## 10. Completion Criteria (When Code Is Fully Tested)
 Code is considered fully tested for a release candidate when:
 - All defined test cases pass.
 - Any failing or incorrect test case is fixed and re-run.
 - All affected tests are maintained and re-executed for the latest code version.
 - All changes are covered by appropriate test levels (unit first, then higher levels as needed).
 
-## 10. Iteration Workflow Used
+## 11. Iteration Workflow Used
 During each development iteration we followed a clear testing cycle:
 - Before development: tester in each pair designs requirement-based tests (TDD-first intent).
 - During development: developer implements against tests and updates tests for new branches/boundaries.
 - After development: suite is re-run and failures resolved before merge.
 
-## 11. Test File Inventory
+## 12. Test File Inventory
 
 ### Unit (`test/unit`)
 - `test/unit/checkin_checkout_test.dart`
@@ -193,6 +215,9 @@ During each development iteration we followed a clear testing cycle:
 - `test/unit/leaderboard_defaults_test.dart`
 - `test/unit/points_boost_test.dart`
 - `test/unit/streak_evaluation_test.dart`
+- `test/unit/models_comprehensive_test.dart`
+- `test/unit/theme_and_shop_repository_test.dart`
+- `test/unit/providers_services_repositories_test.dart`
 
 ### Functional (`test/functional`)
 - `test/functional/auth_test.dart`
@@ -203,6 +228,8 @@ During each development iteration we followed a clear testing cycle:
 - `test/functional/timetable_page_test.dart`
 - `test/functional/profile_page_test.dart`
 - `test/functional/settings_page_test.dart`
+- `test/functional/auth_and_shop_pages_test.dart`
+- `test/functional/ui_components_test.dart`
 
 ### Integration (`test/integration`)
 - `test/integration/security_test.dart`
@@ -214,10 +241,16 @@ During each development iteration we followed a clear testing cycle:
 - `integration_test/acceptance/core_navigation_acceptance_test.dart`
 - `integration_test/acceptance/settings_actions_acceptance_test.dart`
 
-## 12. Commands
+## 13. Commands
 - Unit: `flutter test test/unit`
 - Functional: `flutter test test/functional`
 - Integration: `flutter test test/integration`
 - Acceptance: `flutter test integration_test/acceptance`
 - System: `flutter test integration_test/system`
 - Full local suite: `flutter test test && flutter test integration_test`
+- Coverage data (lcov): `flutter test --coverage`
+- Coverage HTML (single command): `./scripts/generate_coverage_report.sh`
+- Coverage HTML (manual steps):
+  - `flutter test --coverage`
+  - `python3 scripts/augment_lcov_functions.py --in coverage/lcov.info --out coverage/lcov.info --root .`
+  - `genhtml --ignore-errors category coverage/lcov.info -o coverage/html`
