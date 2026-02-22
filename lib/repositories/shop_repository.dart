@@ -69,4 +69,30 @@ class ShopRepository extends BaseRepository {
         .map((j) => Purchase.fromJson(j as Map<String, dynamic>))
         .toList();
   }
+
+  Future<bool> grantMilestoneReward(ShopItemType type) async {
+    requireAuth();
+    try {
+      switch (type) {
+        case ShopItemType.streakFreeze:
+          await client.rpc(
+            'purchase_streak_freeze',
+            params: {'p_user_id': currentUserId!, 'p_cost': 0},
+          );
+          return true;
+        case ShopItemType.weeklyPointsBoost:
+          await client.rpc(
+            'purchase_weekly_boost',
+            params: {
+              'p_user_id': currentUserId!,
+              'p_cost': 0,
+              'p_multiplier': AppConstants.weeklyBoostMultiplier,
+            },
+          );
+          return true;
+      }
+    } catch (_) {
+      return false;
+    }
+  }
 }
