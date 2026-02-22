@@ -59,6 +59,8 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   @override
   String? get error => null;
   @override
+  String? get milestoneRewardMessage => null;
+  @override
   app_models.User? get user => app_models.User(
     id: 'test-user',
     email: 'test@test.com',
@@ -80,6 +82,8 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   Future<void> loadProfile() async {}
   @override
   void clearEvaluation() {}
+  @override
+  void clearMilestoneRewardMessage() {}
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

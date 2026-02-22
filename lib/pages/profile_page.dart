@@ -29,6 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
       await provider.loadProfile();
       if (!mounted) return;
       _showStreakNotification(provider);
+      _showMilestoneRewardNotification(provider);
     });
   }
 
@@ -60,6 +61,20 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     provider.clearEvaluation();
+  }
+
+  void _showMilestoneRewardNotification(ProfileProvider provider) {
+    final message = provider.milestoneRewardMessage;
+    if (message == null) return;
+    final ext = Theme.of(context).extension<TerraThemeExtension>();
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: ext?.success,
+        duration: const Duration(seconds: 4),
+      ),
+    );
+    provider.clearMilestoneRewardMessage();
   }
 
   @override
