@@ -1,0 +1,1 @@
+genhtml --ignore-errors category coverage/lcov.info -o coverage/html

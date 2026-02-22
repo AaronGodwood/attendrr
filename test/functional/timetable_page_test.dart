@@ -37,7 +37,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('WT-03 Timetable interactions', () {
-    testWidgets('WT-03a: day selector is horizontally scrollable', (
+    testWidgets('WT-03a: day selector fits all weekdays on mobile width', (
       tester,
     ) async {
       final lecture = _buildLecture('lec-1');
@@ -52,13 +52,13 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 300));
 
-      expect(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is ListView && widget.scrollDirection == Axis.horizontal,
-        ),
-        findsOneWidget,
-      );
+      expect(find.text('Mon'), findsOneWidget);
+      expect(find.text('Tue'), findsOneWidget);
+      expect(find.text('Wed'), findsOneWidget);
+      expect(find.text('Thu'), findsOneWidget);
+      expect(find.text('Fri'), findsOneWidget);
+      expect(find.text('Sat'), findsOneWidget);
+      expect(find.text('Sun'), findsOneWidget);
     });
 
     testWidgets('WT-03b: tapping a lecture shows details', (tester) async {
