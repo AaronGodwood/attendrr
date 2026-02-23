@@ -35,19 +35,32 @@ class TierProgressCard extends StatelessWidget {
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(colors: [tierColor, tierColor.withValues(alpha: 0.7)]),
+                    gradient: LinearGradient(
+                      colors: [tierColor, tierColor.withValues(alpha: 0.7)],
+                    ),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(_tierIcon(points.tier), color: Colors.white, size: 16),
+                      Icon(
+                        _tierIcon(points.tier),
+                        color: Colors.white,
+                        size: 16,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         points.tierName,
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
                       ),
                     ],
                   ),
@@ -89,12 +102,68 @@ class TierProgressCard extends StatelessWidget {
                 color: ext?.textSecondary,
               ),
             ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children:
+                  points.unlockedMilestones
+                      .where((m) => m.tier != PointsTier.newcomer)
+                      .map(
+                        (m) => Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: tierColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.emoji_events,
+                                size: 14,
+                                color: tierColor,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                m.trophyName,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: tierColor,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                      .toList(),
+            ),
+            if (points.nextMilestone != null) ...[
+              const SizedBox(height: 8),
+              Text(
+                'Next trophy: ${points.nextMilestone!.trophyName} at ${points.nextMilestone!.requiredPoints} XP',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: ext?.textSecondary,
+                ),
+              ),
+            ],
             const SizedBox(height: 12),
             Row(
               children: [
-                _PointsChip(label: 'This week', value: points.weeklyPoints, color: tierColor),
+                _PointsChip(
+                  label: 'This week',
+                  value: points.weeklyPoints,
+                  color: tierColor,
+                ),
                 const SizedBox(width: 8),
-                _PointsChip(label: 'This month', value: points.monthlyPoints, color: tierColor),
+                _PointsChip(
+                  label: 'This month',
+                  value: points.monthlyPoints,
+                  color: tierColor,
+                ),
               ],
             ),
           ],
@@ -160,7 +229,11 @@ class _PointsChip extends StatelessWidget {
   final int value;
   final Color color;
 
-  const _PointsChip({required this.label, required this.value, required this.color});
+  const _PointsChip({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -177,7 +250,11 @@ class _PointsChip extends StatelessWidget {
           const SizedBox(width: 4),
           Text(
             '$value $label',
-            style: TextStyle(fontSize: 12, color: color, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 12,
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
