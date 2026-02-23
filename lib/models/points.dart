@@ -2,6 +2,21 @@ import 'package:equatable/equatable.dart';
 
 enum PointsTier { newcomer, beginner, intermediate, expert, master, legendary }
 
+class PointMilestone extends Equatable {
+  final PointsTier tier;
+  final int requiredPoints;
+  final String trophyName;
+
+  const PointMilestone({
+    required this.tier,
+    required this.requiredPoints,
+    required this.trophyName,
+  });
+
+  @override
+  List<Object?> get props => [tier, requiredPoints, trophyName];
+}
+
 class Points extends Equatable {
   final String id;
   final String userId;
@@ -104,6 +119,39 @@ class Points extends Equatable {
         weeklyBoostExpiresAt!.isAfter(DateTime.now());
   }
 
+  static const List<PointMilestone> milestones = [
+    PointMilestone(
+      tier: PointsTier.newcomer,
+      requiredPoints: 0,
+      trophyName: 'Bronze Start Trophy',
+    ),
+    PointMilestone(
+      tier: PointsTier.beginner,
+      requiredPoints: 100,
+      trophyName: 'Rising Scholar Trophy',
+    ),
+    PointMilestone(
+      tier: PointsTier.intermediate,
+      requiredPoints: 500,
+      trophyName: 'Momentum Trophy',
+    ),
+    PointMilestone(
+      tier: PointsTier.expert,
+      requiredPoints: 2000,
+      trophyName: 'Expert Trophy',
+    ),
+    PointMilestone(
+      tier: PointsTier.master,
+      requiredPoints: 5000,
+      trophyName: 'Master Trophy',
+    ),
+    PointMilestone(
+      tier: PointsTier.legendary,
+      requiredPoints: 10000,
+      trophyName: 'Legend Trophy',
+    ),
+  ];
+
   PointsTier get tier {
     if (totalPoints >= 10000) return PointsTier.legendary;
     if (totalPoints >= 5000) return PointsTier.master;
@@ -145,6 +193,26 @@ class Points extends Equatable {
       case PointsTier.legendary:
         return 0;
     }
+  }
+
+  PointMilestone get currentMilestone {
+    return milestones.lastWhere(
+      (m) => totalPoints >= m.requiredPoints,
+      orElse: () => milestones.first,
+    );
+  }
+
+  PointMilestone? get nextMilestone {
+    for (final m in milestones) {
+      if (totalPoints < m.requiredPoints) {
+        return m;
+      }
+    }
+    return null;
+  }
+
+  List<PointMilestone> get unlockedMilestones {
+    return milestones.where((m) => totalPoints >= m.requiredPoints).toList();
   }
 
   @override
