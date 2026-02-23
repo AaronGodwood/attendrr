@@ -52,9 +52,15 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   int refreshCount = 0;
 
   @override
+  String? get milestoneRewardMessage => null;
+
+  @override
   Future<void> refresh() async {
     refreshCount++;
   }
+
+  @override
+  void clearMilestoneRewardMessage() {}
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

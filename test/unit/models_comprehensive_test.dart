@@ -197,6 +197,12 @@ void main() {
       expect(p.tier, PointsTier.master);
       expect(p.tierName, 'Master');
       expect(p.pointsToNextTier, 4800);
+      expect(p.currentMilestone.trophyName, 'Master Trophy');
+      expect(p.nextMilestone?.tier, PointsTier.legendary);
+      expect(
+        p.unlockedMilestones.any((m) => m.tier == PointsTier.master),
+        isTrue,
+      );
       expect(p.copyWith(totalPoints: 10).tier, PointsTier.newcomer);
       expect(Points.fromJson({'user_id': 'u1'}).totalPoints, 0);
       expect(Points.empty('u2').userId, 'u2');
