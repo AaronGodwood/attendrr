@@ -1,0 +1,362 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - lcov.info - theme/theme_extensions.dart</title>
+  <link rel="stylesheet" type="text/css" href="../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../index.html" title="Click to go to top-level">top level</a> - <a href="index.html" title="Click to go to directory theme">theme</a> - theme_extensions.dart<span style="font-size: 80%;"> (source / <a href="theme_extensions.dart.func-c.html" title="Click to go to function table">functions</a>)</span></td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">lcov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryHi">98.6&nbsp;%</td>
+            <td class="headerCovTableEntry">71</td>
+            <td class="headerCovTableEntry">70</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2026-02-22 22:25:14</td>
+            <td></td>
+            <td class="headerItem">Functions:</td>
+            <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
+            <td class="headerCovTableEntry">1</td>
+            <td class="headerCovTableEntry">1</td>
+          </tr>
+                  <tr><td><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : import 'package:flutter/material.dart';</span>
+<span id="L2"><span class="lineNum">       2</span>              : import 'colors.dart';</span>
+<span id="L3"><span class="lineNum">       3</span>              : </span>
+<span id="L4"><span class="lineNum">       4</span>              : /// Custom theme extension for semantic colors not covered by ColorScheme.</span>
+<span id="L5"><span class="lineNum">       5</span>              : @immutable</span>
+<span id="L6"><span class="lineNum">       6</span>              : class TerraThemeExtension extends ThemeExtension&lt;TerraThemeExtension&gt; {</span>
+<span id="L7"><span class="lineNum">       7</span>              :   final Color accent;</span>
+<span id="L8"><span class="lineNum">       8</span>              :   final Color accentMuted;</span>
+<span id="L9"><span class="lineNum">       9</span>              :   final Color danger;</span>
+<span id="L10"><span class="lineNum">      10</span>              :   final Color dangerContainer;</span>
+<span id="L11"><span class="lineNum">      11</span>              :   final Color warning;</span>
+<span id="L12"><span class="lineNum">      12</span>              :   final Color warningContainer;</span>
+<span id="L13"><span class="lineNum">      13</span>              :   final Color success;</span>
+<span id="L14"><span class="lineNum">      14</span>              :   final Color successContainer;</span>
+<span id="L15"><span class="lineNum">      15</span>              :   final Color textSecondary;</span>
+<span id="L16"><span class="lineNum">      16</span>              :   final Color textDisabled;</span>
+<span id="L17"><span class="lineNum">      17</span>              :   final Color surfaceVariant;</span>
+<span id="L18"><span class="lineNum">      18</span>              :   final Color surfaceTint;</span>
+<span id="L19"><span class="lineNum">      19</span>              :   final Color primaryLight;</span>
+<span id="L20"><span class="lineNum">      20</span>              :   final Color primaryContainer;</span>
+<span id="L21"><span class="lineNum">      21</span>              :   final Color secondaryLight;</span>
+<span id="L22"><span class="lineNum">      22</span>              :   final Color secondaryContainer;</span>
+<span id="L23"><span class="lineNum">      23</span>              :   final LinearGradient streakGradient;</span>
+<span id="L24"><span class="lineNum">      24</span>              :   final LinearGradient pointsGradient;</span>
+<span id="L25"><span class="lineNum">      25</span>              :   final LinearGradient tierGradient;</span>
+<span id="L26"><span class="lineNum">      26</span>              :   final LinearGradient checkinSuccessGradient;</span>
+<span id="L27"><span class="lineNum">      27</span>              :   final List&lt;Color&gt; moduleColors;</span>
+<span id="L28"><span class="lineNum">      28</span>              :   final Color shimmerBase;</span>
+<span id="L29"><span class="lineNum">      29</span>              :   final Color shimmerHighlight;</span>
+<span id="L30"><span class="lineNum">      30</span>              :   final Color tierNewcomer;</span>
+<span id="L31"><span class="lineNum">      31</span>              :   final Color tierBeginner;</span>
+<span id="L32"><span class="lineNum">      32</span>              :   final Color tierIntermediate;</span>
+<span id="L33"><span class="lineNum">      33</span>              :   final Color tierExpert;</span>
+<span id="L34"><span class="lineNum">      34</span>              :   final Color tierMaster;</span>
+<span id="L35"><span class="lineNum">      35</span>              :   final Color tierLegendary;</span>
+<span id="L36"><span class="lineNum">      36</span>              :   final Color medalGold;</span>
+<span id="L37"><span class="lineNum">      37</span>              :   final Color medalSilver;</span>
+<span id="L38"><span class="lineNum">      38</span>              :   final Color medalBronze;</span>
+<span id="L39"><span class="lineNum">      39</span>              : </span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaGNC">           1 :   const TerraThemeExtension({</span></span>
+<span id="L41"><span class="lineNum">      41</span>              :     required this.accent,</span>
+<span id="L42"><span class="lineNum">      42</span>              :     required this.accentMuted,</span>
+<span id="L43"><span class="lineNum">      43</span>              :     required this.danger,</span>
+<span id="L44"><span class="lineNum">      44</span>              :     required this.dangerContainer,</span>
+<span id="L45"><span class="lineNum">      45</span>              :     required this.warning,</span>
+<span id="L46"><span class="lineNum">      46</span>              :     required this.warningContainer,</span>
+<span id="L47"><span class="lineNum">      47</span>              :     required this.success,</span>
+<span id="L48"><span class="lineNum">      48</span>              :     required this.successContainer,</span>
+<span id="L49"><span class="lineNum">      49</span>              :     required this.textSecondary,</span>
+<span id="L50"><span class="lineNum">      50</span>              :     required this.textDisabled,</span>
+<span id="L51"><span class="lineNum">      51</span>              :     required this.surfaceVariant,</span>
+<span id="L52"><span class="lineNum">      52</span>              :     required this.surfaceTint,</span>
+<span id="L53"><span class="lineNum">      53</span>              :     required this.primaryLight,</span>
+<span id="L54"><span class="lineNum">      54</span>              :     required this.primaryContainer,</span>
+<span id="L55"><span class="lineNum">      55</span>              :     required this.secondaryLight,</span>
+<span id="L56"><span class="lineNum">      56</span>              :     required this.secondaryContainer,</span>
+<span id="L57"><span class="lineNum">      57</span>              :     required this.streakGradient,</span>
+<span id="L58"><span class="lineNum">      58</span>              :     required this.pointsGradient,</span>
+<span id="L59"><span class="lineNum">      59</span>              :     required this.tierGradient,</span>
+<span id="L60"><span class="lineNum">      60</span>              :     required this.checkinSuccessGradient,</span>
+<span id="L61"><span class="lineNum">      61</span>              :     required this.moduleColors,</span>
+<span id="L62"><span class="lineNum">      62</span>              :     required this.shimmerBase,</span>
+<span id="L63"><span class="lineNum">      63</span>              :     required this.shimmerHighlight,</span>
+<span id="L64"><span class="lineNum">      64</span>              :     required this.tierNewcomer,</span>
+<span id="L65"><span class="lineNum">      65</span>              :     required this.tierBeginner,</span>
+<span id="L66"><span class="lineNum">      66</span>              :     required this.tierIntermediate,</span>
+<span id="L67"><span class="lineNum">      67</span>              :     required this.tierExpert,</span>
+<span id="L68"><span class="lineNum">      68</span>              :     required this.tierMaster,</span>
+<span id="L69"><span class="lineNum">      69</span>              :     required this.tierLegendary,</span>
+<span id="L70"><span class="lineNum">      70</span>              :     required this.medalGold,</span>
+<span id="L71"><span class="lineNum">      71</span>              :     required this.medalSilver,</span>
+<span id="L72"><span class="lineNum">      72</span>              :     required this.medalBronze,</span>
+<span id="L73"><span class="lineNum">      73</span>              :   });</span>
+<span id="L74"><span class="lineNum">      74</span>              : </span>
+<span id="L75"><span class="lineNum">      75</span> <span class="tlaGNC">           2 :   factory TerraThemeExtension.dark() =&gt; TerraThemeExtension(</span></span>
+<span id="L76"><span class="lineNum">      76</span>              :         accent: TerraColors.darkAccent,</span>
+<span id="L77"><span class="lineNum">      77</span>              :         accentMuted: TerraColors.darkAccentMuted,</span>
+<span id="L78"><span class="lineNum">      78</span>              :         danger: TerraColors.darkDanger,</span>
+<span id="L79"><span class="lineNum">      79</span>              :         dangerContainer: TerraColors.darkDangerContainer,</span>
+<span id="L80"><span class="lineNum">      80</span>              :         warning: TerraColors.darkWarning,</span>
+<span id="L81"><span class="lineNum">      81</span>              :         warningContainer: TerraColors.darkWarningContainer,</span>
+<span id="L82"><span class="lineNum">      82</span>              :         success: TerraColors.darkSecondary,</span>
+<span id="L83"><span class="lineNum">      83</span>              :         successContainer: TerraColors.darkSecondaryContainer,</span>
+<span id="L84"><span class="lineNum">      84</span>              :         textSecondary: TerraColors.darkTextSecondary,</span>
+<span id="L85"><span class="lineNum">      85</span>              :         textDisabled: TerraColors.darkTextDisabled,</span>
+<span id="L86"><span class="lineNum">      86</span>              :         surfaceVariant: TerraColors.darkSurfaceVariant,</span>
+<span id="L87"><span class="lineNum">      87</span>              :         surfaceTint: TerraColors.darkSurfaceTint,</span>
+<span id="L88"><span class="lineNum">      88</span>              :         primaryLight: TerraColors.darkPrimaryLight,</span>
+<span id="L89"><span class="lineNum">      89</span>              :         primaryContainer: TerraColors.darkPrimaryContainer,</span>
+<span id="L90"><span class="lineNum">      90</span>              :         secondaryLight: TerraColors.darkSecondaryLight,</span>
+<span id="L91"><span class="lineNum">      91</span>              :         secondaryContainer: TerraColors.darkSecondaryContainer,</span>
+<span id="L92"><span class="lineNum">      92</span>              :         streakGradient: const LinearGradient(</span>
+<span id="L93"><span class="lineNum">      93</span>              :           begin: Alignment(-0.7, -0.7),</span>
+<span id="L94"><span class="lineNum">      94</span>              :           end: Alignment(0.7, 0.7),</span>
+<span id="L95"><span class="lineNum">      95</span>              :           colors: TerraColors.darkStreakGradientColors,</span>
+<span id="L96"><span class="lineNum">      96</span>              :         ),</span>
+<span id="L97"><span class="lineNum">      97</span>              :         pointsGradient: const LinearGradient(</span>
+<span id="L98"><span class="lineNum">      98</span>              :           begin: Alignment(-0.7, -0.7),</span>
+<span id="L99"><span class="lineNum">      99</span>              :           end: Alignment(0.7, 0.7),</span>
+<span id="L100"><span class="lineNum">     100</span>              :           colors: TerraColors.darkPointsGradientColors,</span>
+<span id="L101"><span class="lineNum">     101</span>              :         ),</span>
+<span id="L102"><span class="lineNum">     102</span>              :         tierGradient: const LinearGradient(</span>
+<span id="L103"><span class="lineNum">     103</span>              :           begin: Alignment(-0.7, -0.7),</span>
+<span id="L104"><span class="lineNum">     104</span>              :           end: Alignment(0.7, 0.7),</span>
+<span id="L105"><span class="lineNum">     105</span>              :           colors: TerraColors.darkTierGradientColors,</span>
+<span id="L106"><span class="lineNum">     106</span>              :         ),</span>
+<span id="L107"><span class="lineNum">     107</span>              :         checkinSuccessGradient: const LinearGradient(</span>
+<span id="L108"><span class="lineNum">     108</span>              :           begin: Alignment.topCenter,</span>
+<span id="L109"><span class="lineNum">     109</span>              :           end: Alignment.bottomCenter,</span>
+<span id="L110"><span class="lineNum">     110</span>              :           colors: TerraColors.darkCheckinSuccessColors,</span>
+<span id="L111"><span class="lineNum">     111</span>              :         ),</span>
+<span id="L112"><span class="lineNum">     112</span>              :         moduleColors: TerraColors.moduleColors,</span>
+<span id="L113"><span class="lineNum">     113</span>              :         shimmerBase: TerraColors.darkSurfaceVariant,</span>
+<span id="L114"><span class="lineNum">     114</span>              :         shimmerHighlight: TerraColors.darkSurfaceTint,</span>
+<span id="L115"><span class="lineNum">     115</span>              :         tierNewcomer: TerraColors.tierNewcomer,</span>
+<span id="L116"><span class="lineNum">     116</span>              :         tierBeginner: TerraColors.tierBeginner,</span>
+<span id="L117"><span class="lineNum">     117</span>              :         tierIntermediate: TerraColors.tierIntermediate,</span>
+<span id="L118"><span class="lineNum">     118</span>              :         tierExpert: TerraColors.tierExpert,</span>
+<span id="L119"><span class="lineNum">     119</span>              :         tierMaster: TerraColors.tierMaster,</span>
+<span id="L120"><span class="lineNum">     120</span>              :         tierLegendary: TerraColors.tierLegendary,</span>
+<span id="L121"><span class="lineNum">     121</span>              :         medalGold: TerraColors.medalGold,</span>
+<span id="L122"><span class="lineNum">     122</span>              :         medalSilver: TerraColors.medalSilver,</span>
+<span id="L123"><span class="lineNum">     123</span>              :         medalBronze: TerraColors.medalBronze,</span>
+<span id="L124"><span class="lineNum">     124</span>              :       );</span>
+<span id="L125"><span class="lineNum">     125</span>              : </span>
+<span id="L126"><span class="lineNum">     126</span> <span class="tlaGNC">           2 :   factory TerraThemeExtension.light() =&gt; TerraThemeExtension(</span></span>
+<span id="L127"><span class="lineNum">     127</span>              :         accent: TerraColors.lightAccent,</span>
+<span id="L128"><span class="lineNum">     128</span>              :         accentMuted: TerraColors.lightAccentMuted,</span>
+<span id="L129"><span class="lineNum">     129</span>              :         danger: TerraColors.lightDanger,</span>
+<span id="L130"><span class="lineNum">     130</span>              :         dangerContainer: TerraColors.lightDangerContainer,</span>
+<span id="L131"><span class="lineNum">     131</span>              :         warning: TerraColors.lightWarning,</span>
+<span id="L132"><span class="lineNum">     132</span>              :         warningContainer: TerraColors.lightWarningContainer,</span>
+<span id="L133"><span class="lineNum">     133</span>              :         success: TerraColors.lightSecondary,</span>
+<span id="L134"><span class="lineNum">     134</span>              :         successContainer: TerraColors.lightSecondaryContainer,</span>
+<span id="L135"><span class="lineNum">     135</span>              :         textSecondary: TerraColors.lightTextSecondary,</span>
+<span id="L136"><span class="lineNum">     136</span>              :         textDisabled: TerraColors.lightTextDisabled,</span>
+<span id="L137"><span class="lineNum">     137</span>              :         surfaceVariant: TerraColors.lightSurfaceVariant,</span>
+<span id="L138"><span class="lineNum">     138</span>              :         surfaceTint: TerraColors.lightSurfaceTint,</span>
+<span id="L139"><span class="lineNum">     139</span>              :         primaryLight: TerraColors.lightPrimaryLight,</span>
+<span id="L140"><span class="lineNum">     140</span>              :         primaryContainer: TerraColors.lightPrimaryContainer,</span>
+<span id="L141"><span class="lineNum">     141</span>              :         secondaryLight: TerraColors.lightSecondaryLight,</span>
+<span id="L142"><span class="lineNum">     142</span>              :         secondaryContainer: TerraColors.lightSecondaryContainer,</span>
+<span id="L143"><span class="lineNum">     143</span>              :         streakGradient: const LinearGradient(</span>
+<span id="L144"><span class="lineNum">     144</span>              :           begin: Alignment(-0.7, -0.7),</span>
+<span id="L145"><span class="lineNum">     145</span>              :           end: Alignment(0.7, 0.7),</span>
+<span id="L146"><span class="lineNum">     146</span>              :           colors: TerraColors.lightStreakGradientColors,</span>
+<span id="L147"><span class="lineNum">     147</span>              :         ),</span>
+<span id="L148"><span class="lineNum">     148</span>              :         pointsGradient: const LinearGradient(</span>
+<span id="L149"><span class="lineNum">     149</span>              :           begin: Alignment(-0.7, -0.7),</span>
+<span id="L150"><span class="lineNum">     150</span>              :           end: Alignment(0.7, 0.7),</span>
+<span id="L151"><span class="lineNum">     151</span>              :           colors: TerraColors.lightPointsGradientColors,</span>
+<span id="L152"><span class="lineNum">     152</span>              :         ),</span>
+<span id="L153"><span class="lineNum">     153</span>              :         tierGradient: const LinearGradient(</span>
+<span id="L154"><span class="lineNum">     154</span>              :           begin: Alignment(-0.7, -0.7),</span>
+<span id="L155"><span class="lineNum">     155</span>              :           end: Alignment(0.7, 0.7),</span>
+<span id="L156"><span class="lineNum">     156</span>              :           colors: TerraColors.lightTierGradientColors,</span>
+<span id="L157"><span class="lineNum">     157</span>              :         ),</span>
+<span id="L158"><span class="lineNum">     158</span>              :         checkinSuccessGradient: const LinearGradient(</span>
+<span id="L159"><span class="lineNum">     159</span>              :           begin: Alignment.topCenter,</span>
+<span id="L160"><span class="lineNum">     160</span>              :           end: Alignment.bottomCenter,</span>
+<span id="L161"><span class="lineNum">     161</span>              :           colors: TerraColors.lightCheckinSuccessColors,</span>
+<span id="L162"><span class="lineNum">     162</span>              :         ),</span>
+<span id="L163"><span class="lineNum">     163</span>              :         moduleColors: TerraColors.moduleColors,</span>
+<span id="L164"><span class="lineNum">     164</span>              :         shimmerBase: TerraColors.lightSurfaceTint,</span>
+<span id="L165"><span class="lineNum">     165</span>              :         shimmerHighlight: TerraColors.lightSurfaceVariant,</span>
+<span id="L166"><span class="lineNum">     166</span>              :         tierNewcomer: TerraColors.tierNewcomer,</span>
+<span id="L167"><span class="lineNum">     167</span>              :         tierBeginner: TerraColors.tierBeginner,</span>
+<span id="L168"><span class="lineNum">     168</span>              :         tierIntermediate: TerraColors.tierIntermediate,</span>
+<span id="L169"><span class="lineNum">     169</span>              :         tierExpert: TerraColors.tierExpert,</span>
+<span id="L170"><span class="lineNum">     170</span>              :         tierMaster: TerraColors.tierMaster,</span>
+<span id="L171"><span class="lineNum">     171</span>              :         tierLegendary: TerraColors.tierLegendary,</span>
+<span id="L172"><span class="lineNum">     172</span>              :         medalGold: TerraColors.medalGold,</span>
+<span id="L173"><span class="lineNum">     173</span>              :         medalSilver: TerraColors.medalSilver,</span>
+<span id="L174"><span class="lineNum">     174</span>              :         medalBronze: TerraColors.medalBronze,</span>
+<span id="L175"><span class="lineNum">     175</span>              :       );</span>
+<span id="L176"><span class="lineNum">     176</span>              : </span>
+<span id="L177"><span class="lineNum">     177</span> <span class="tlaGNC">           1 :   @override</span></span>
+<span id="L178"><span class="lineNum">     178</span>              :   TerraThemeExtension copyWith({</span>
+<span id="L179"><span class="lineNum">     179</span>              :     Color? accent,</span>
+<span id="L180"><span class="lineNum">     180</span>              :     Color? accentMuted,</span>
+<span id="L181"><span class="lineNum">     181</span>              :     Color? danger,</span>
+<span id="L182"><span class="lineNum">     182</span>              :     Color? dangerContainer,</span>
+<span id="L183"><span class="lineNum">     183</span>              :     Color? warning,</span>
+<span id="L184"><span class="lineNum">     184</span>              :     Color? warningContainer,</span>
+<span id="L185"><span class="lineNum">     185</span>              :     Color? success,</span>
+<span id="L186"><span class="lineNum">     186</span>              :     Color? successContainer,</span>
+<span id="L187"><span class="lineNum">     187</span>              :     Color? textSecondary,</span>
+<span id="L188"><span class="lineNum">     188</span>              :     Color? textDisabled,</span>
+<span id="L189"><span class="lineNum">     189</span>              :     Color? surfaceVariant,</span>
+<span id="L190"><span class="lineNum">     190</span>              :     Color? surfaceTint,</span>
+<span id="L191"><span class="lineNum">     191</span>              :     Color? primaryLight,</span>
+<span id="L192"><span class="lineNum">     192</span>              :     Color? primaryContainer,</span>
+<span id="L193"><span class="lineNum">     193</span>              :     Color? secondaryLight,</span>
+<span id="L194"><span class="lineNum">     194</span>              :     Color? secondaryContainer,</span>
+<span id="L195"><span class="lineNum">     195</span>              :     LinearGradient? streakGradient,</span>
+<span id="L196"><span class="lineNum">     196</span>              :     LinearGradient? pointsGradient,</span>
+<span id="L197"><span class="lineNum">     197</span>              :     LinearGradient? tierGradient,</span>
+<span id="L198"><span class="lineNum">     198</span>              :     LinearGradient? checkinSuccessGradient,</span>
+<span id="L199"><span class="lineNum">     199</span>              :     List&lt;Color&gt;? moduleColors,</span>
+<span id="L200"><span class="lineNum">     200</span>              :     Color? shimmerBase,</span>
+<span id="L201"><span class="lineNum">     201</span>              :     Color? shimmerHighlight,</span>
+<span id="L202"><span class="lineNum">     202</span>              :     Color? tierNewcomer,</span>
+<span id="L203"><span class="lineNum">     203</span>              :     Color? tierBeginner,</span>
+<span id="L204"><span class="lineNum">     204</span>              :     Color? tierIntermediate,</span>
+<span id="L205"><span class="lineNum">     205</span>              :     Color? tierExpert,</span>
+<span id="L206"><span class="lineNum">     206</span>              :     Color? tierMaster,</span>
+<span id="L207"><span class="lineNum">     207</span>              :     Color? tierLegendary,</span>
+<span id="L208"><span class="lineNum">     208</span>              :     Color? medalGold,</span>
+<span id="L209"><span class="lineNum">     209</span>              :     Color? medalSilver,</span>
+<span id="L210"><span class="lineNum">     210</span>              :     Color? medalBronze,</span>
+<span id="L211"><span class="lineNum">     211</span>              :   }) {</span>
+<span id="L212"><span class="lineNum">     212</span> <span class="tlaGNC">           1 :     return TerraThemeExtension(</span></span>
+<span id="L213"><span class="lineNum">     213</span> <span class="tlaUNC">           0 :       accent: accent ?? this.accent,</span></span>
+<span id="L214"><span class="lineNum">     214</span> <span class="tlaGNC">           1 :       accentMuted: accentMuted ?? this.accentMuted,</span></span>
+<span id="L215"><span class="lineNum">     215</span> <span class="tlaGNC">           1 :       danger: danger ?? this.danger,</span></span>
+<span id="L216"><span class="lineNum">     216</span> <span class="tlaGNC">           1 :       dangerContainer: dangerContainer ?? this.dangerContainer,</span></span>
+<span id="L217"><span class="lineNum">     217</span> <span class="tlaGNC">           1 :       warning: warning ?? this.warning,</span></span>
+<span id="L218"><span class="lineNum">     218</span> <span class="tlaGNC">           1 :       warningContainer: warningContainer ?? this.warningContainer,</span></span>
+<span id="L219"><span class="lineNum">     219</span> <span class="tlaGNC">           1 :       success: success ?? this.success,</span></span>
+<span id="L220"><span class="lineNum">     220</span> <span class="tlaGNC">           1 :       successContainer: successContainer ?? this.successContainer,</span></span>
+<span id="L221"><span class="lineNum">     221</span> <span class="tlaGNC">           1 :       textSecondary: textSecondary ?? this.textSecondary,</span></span>
+<span id="L222"><span class="lineNum">     222</span> <span class="tlaGNC">           1 :       textDisabled: textDisabled ?? this.textDisabled,</span></span>
+<span id="L223"><span class="lineNum">     223</span> <span class="tlaGNC">           1 :       surfaceVariant: surfaceVariant ?? this.surfaceVariant,</span></span>
+<span id="L224"><span class="lineNum">     224</span> <span class="tlaGNC">           1 :       surfaceTint: surfaceTint ?? this.surfaceTint,</span></span>
+<span id="L225"><span class="lineNum">     225</span> <span class="tlaGNC">           1 :       primaryLight: primaryLight ?? this.primaryLight,</span></span>
+<span id="L226"><span class="lineNum">     226</span> <span class="tlaGNC">           1 :       primaryContainer: primaryContainer ?? this.primaryContainer,</span></span>
+<span id="L227"><span class="lineNum">     227</span> <span class="tlaGNC">           1 :       secondaryLight: secondaryLight ?? this.secondaryLight,</span></span>
+<span id="L228"><span class="lineNum">     228</span> <span class="tlaGNC">           1 :       secondaryContainer: secondaryContainer ?? this.secondaryContainer,</span></span>
+<span id="L229"><span class="lineNum">     229</span> <span class="tlaGNC">           1 :       streakGradient: streakGradient ?? this.streakGradient,</span></span>
+<span id="L230"><span class="lineNum">     230</span> <span class="tlaGNC">           1 :       pointsGradient: pointsGradient ?? this.pointsGradient,</span></span>
+<span id="L231"><span class="lineNum">     231</span> <span class="tlaGNC">           1 :       tierGradient: tierGradient ?? this.tierGradient,</span></span>
+<span id="L232"><span class="lineNum">     232</span> <span class="tlaGNC">           1 :       checkinSuccessGradient: checkinSuccessGradient ?? this.checkinSuccessGradient,</span></span>
+<span id="L233"><span class="lineNum">     233</span> <span class="tlaGNC">           1 :       moduleColors: moduleColors ?? this.moduleColors,</span></span>
+<span id="L234"><span class="lineNum">     234</span> <span class="tlaGNC">           1 :       shimmerBase: shimmerBase ?? this.shimmerBase,</span></span>
+<span id="L235"><span class="lineNum">     235</span> <span class="tlaGNC">           1 :       shimmerHighlight: shimmerHighlight ?? this.shimmerHighlight,</span></span>
+<span id="L236"><span class="lineNum">     236</span> <span class="tlaGNC">           1 :       tierNewcomer: tierNewcomer ?? this.tierNewcomer,</span></span>
+<span id="L237"><span class="lineNum">     237</span> <span class="tlaGNC">           1 :       tierBeginner: tierBeginner ?? this.tierBeginner,</span></span>
+<span id="L238"><span class="lineNum">     238</span> <span class="tlaGNC">           1 :       tierIntermediate: tierIntermediate ?? this.tierIntermediate,</span></span>
+<span id="L239"><span class="lineNum">     239</span> <span class="tlaGNC">           1 :       tierExpert: tierExpert ?? this.tierExpert,</span></span>
+<span id="L240"><span class="lineNum">     240</span> <span class="tlaGNC">           1 :       tierMaster: tierMaster ?? this.tierMaster,</span></span>
+<span id="L241"><span class="lineNum">     241</span> <span class="tlaGNC">           1 :       tierLegendary: tierLegendary ?? this.tierLegendary,</span></span>
+<span id="L242"><span class="lineNum">     242</span> <span class="tlaGNC">           1 :       medalGold: medalGold ?? this.medalGold,</span></span>
+<span id="L243"><span class="lineNum">     243</span> <span class="tlaGNC">           1 :       medalSilver: medalSilver ?? this.medalSilver,</span></span>
+<span id="L244"><span class="lineNum">     244</span> <span class="tlaGNC">           1 :       medalBronze: medalBronze ?? this.medalBronze,</span></span>
+<span id="L245"><span class="lineNum">     245</span>              :     );</span>
+<span id="L246"><span class="lineNum">     246</span>              :   }</span>
+<span id="L247"><span class="lineNum">     247</span>              : </span>
+<span id="L248"><span class="lineNum">     248</span> <span class="tlaGNC">           1 :   @override</span></span>
+<span id="L249"><span class="lineNum">     249</span>              :   TerraThemeExtension lerp(covariant TerraThemeExtension? other, double t) {</span>
+<span id="L250"><span class="lineNum">     250</span>              :     if (other == null) return this;</span>
+<span id="L251"><span class="lineNum">     251</span> <span class="tlaGNC">           1 :     return TerraThemeExtension(</span></span>
+<span id="L252"><span class="lineNum">     252</span> <span class="tlaGNC">           3 :       accent: Color.lerp(accent, other.accent, t)!,</span></span>
+<span id="L253"><span class="lineNum">     253</span> <span class="tlaGNC">           3 :       accentMuted: Color.lerp(accentMuted, other.accentMuted, t)!,</span></span>
+<span id="L254"><span class="lineNum">     254</span> <span class="tlaGNC">           3 :       danger: Color.lerp(danger, other.danger, t)!,</span></span>
+<span id="L255"><span class="lineNum">     255</span> <span class="tlaGNC">           3 :       dangerContainer: Color.lerp(dangerContainer, other.dangerContainer, t)!,</span></span>
+<span id="L256"><span class="lineNum">     256</span> <span class="tlaGNC">           3 :       warning: Color.lerp(warning, other.warning, t)!,</span></span>
+<span id="L257"><span class="lineNum">     257</span> <span class="tlaGNC">           3 :       warningContainer: Color.lerp(warningContainer, other.warningContainer, t)!,</span></span>
+<span id="L258"><span class="lineNum">     258</span> <span class="tlaGNC">           3 :       success: Color.lerp(success, other.success, t)!,</span></span>
+<span id="L259"><span class="lineNum">     259</span> <span class="tlaGNC">           3 :       successContainer: Color.lerp(successContainer, other.successContainer, t)!,</span></span>
+<span id="L260"><span class="lineNum">     260</span> <span class="tlaGNC">           3 :       textSecondary: Color.lerp(textSecondary, other.textSecondary, t)!,</span></span>
+<span id="L261"><span class="lineNum">     261</span> <span class="tlaGNC">           3 :       textDisabled: Color.lerp(textDisabled, other.textDisabled, t)!,</span></span>
+<span id="L262"><span class="lineNum">     262</span> <span class="tlaGNC">           3 :       surfaceVariant: Color.lerp(surfaceVariant, other.surfaceVariant, t)!,</span></span>
+<span id="L263"><span class="lineNum">     263</span> <span class="tlaGNC">           3 :       surfaceTint: Color.lerp(surfaceTint, other.surfaceTint, t)!,</span></span>
+<span id="L264"><span class="lineNum">     264</span> <span class="tlaGNC">           3 :       primaryLight: Color.lerp(primaryLight, other.primaryLight, t)!,</span></span>
+<span id="L265"><span class="lineNum">     265</span> <span class="tlaGNC">           3 :       primaryContainer: Color.lerp(primaryContainer, other.primaryContainer, t)!,</span></span>
+<span id="L266"><span class="lineNum">     266</span> <span class="tlaGNC">           3 :       secondaryLight: Color.lerp(secondaryLight, other.secondaryLight, t)!,</span></span>
+<span id="L267"><span class="lineNum">     267</span> <span class="tlaGNC">           3 :       secondaryContainer: Color.lerp(secondaryContainer, other.secondaryContainer, t)!,</span></span>
+<span id="L268"><span class="lineNum">     268</span> <span class="tlaGNC">           3 :       streakGradient: LinearGradient.lerp(streakGradient, other.streakGradient, t)!,</span></span>
+<span id="L269"><span class="lineNum">     269</span> <span class="tlaGNC">           3 :       pointsGradient: LinearGradient.lerp(pointsGradient, other.pointsGradient, t)!,</span></span>
+<span id="L270"><span class="lineNum">     270</span> <span class="tlaGNC">           3 :       tierGradient: LinearGradient.lerp(tierGradient, other.tierGradient, t)!,</span></span>
+<span id="L271"><span class="lineNum">     271</span> <span class="tlaGNC">           3 :       checkinSuccessGradient: LinearGradient.lerp(checkinSuccessGradient, other.checkinSuccessGradient, t)!,</span></span>
+<span id="L272"><span class="lineNum">     272</span> <span class="tlaGNC">           1 :       moduleColors: other.moduleColors,</span></span>
+<span id="L273"><span class="lineNum">     273</span> <span class="tlaGNC">           3 :       shimmerBase: Color.lerp(shimmerBase, other.shimmerBase, t)!,</span></span>
+<span id="L274"><span class="lineNum">     274</span> <span class="tlaGNC">           3 :       shimmerHighlight: Color.lerp(shimmerHighlight, other.shimmerHighlight, t)!,</span></span>
+<span id="L275"><span class="lineNum">     275</span> <span class="tlaGNC">           3 :       tierNewcomer: Color.lerp(tierNewcomer, other.tierNewcomer, t)!,</span></span>
+<span id="L276"><span class="lineNum">     276</span> <span class="tlaGNC">           3 :       tierBeginner: Color.lerp(tierBeginner, other.tierBeginner, t)!,</span></span>
+<span id="L277"><span class="lineNum">     277</span> <span class="tlaGNC">           3 :       tierIntermediate: Color.lerp(tierIntermediate, other.tierIntermediate, t)!,</span></span>
+<span id="L278"><span class="lineNum">     278</span> <span class="tlaGNC">           3 :       tierExpert: Color.lerp(tierExpert, other.tierExpert, t)!,</span></span>
+<span id="L279"><span class="lineNum">     279</span> <span class="tlaGNC">           3 :       tierMaster: Color.lerp(tierMaster, other.tierMaster, t)!,</span></span>
+<span id="L280"><span class="lineNum">     280</span> <span class="tlaGNC">           3 :       tierLegendary: Color.lerp(tierLegendary, other.tierLegendary, t)!,</span></span>
+<span id="L281"><span class="lineNum">     281</span> <span class="tlaGNC">           3 :       medalGold: Color.lerp(medalGold, other.medalGold, t)!,</span></span>
+<span id="L282"><span class="lineNum">     282</span> <span class="tlaGNC">           3 :       medalSilver: Color.lerp(medalSilver, other.medalSilver, t)!,</span></span>
+<span id="L283"><span class="lineNum">     283</span> <span class="tlaGNC">           3 :       medalBronze: Color.lerp(medalBronze, other.medalBronze, t)!,</span></span>
+<span id="L284"><span class="lineNum">     284</span>              :     );</span>
+<span id="L285"><span class="lineNum">     285</span>              :   }</span>
+<span id="L286"><span class="lineNum">     286</span>              : }</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.4-0</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>
