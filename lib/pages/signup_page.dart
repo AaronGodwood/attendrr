@@ -91,7 +91,10 @@ class _SignUpPageState extends State<SignUpPage> {
                           color: ext?.dangerContainer,
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(auth.error!, style: TextStyle(color: ext?.danger)),
+                        child: Text(
+                          auth.error!,
+                          style: TextStyle(color: ext?.danger),
+                        ),
                       );
                     }
                     return const SizedBox.shrink();
@@ -105,9 +108,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     prefixIcon: Icon(Icons.person_outlined),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Please enter a username';
-                    if (value.length < 3) return 'Username must be at least 3 characters';
-                    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value)) return 'Only letters, numbers, and underscores';
+                    if (value == null || value.isEmpty)
+                      return 'Please enter a username';
+                    if (value.length < 3)
+                      return 'Username must be at least 3 characters';
+                    if (!RegExp(r'^[a-zA-Z0-9_]+$').hasMatch(value))
+                      return 'Only letters, numbers, and underscores';
                     return null;
                   },
                 ),
@@ -121,8 +127,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Please enter your email';
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'Please enter a valid email';
+                    if (value == null || value.isEmpty)
+                      return 'Please enter your email';
+                    if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    ).hasMatch(value))
+                      return 'Please enter a valid email';
                     return null;
                   },
                 ),
@@ -135,13 +145,22 @@ class _SignUpPageState extends State<SignUpPage> {
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
-                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed:
+                          () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                     ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Please enter a password';
-                    if (value.length < 6) return 'Password must be at least 6 characters';
+                    if (value == null || value.isEmpty)
+                      return 'Please enter a password';
+                    if (value.length < 6)
+                      return 'Password must be at least 6 characters';
                     return null;
                   },
                 ),
@@ -149,13 +168,15 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 8),
                   LinearProgressIndicator(
                     value: _passwordStrength,
-                    backgroundColor: ext?.surfaceTint ?? theme.colorScheme.outline.withValues(alpha: 0.3),
+                    backgroundColor:
+                        ext?.surfaceTint ??
+                        theme.colorScheme.outline.withValues(alpha: 0.3),
                     valueColor: AlwaysStoppedAnimation<Color>(
                       _passwordStrength < 0.3
                           ? (ext?.danger ?? Colors.red)
                           : _passwordStrength < 0.6
-                              ? (ext?.warning ?? Colors.orange)
-                              : (ext?.success ?? Colors.green),
+                          ? (ext?.warning ?? Colors.orange)
+                          : (ext?.success ?? Colors.green),
                     ),
                   ),
                 ],
@@ -168,12 +189,20 @@ class _SignUpPageState extends State<SignUpPage> {
                     labelText: 'Confirm Password',
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
-                      icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility),
-                      onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                      icon: Icon(
+                        _obscureConfirm
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed:
+                          () => setState(
+                            () => _obscureConfirm = !_obscureConfirm,
+                          ),
                     ),
                   ),
                   validator: (value) {
-                    if (value != _passwordController.text) return 'Passwords do not match';
+                    if (value != _passwordController.text)
+                      return 'Passwords do not match';
                     return null;
                   },
                 ),
@@ -181,7 +210,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
                 Row(
                   children: [
-                    Checkbox(value: _agreeToTerms, onChanged: (v) => setState(() => _agreeToTerms = v ?? false)),
+                    Checkbox(
+                      value: _agreeToTerms,
+                      onChanged:
+                          (v) => setState(() => _agreeToTerms = v ?? false),
+                    ),
                     Expanded(
                       child: RichText(
                         text: TextSpan(
@@ -192,7 +225,10 @@ class _SignUpPageState extends State<SignUpPage> {
                             const TextSpan(text: 'I agree to the '),
                             TextSpan(
                               text: 'Terms of Service',
-                              style: TextStyle(color: theme.colorScheme.primary, fontWeight: FontWeight.bold),
+                              style: TextStyle(
+                                color: theme.colorScheme.primary,
+                                fontWeight: FontWeight.bold,
+                              ),
                               recognizer: TapGestureRecognizer()..onTap = () {},
                             ),
                           ],
@@ -208,10 +244,27 @@ class _SignUpPageState extends State<SignUpPage> {
                     return SizedBox(
                       height: 56,
                       child: ElevatedButton(
-                        onPressed: (auth.isLoading || !_agreeToTerms) ? null : _handleSignUp,
-                        child: auth.isLoading
-                            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                            : const Text('Create Account', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        onPressed:
+                            (auth.isLoading || !_agreeToTerms)
+                                ? null
+                                : _handleSignUp,
+                        child:
+                            auth.isLoading
+                                ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                                : const Text(
+                                  'Create Account',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                       ),
                     );
                   },
@@ -224,7 +277,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     const Text('Already have an account? '),
                     TextButton(
                       onPressed: () => context.go('/login'),
-                      child: const Text('Sign In', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Sign In',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),
@@ -239,7 +295,9 @@ class _SignUpPageState extends State<SignUpPage> {
   Future<void> _handleSignUp() async {
     if (!_formKey.currentState!.validate()) return;
     if (!_agreeToTerms) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please agree to the Terms of Service')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please agree to the Terms of Service')),
+      );
       return;
     }
 
@@ -263,27 +321,37 @@ class _SignUpPageState extends State<SignUpPage> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (context) => AlertDialog(
-        title: const Row(children: [Icon(Icons.email), SizedBox(width: 8), Text('Verify Your Email')]),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('We\'ve sent a verification link to:'),
-            const SizedBox(height: 8),
-            Text(_emailController.text, style: const TextStyle(fontWeight: FontWeight.bold)),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              context.go('/login');
-            },
-            child: const Text('Go to Login'),
+      builder:
+          (context) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(Icons.email),
+                SizedBox(width: 8),
+                Text('Verify Your Email'),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('We\'ve sent a verification link to:'),
+                const SizedBox(height: 8),
+                Text(
+                  _emailController.text,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  context.go('/login');
+                },
+                child: const Text('Go to Login'),
+              ),
+            ],
           ),
-        ],
-      ),
     );
   }
 }
