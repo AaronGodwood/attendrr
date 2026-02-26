@@ -66,9 +66,18 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.error_outline, color: ext?.danger, size: 20),
+                            Icon(
+                              Icons.error_outline,
+                              color: ext?.danger,
+                              size: 20,
+                            ),
                             const SizedBox(width: 8),
-                            Expanded(child: Text(auth.error!, style: TextStyle(color: ext?.danger))),
+                            Expanded(
+                              child: Text(
+                                auth.error!,
+                                style: TextStyle(color: ext?.danger),
+                              ),
+                            ),
                             IconButton(
                               icon: const Icon(Icons.close, size: 18),
                               onPressed: () => auth.clearError(),
@@ -91,8 +100,12 @@ class _LoginPageState extends State<LoginPage> {
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Please enter your email';
-                    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) return 'Please enter a valid email';
+                    if (value == null || value.isEmpty)
+                      return 'Please enter your email';
+                    if (!RegExp(
+                      r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                    ).hasMatch(value))
+                      return 'Please enter a valid email';
                     return null;
                   },
                 ),
@@ -105,12 +118,20 @@ class _LoginPageState extends State<LoginPage> {
                     labelText: 'Password',
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
-                      icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed:
+                          () => setState(
+                            () => _obscurePassword = !_obscurePassword,
+                          ),
                     ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty) return 'Please enter your password';
+                    if (value == null || value.isEmpty)
+                      return 'Please enter your password';
                     return null;
                   },
                 ),
@@ -131,9 +152,23 @@ class _LoginPageState extends State<LoginPage> {
                       height: 56,
                       child: ElevatedButton(
                         onPressed: auth.isLoading ? null : _handleLogin,
-                        child: auth.isLoading
-                            ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
-                            : const Text('Sign In', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        child:
+                            auth.isLoading
+                                ? const SizedBox(
+                                  width: 24,
+                                  height: 24,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: Colors.white,
+                                  ),
+                                )
+                                : const Text(
+                                  'Sign In',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                       ),
                     );
                   },
@@ -195,7 +230,10 @@ class _LoginPageState extends State<LoginPage> {
                     const Text("Don't have an account? "),
                     TextButton(
                       onPressed: () => context.go('/signup'),
-                      child: const Text('Sign Up', style: TextStyle(fontWeight: FontWeight.bold)),
+                      child: const Text(
+                        'Sign Up',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ],
                 ),

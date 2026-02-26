@@ -36,10 +36,14 @@ class SplashPage extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(
-                  Icons.school,
-                  size: 64,
-                  color: Color(0xFFC67B4E),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(30),
+                  child: Image.asset(
+                    'assets/icons/app_icon.png',
+                    width: 120,
+                    height: 120,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
               const SizedBox(height: 24),
