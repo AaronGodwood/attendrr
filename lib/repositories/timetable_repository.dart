@@ -1,20 +1,24 @@
 import 'base_repository.dart';
+import 'building_repository.dart';
 import '../models/models.dart';
 import '../services/ical_service.dart';
+import '../utils/location_lookup.dart';
 
 class TimetableRepository extends BaseRepository {
   static final TimetableRepository instance = TimetableRepository._();
   TimetableRepository._();
 
   final _icalService = ICalService.instance;
+  final _buildingRepository = BuildingRepository.instance;
 
   Future<Timetable> getUserTimetable() async {
     requireAuth();
-    final response = await client
-        .from('timetables')
-        .select()
-        .eq('user_id', currentUserId!)
-        .single();
+    final response =
+        await client
+            .from('timetables')
+            .select()
+            .eq('user_id', currentUserId!)
+            .single();
     return Timetable.fromJson(response);
   }
 
@@ -29,7 +33,9 @@ class TimetableRepository extends BaseRepository {
     return (response as List).map((json) => Lecture.fromJson(json)).toList();
   }
 
-  Future<List<LectureWithAttendance>> getLecturesForWeek(DateTime weekStart) async {
+  Future<List<LectureWithAttendance>> getLecturesForWeek(
+    DateTime weekStart,
+  ) async {
     requireAuth();
     final weekEnd = weekStart.add(const Duration(days: 7));
     final timetable = await getUserTimetable();
@@ -42,7 +48,9 @@ class TimetableRepository extends BaseRepository {
         .lt('start_time', weekEnd.toIso8601String())
         .order('start_time', ascending: true);
 
-    return (response as List).map((json) => LectureWithAttendance.fromJson(json)).toList();
+    return (response as List)
+        .map((json) => LectureWithAttendance.fromJson(json))
+        .toList();
   }
 
   Future<Lecture?> getCurrentLecture() async {
@@ -50,13 +58,14 @@ class TimetableRepository extends BaseRepository {
     final now = DateTime.now();
     final timetable = await getUserTimetable();
 
-    final response = await client
-        .from('lectures')
-        .select()
-        .eq('timetable_id', timetable.id)
-        .lte('start_time', now.toIso8601String())
-        .gte('end_time', now.toIso8601String())
-        .maybeSingle();
+    final response =
+        await client
+            .from('lectures')
+            .select()
+            .eq('timetable_id', timetable.id)
+            .lte('start_time', now.toIso8601String())
+            .gte('end_time', now.toIso8601String())
+            .maybeSingle();
 
     return response != null ? Lecture.fromJson(response) : null;
   }
@@ -66,14 +75,15 @@ class TimetableRepository extends BaseRepository {
     final now = DateTime.now();
     final timetable = await getUserTimetable();
 
-    final response = await client
-        .from('lectures')
-        .select()
-        .eq('timetable_id', timetable.id)
-        .gt('start_time', now.toIso8601String())
-        .order('start_time', ascending: true)
-        .limit(1)
-        .maybeSingle();
+    final response =
+        await client
+            .from('lectures')
+            .select()
+            .eq('timetable_id', timetable.id)
+            .gt('start_time', now.toIso8601String())
+            .order('start_time', ascending: true)
+            .limit(1)
+            .maybeSingle();
 
     return response != null ? Lecture.fromJson(response) : null;
   }
@@ -81,26 +91,38 @@ class TimetableRepository extends BaseRepository {
   Future<SyncResult> syncFromIcal(String icalUrl) async {
     requireAuth();
 
+    // Fetch buildings from Supabase and seed the location resolver so
+    // building name → lat/lon lookups use live data instead of local constants.
+    final buildings = await _buildingRepository.getBuildings();
+    LocationLookup.seed(buildings);
+
     final allEvents = await _icalService.fetchAndParse(icalUrl);
     final lectures = _icalService.filterLectures(allEvents);
     final timetable = await getUserTimetable();
 
-    await client.from('profiles').update({'ical_url': icalUrl}).eq('id', currentUserId!);
+    await client
+        .from('profiles')
+        .update({'ical_url': icalUrl})
+        .eq('id', currentUserId!);
 
     int added = 0, updated = 0;
 
     for (final event in lectures) {
       final lectureData = event.toLectureJson(timetable.id);
 
-      final existing = await client
-          .from('lectures')
-          .select('id')
-          .eq('timetable_id', timetable.id)
-          .eq('external_id', event.uid)
-          .maybeSingle();
+      final existing =
+          await client
+              .from('lectures')
+              .select('id')
+              .eq('timetable_id', timetable.id)
+              .eq('external_id', event.uid)
+              .maybeSingle();
 
       if (existing != null) {
-        await client.from('lectures').update(lectureData).eq('id', existing['id']);
+        await client
+            .from('lectures')
+            .update(lectureData)
+            .eq('id', existing['id']);
         updated++;
       } else {
         await client.from('lectures').insert(lectureData);
@@ -108,12 +130,20 @@ class TimetableRepository extends BaseRepository {
       }
     }
 
-    await client.from('timetables').update({
-      'last_synced_at': DateTime.now().toIso8601String(),
-      'source': 'ical',
-    }).eq('id', timetable.id);
+    await client
+        .from('timetables')
+        .update({
+          'last_synced_at': DateTime.now().toIso8601String(),
+          'source': 'ical',
+        })
+        .eq('id', timetable.id);
 
-    return SyncResult(total: allEvents.length, lectures: lectures.length, added: added, updated: updated);
+    return SyncResult(
+      total: allEvents.length,
+      lectures: lectures.length,
+      added: added,
+      updated: updated,
+    );
   }
 }
 
@@ -123,8 +153,14 @@ class SyncResult {
   final int added;
   final int updated;
 
-  SyncResult({required this.total, required this.lectures, required this.added, required this.updated});
+  SyncResult({
+    required this.total,
+    required this.lectures,
+    required this.added,
+    required this.updated,
+  });
 
   @override
-  String toString() => 'Synced $lectures lectures ($added new, $updated updated)';
+  String toString() =>
+      'Synced $lectures lectures ($added new, $updated updated)';
 }
