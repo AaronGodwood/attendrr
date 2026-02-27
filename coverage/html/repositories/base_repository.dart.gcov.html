@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-02-22 22:25:14</td>
+            <td class="headerValue">2026-02-27 15:33:27</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
@@ -63,12 +63,12 @@
 <span id="L1"><span class="lineNum">       1</span>              : import 'package:supabase_flutter/supabase_flutter.dart';</span>
 <span id="L2"><span class="lineNum">       2</span>              : </span>
 <span id="L3"><span class="lineNum">       3</span>              : abstract class BaseRepository {</span>
-<span id="L4"><span class="lineNum">       4</span> <span class="tlaGNC">           5 :   SupabaseClient get client =&gt; Supabase.instance.client;</span></span>
-<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC">           7 :   String? get currentUserId =&gt; client.auth.currentUser?.id;</span></span>
+<span id="L4"><span class="lineNum">       4</span> <span class="tlaGNC">           8 :   SupabaseClient get client =&gt; Supabase.instance.client;</span></span>
+<span id="L5"><span class="lineNum">       5</span> <span class="tlaGNC">          12 :   String? get currentUserId =&gt; client.auth.currentUser?.id;</span></span>
 <span id="L6"><span class="lineNum">       6</span>              : </span>
-<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">           2 :   void requireAuth() {</span></span>
-<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">           2 :     if (currentUserId == null) {</span></span>
-<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">           1 :       throw Exception('User must be authenticated');</span></span>
+<span id="L7"><span class="lineNum">       7</span> <span class="tlaGNC">           3 :   void requireAuth() {</span></span>
+<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">           3 :     if (currentUserId == null) {</span></span>
+<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">           2 :       throw Exception('User must be authenticated');</span></span>
 <span id="L10"><span class="lineNum">      10</span>              :     }</span>
 <span id="L11"><span class="lineNum">      11</span>              :   }</span>
 <span id="L12"><span class="lineNum">      12</span>              : }</span>
