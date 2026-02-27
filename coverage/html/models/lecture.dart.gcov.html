@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-02-22 22:25:14</td>
+            <td class="headerValue">2026-02-27 15:33:27</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryMed">83.3&nbsp;%</td>
@@ -175,9 +175,9 @@
 <span id="L113"><span class="lineNum">     113</span>              :   }</span>
 <span id="L114"><span class="lineNum">     114</span>              : </span>
 <span id="L115"><span class="lineNum">     115</span>              :   // Computed properties</span>
-<span id="L116"><span class="lineNum">     116</span> <span class="tlaGNC">           3 :   bool get isActive {</span></span>
-<span id="L117"><span class="lineNum">     117</span> <span class="tlaGNC">           3 :     final now = DateTime.now();</span></span>
-<span id="L118"><span class="lineNum">     118</span> <span class="tlaGNC">          12 :     return now.isAfter(startTime) &amp;&amp; now.isBefore(endTime);</span></span>
+<span id="L116"><span class="lineNum">     116</span> <span class="tlaGNC">           4 :   bool get isActive {</span></span>
+<span id="L117"><span class="lineNum">     117</span> <span class="tlaGNC">           4 :     final now = DateTime.now();</span></span>
+<span id="L118"><span class="lineNum">     118</span> <span class="tlaGNC">          16 :     return now.isAfter(startTime) &amp;&amp; now.isBefore(endTime);</span></span>
 <span id="L119"><span class="lineNum">     119</span>              :   }</span>
 <span id="L120"><span class="lineNum">     120</span>              : </span>
 <span id="L121"><span class="lineNum">     121</span> <span class="tlaGNC">           4 :   bool get isUpcoming =&gt; DateTime.now().isBefore(startTime);</span></span>
@@ -258,7 +258,7 @@
 <span id="L196"><span class="lineNum">     196</span> <span class="tlaGNC">           2 :   LectureStatus get status {</span></span>
 <span id="L197"><span class="lineNum">     197</span> <span class="tlaGNC">           2 :     if (attended) return LectureStatus.attended;</span></span>
 <span id="L198"><span class="lineNum">     198</span> <span class="tlaGNC">           4 :     if (lecture.isPast) return LectureStatus.missed;</span></span>
-<span id="L199"><span class="lineNum">     199</span> <span class="tlaGNC">           2 :     if (lecture.isActive) return LectureStatus.inProgress;</span></span>
+<span id="L199"><span class="lineNum">     199</span> <span class="tlaGNC">           4 :     if (lecture.isActive) return LectureStatus.inProgress;</span></span>
 <span id="L200"><span class="lineNum">     200</span>              :     return LectureStatus.upcoming;</span>
 <span id="L201"><span class="lineNum">     201</span>              :   }</span>
 <span id="L202"><span class="lineNum">     202</span>              : }</span>

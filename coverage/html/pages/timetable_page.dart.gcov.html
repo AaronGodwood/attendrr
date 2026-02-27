@@ -31,13 +31,13 @@
             <td class="headerValue">lcov.info</td>
             <td></td>
             <td class="headerItem">Lines:</td>
-            <td class="headerCovTableEntryMed">76.3&nbsp;%</td>
+            <td class="headerCovTableEntryMed">81.0&nbsp;%</td>
             <td class="headerCovTableEntry">384</td>
-            <td class="headerCovTableEntry">293</td>
+            <td class="headerCovTableEntry">311</td>
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-02-22 22:25:14</td>
+            <td class="headerValue">2026-02-27 15:33:27</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryMed">84.2&nbsp;%</td>
@@ -319,16 +319,16 @@
 <span id="L257"><span class="lineNum">     257</span> <span class="tlaGNC">           1 :         HapticFeedback.selectionClick();</span></span>
 <span id="L258"><span class="lineNum">     258</span> <span class="tlaGNC">           3 :         final dayDifference = date.difference(_selectedDate).inDays;</span></span>
 <span id="L259"><span class="lineNum">     259</span> <span class="tlaGNC">           1 :         if (dayDifference != 0) {</span></span>
-<span id="L260"><span class="lineNum">     260</span> <span class="tlaUNC">           0 :           _slideAnimation = Tween&lt;Offset&gt;(</span></span>
-<span id="L261"><span class="lineNum">     261</span> <span class="tlaUNC">           0 :             begin: Offset(dayDifference &gt; 0 ? 1.0 : -1.0, 0.0),</span></span>
+<span id="L260"><span class="lineNum">     260</span> <span class="tlaGNC">           2 :           _slideAnimation = Tween&lt;Offset&gt;(</span></span>
+<span id="L261"><span class="lineNum">     261</span> <span class="tlaGNC">           2 :             begin: Offset(dayDifference &gt; 0 ? 1.0 : -1.0, 0.0),</span></span>
 <span id="L262"><span class="lineNum">     262</span>              :             end: Offset.zero,</span>
-<span id="L263"><span class="lineNum">     263</span> <span class="tlaUNC">           0 :           ).animate(</span></span>
-<span id="L264"><span class="lineNum">     264</span> <span class="tlaUNC">           0 :             CurvedAnimation(</span></span>
-<span id="L265"><span class="lineNum">     265</span> <span class="tlaUNC">           0 :               parent: _animationController,</span></span>
+<span id="L263"><span class="lineNum">     263</span> <span class="tlaGNC">           1 :           ).animate(</span></span>
+<span id="L264"><span class="lineNum">     264</span> <span class="tlaGNC">           1 :             CurvedAnimation(</span></span>
+<span id="L265"><span class="lineNum">     265</span> <span class="tlaGNC">           1 :               parent: _animationController,</span></span>
 <span id="L266"><span class="lineNum">     266</span>              :               curve: Curves.easeInOut,</span>
 <span id="L267"><span class="lineNum">     267</span>              :             ),</span>
 <span id="L268"><span class="lineNum">     268</span>              :           );</span>
-<span id="L269"><span class="lineNum">     269</span> <span class="tlaUNC">           0 :           _animationController.forward(from: 0.0);</span></span>
+<span id="L269"><span class="lineNum">     269</span> <span class="tlaGNC">           2 :           _animationController.forward(from: 0.0);</span></span>
 <span id="L270"><span class="lineNum">     270</span>              :         }</span>
 <span id="L271"><span class="lineNum">     271</span> <span class="tlaGNC">           2 :         setState(() {</span></span>
 <span id="L272"><span class="lineNum">     272</span> <span class="tlaGNC">           1 :           _selectedDate = date;</span></span>
@@ -345,7 +345,7 @@
 <span id="L283"><span class="lineNum">     283</span> <span class="tlaGNC">           4 :                   ? theme.colorScheme.primary</span></span>
 <span id="L284"><span class="lineNum">     284</span>              :                   : isToday</span>
 <span id="L285"><span class="lineNum">     285</span> <span class="tlaUNC">           0 :                   ? (ext?.primaryContainer ??</span></span>
-<span id="L286"><span class="lineNum">     286</span> <span class="tlaUNC">           0 :                       theme.colorScheme.primaryContainer)</span></span>
+<span id="L286"><span class="lineNum">     286</span> <span class="tlaGNC">           2 :                       theme.colorScheme.primaryContainer)</span></span>
 <span id="L287"><span class="lineNum">     287</span>              :                   : Colors.transparent,</span>
 <span id="L288"><span class="lineNum">     288</span> <span class="tlaGNC">           2 :           borderRadius: BorderRadius.circular(18),</span></span>
 <span id="L289"><span class="lineNum">     289</span>              :         ),</span>
@@ -364,7 +364,7 @@
 <span id="L302"><span class="lineNum">     302</span>              :                       isSelected</span>
 <span id="L303"><span class="lineNum">     303</span> <span class="tlaGNC">           4 :                           ? theme.colorScheme.onPrimary</span></span>
 <span id="L304"><span class="lineNum">     304</span>              :                           : isToday</span>
-<span id="L305"><span class="lineNum">     305</span> <span class="tlaUNC">           0 :                           ? theme.colorScheme.primary</span></span>
+<span id="L305"><span class="lineNum">     305</span> <span class="tlaGNC">           2 :                           ? theme.colorScheme.primary</span></span>
 <span id="L306"><span class="lineNum">     306</span> <span class="tlaUNC">           0 :                           : ext?.textSecondary,</span></span>
 <span id="L307"><span class="lineNum">     307</span>              :                 ),</span>
 <span id="L308"><span class="lineNum">     308</span>              :               ),</span>
@@ -382,7 +382,7 @@
 <span id="L320"><span class="lineNum">     320</span>              :                       isSelected</span>
 <span id="L321"><span class="lineNum">     321</span> <span class="tlaGNC">           4 :                           ? theme.colorScheme.onPrimary</span></span>
 <span id="L322"><span class="lineNum">     322</span>              :                           : isToday</span>
-<span id="L323"><span class="lineNum">     323</span> <span class="tlaUNC">           0 :                           ? theme.colorScheme.primary</span></span>
+<span id="L323"><span class="lineNum">     323</span> <span class="tlaGNC">           2 :                           ? theme.colorScheme.primary</span></span>
 <span id="L324"><span class="lineNum">     324</span> <span class="tlaGNC">           4 :                           : theme.colorScheme.onSurface,</span></span>
 <span id="L325"><span class="lineNum">     325</span>              :                 ),</span>
 <span id="L326"><span class="lineNum">     326</span>              :               ),</span>
@@ -537,27 +537,27 @@
 <span id="L475"><span class="lineNum">     475</span>              :       return const SizedBox.shrink();</span>
 <span id="L476"><span class="lineNum">     476</span>              :     }</span>
 <span id="L477"><span class="lineNum">     477</span>              : </span>
-<span id="L478"><span class="lineNum">     478</span> <span class="tlaUNC">           0 :     final topPosition = (minutesSinceMidnight - startMinutes).toDouble();</span></span>
+<span id="L478"><span class="lineNum">     478</span> <span class="tlaGNC">           2 :     final topPosition = (minutesSinceMidnight - startMinutes).toDouble();</span></span>
 <span id="L479"><span class="lineNum">     479</span>              : </span>
 <span id="L480"><span class="lineNum">     480</span>              :     final dangerColor =</span>
-<span id="L481"><span class="lineNum">     481</span> <span class="tlaUNC">           0 :         Theme.of(context).extension&lt;TerraThemeExtension&gt;()?.danger ??</span></span>
-<span id="L482"><span class="lineNum">     482</span> <span class="tlaUNC">           0 :         Theme.of(context).colorScheme.error;</span></span>
+<span id="L481"><span class="lineNum">     481</span> <span class="tlaGNC">           3 :         Theme.of(context).extension&lt;TerraThemeExtension&gt;()?.danger ??</span></span>
+<span id="L482"><span class="lineNum">     482</span> <span class="tlaGNC">           4 :         Theme.of(context).colorScheme.error;</span></span>
 <span id="L483"><span class="lineNum">     483</span>              : </span>
-<span id="L484"><span class="lineNum">     484</span> <span class="tlaUNC">           0 :     return Positioned(</span></span>
+<span id="L484"><span class="lineNum">     484</span> <span class="tlaGNC">           1 :     return Positioned(</span></span>
 <span id="L485"><span class="lineNum">     485</span>              :       top: topPosition,</span>
 <span id="L486"><span class="lineNum">     486</span>              :       left: 0,</span>
 <span id="L487"><span class="lineNum">     487</span>              :       right: 0,</span>
-<span id="L488"><span class="lineNum">     488</span> <span class="tlaUNC">           0 :       child: Row(</span></span>
-<span id="L489"><span class="lineNum">     489</span> <span class="tlaUNC">           0 :         children: [</span></span>
-<span id="L490"><span class="lineNum">     490</span> <span class="tlaUNC">           0 :           Container(</span></span>
+<span id="L488"><span class="lineNum">     488</span> <span class="tlaGNC">           1 :       child: Row(</span></span>
+<span id="L489"><span class="lineNum">     489</span> <span class="tlaGNC">           1 :         children: [</span></span>
+<span id="L490"><span class="lineNum">     490</span> <span class="tlaGNC">           1 :           Container(</span></span>
 <span id="L491"><span class="lineNum">     491</span>              :             width: 8,</span>
 <span id="L492"><span class="lineNum">     492</span>              :             height: 8,</span>
-<span id="L493"><span class="lineNum">     493</span> <span class="tlaUNC">           0 :             decoration: BoxDecoration(</span></span>
+<span id="L493"><span class="lineNum">     493</span> <span class="tlaGNC">           1 :             decoration: BoxDecoration(</span></span>
 <span id="L494"><span class="lineNum">     494</span>              :               color: dangerColor,</span>
 <span id="L495"><span class="lineNum">     495</span>              :               shape: BoxShape.circle,</span>
 <span id="L496"><span class="lineNum">     496</span>              :             ),</span>
 <span id="L497"><span class="lineNum">     497</span>              :           ),</span>
-<span id="L498"><span class="lineNum">     498</span> <span class="tlaUNC">           0 :           Expanded(child: Container(height: 2, color: dangerColor)),</span></span>
+<span id="L498"><span class="lineNum">     498</span> <span class="tlaGNC">           2 :           Expanded(child: Container(height: 2, color: dangerColor)),</span></span>
 <span id="L499"><span class="lineNum">     499</span>              :         ],</span>
 <span id="L500"><span class="lineNum">     500</span>              :       ),</span>
 <span id="L501"><span class="lineNum">     501</span>              :     );</span>
@@ -596,9 +596,9 @@
 <span id="L534"><span class="lineNum">     534</span> <span class="tlaGNC">           1 :       LectureStatus.attended =&gt; (ext?.success ??</span></span>
 <span id="L535"><span class="lineNum">     535</span> <span class="tlaUNC">           0 :               themeData.colorScheme.secondary)</span></span>
 <span id="L536"><span class="lineNum">     536</span> <span class="tlaUNC">           0 :           .withValues(alpha: 0.1),</span></span>
-<span id="L537"><span class="lineNum">     537</span> <span class="tlaGNC">           3 :       LectureStatus.missed =&gt; (ext?.danger ?? themeData.colorScheme.error)</span></span>
-<span id="L538"><span class="lineNum">     538</span> <span class="tlaGNC">           1 :           .withValues(alpha: 0.1),</span></span>
-<span id="L539"><span class="lineNum">     539</span> <span class="tlaUNC">           0 :       LectureStatus.inProgress =&gt; moduleColor.withValues(alpha: 0.15),</span></span>
+<span id="L537"><span class="lineNum">     537</span> <span class="tlaGNC">           1 :       LectureStatus.missed =&gt; (ext?.danger ?? themeData.colorScheme.error)</span></span>
+<span id="L538"><span class="lineNum">     538</span> <span class="tlaUNC">           0 :           .withValues(alpha: 0.1),</span></span>
+<span id="L539"><span class="lineNum">     539</span> <span class="tlaGNC">           2 :       LectureStatus.inProgress =&gt; moduleColor.withValues(alpha: 0.15),</span></span>
 <span id="L540"><span class="lineNum">     540</span> <span class="tlaUNC">           0 :       LectureStatus.upcoming =&gt; moduleColor.withValues(alpha: 0.08),</span></span>
 <span id="L541"><span class="lineNum">     541</span>              :     };</span>
 <span id="L542"><span class="lineNum">     542</span>              : </span>
@@ -655,9 +655,9 @@
 <span id="L593"><span class="lineNum">     593</span>              :                           ),</span>
 <span id="L594"><span class="lineNum">     594</span>              :                         )</span>
 <span id="L595"><span class="lineNum">     595</span> <span class="tlaGNC">           1 :                       else if (status == LectureStatus.missed)</span></span>
-<span id="L596"><span class="lineNum">     596</span> <span class="tlaGNC">           1 :                         Padding(</span></span>
+<span id="L596"><span class="lineNum">     596</span> <span class="tlaUNC">           0 :                         Padding(</span></span>
 <span id="L597"><span class="lineNum">     597</span>              :                           padding: const EdgeInsets.only(right: 4),</span>
-<span id="L598"><span class="lineNum">     598</span> <span class="tlaGNC">           1 :                           child: Icon(</span></span>
+<span id="L598"><span class="lineNum">     598</span> <span class="tlaUNC">           0 :                           child: Icon(</span></span>
 <span id="L599"><span class="lineNum">     599</span>              :                             Icons.cancel,</span>
 <span id="L600"><span class="lineNum">     600</span>              :                             size: 14,</span>
 <span id="L601"><span class="lineNum">     601</span>              :                             color: statusIconColor,</span>
@@ -820,7 +820,7 @@
 <span id="L758"><span class="lineNum">     758</span>              :                   ? Icons.check_circle</span>
 <span id="L759"><span class="lineNum">     759</span> <span class="tlaGNC">           1 :                   : status == LectureStatus.missed</span></span>
 <span id="L760"><span class="lineNum">     760</span>              :                   ? Icons.cancel</span>
-<span id="L761"><span class="lineNum">     761</span> <span class="tlaUNC">           0 :                   : status == LectureStatus.inProgress</span></span>
+<span id="L761"><span class="lineNum">     761</span> <span class="tlaGNC">           1 :                   : status == LectureStatus.inProgress</span></span>
 <span id="L762"><span class="lineNum">     762</span>              :                   ? Icons.play_circle</span>
 <span id="L763"><span class="lineNum">     763</span>              :                   : Icons.schedule,</span>
 <span id="L764"><span class="lineNum">     764</span>              :               size: 16,</span>
@@ -829,7 +829,7 @@
 <span id="L767"><span class="lineNum">     767</span> <span class="tlaUNC">           0 :                       ? ext?.success</span></span>
 <span id="L768"><span class="lineNum">     768</span> <span class="tlaGNC">           1 :                       : status == LectureStatus.missed</span></span>
 <span id="L769"><span class="lineNum">     769</span> <span class="tlaUNC">           0 :                       ? ext?.danger</span></span>
-<span id="L770"><span class="lineNum">     770</span> <span class="tlaUNC">           0 :                       : theme.colorScheme.primary,</span></span>
+<span id="L770"><span class="lineNum">     770</span> <span class="tlaGNC">           2 :                       : theme.colorScheme.primary,</span></span>
 <span id="L771"><span class="lineNum">     771</span>              :             ),</span>
 <span id="L772"><span class="lineNum">     772</span>              :             const SizedBox(width: 6),</span>
 <span id="L773"><span class="lineNum">     773</span> <span class="tlaGNC">           5 :             Text('Status: ${status.name}', style: theme.textTheme.bodyMedium),</span></span>
