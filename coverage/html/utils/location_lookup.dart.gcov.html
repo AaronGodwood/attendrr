@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Test Date:</td>
-            <td class="headerValue">2026-02-22 22:25:14</td>
+            <td class="headerValue">2026-02-27 15:33:27</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntryHi">100.0&nbsp;%</td>
@@ -60,51 +60,53 @@
               <td>
 <pre class="sourceHeading">            Line data    Source code</pre>
 <pre class="source">
-<span id="L1"><span class="lineNum">       1</span>              : import 'uob_buildings.dart';</span>
+<span id="L1"><span class="lineNum">       1</span>              : import '../models/building.dart';</span>
 <span id="L2"><span class="lineNum">       2</span>              : </span>
 <span id="L3"><span class="lineNum">       3</span>              : class LocationLookup {</span>
-<span id="L4"><span class="lineNum">       4</span> <span class="tlaGNC">          12 :   static final List&lt;_AliasEntry&gt; _aliases = _buildAliases();</span></span>
+<span id="L4"><span class="lineNum">       4</span> <span class="tlaGNC">           8 :   static List&lt;_AliasEntry&gt; _aliases = [];</span></span>
 <span id="L5"><span class="lineNum">       5</span>              : </span>
-<span id="L6"><span class="lineNum">       6</span> <span class="tlaGNC">           4 :   static UobBuilding? resolve(String? rawLocation) {</span></span>
-<span id="L7"><span class="lineNum">       7</span>              :     if (rawLocation == null) return null;</span>
-<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">           4 :     final normalized = _normalize(rawLocation);</span></span>
-<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">           4 :     if (normalized.isEmpty) return null;</span></span>
-<span id="L10"><span class="lineNum">      10</span>              : </span>
-<span id="L11"><span class="lineNum">      11</span> <span class="tlaGNC">           8 :     for (final entry in _aliases) {</span></span>
-<span id="L12"><span class="lineNum">      12</span> <span class="tlaGNC">           8 :       if (normalized.contains(entry.alias)) {</span></span>
-<span id="L13"><span class="lineNum">      13</span> <span class="tlaGNC">           3 :         return entry.building;</span></span>
-<span id="L14"><span class="lineNum">      14</span>              :       }</span>
-<span id="L15"><span class="lineNum">      15</span>              :     }</span>
-<span id="L16"><span class="lineNum">      16</span>              : </span>
-<span id="L17"><span class="lineNum">      17</span>              :     return null;</span>
-<span id="L18"><span class="lineNum">      18</span>              :   }</span>
-<span id="L19"><span class="lineNum">      19</span>              : </span>
-<span id="L20"><span class="lineNum">      20</span> <span class="tlaGNC">           4 :   static List&lt;_AliasEntry&gt; _buildAliases() {</span></span>
-<span id="L21"><span class="lineNum">      21</span> <span class="tlaGNC">           4 :     final entries = &lt;_AliasEntry&gt;[];</span></span>
-<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">           8 :     for (final building in uobBuildings) {</span></span>
-<span id="L23"><span class="lineNum">      23</span> <span class="tlaGNC">           8 :       for (final alias in building.aliases) {</span></span>
-<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">           4 :         final normalizedAlias = _normalize(alias);</span></span>
-<span id="L25"><span class="lineNum">      25</span> <span class="tlaGNC">           4 :         if (normalizedAlias.isEmpty) continue;</span></span>
-<span id="L26"><span class="lineNum">      26</span> <span class="tlaGNC">           8 :         entries.add(_AliasEntry(normalizedAlias, building));</span></span>
-<span id="L27"><span class="lineNum">      27</span>              :       }</span>
-<span id="L28"><span class="lineNum">      28</span>              :     }</span>
-<span id="L29"><span class="lineNum">      29</span>              : </span>
-<span id="L30"><span class="lineNum">      30</span> <span class="tlaGNC">          28 :     entries.sort((a, b) =&gt; b.alias.length.compareTo(a.alias.length));</span></span>
-<span id="L31"><span class="lineNum">      31</span>              :     return entries;</span>
-<span id="L32"><span class="lineNum">      32</span>              :   }</span>
-<span id="L33"><span class="lineNum">      33</span>              : </span>
-<span id="L34"><span class="lineNum">      34</span> <span class="tlaGNC">           4 :   static String _normalize(String value) {</span></span>
-<span id="L35"><span class="lineNum">      35</span> <span class="tlaGNC">           4 :     final lower = value.toLowerCase();</span></span>
-<span id="L36"><span class="lineNum">      36</span> <span class="tlaGNC">           8 :     final cleaned = lower.replaceAll(RegExp(r'[^a-z0-9]+'), ' ');</span></span>
-<span id="L37"><span class="lineNum">      37</span> <span class="tlaGNC">           4 :     return cleaned.trim();</span></span>
-<span id="L38"><span class="lineNum">      38</span>              :   }</span>
-<span id="L39"><span class="lineNum">      39</span>              : }</span>
-<span id="L40"><span class="lineNum">      40</span>              : </span>
-<span id="L41"><span class="lineNum">      41</span>              : class _AliasEntry {</span>
-<span id="L42"><span class="lineNum">      42</span>              :   final String alias;</span>
-<span id="L43"><span class="lineNum">      43</span>              :   final UobBuilding building;</span>
-<span id="L44"><span class="lineNum">      44</span> <span class="tlaGNC">           4 :   const _AliasEntry(this.alias, this.building);</span></span>
-<span id="L45"><span class="lineNum">      45</span>              : }</span>
+<span id="L6"><span class="lineNum">       6</span>              :   /// Call this once before any [resolve] calls, passing the buildings fetched</span>
+<span id="L7"><span class="lineNum">       7</span>              :   /// from Supabase. Replaces any previously seeded data.</span>
+<span id="L8"><span class="lineNum">       8</span> <span class="tlaGNC">           2 :   static void seed(List&lt;Building&gt; buildings) {</span></span>
+<span id="L9"><span class="lineNum">       9</span> <span class="tlaGNC">           2 :     final entries = &lt;_AliasEntry&gt;[];</span></span>
+<span id="L10"><span class="lineNum">      10</span> <span class="tlaGNC">           4 :     for (final building in buildings) {</span></span>
+<span id="L11"><span class="lineNum">      11</span> <span class="tlaGNC">           4 :       for (final alias in building.aliases) {</span></span>
+<span id="L12"><span class="lineNum">      12</span> <span class="tlaGNC">           2 :         final normalizedAlias = _normalize(alias);</span></span>
+<span id="L13"><span class="lineNum">      13</span> <span class="tlaGNC">           2 :         if (normalizedAlias.isEmpty) continue;</span></span>
+<span id="L14"><span class="lineNum">      14</span> <span class="tlaGNC">           4 :         entries.add(_AliasEntry(normalizedAlias, building));</span></span>
+<span id="L15"><span class="lineNum">      15</span>              :       }</span>
+<span id="L16"><span class="lineNum">      16</span>              :     }</span>
+<span id="L17"><span class="lineNum">      17</span>              :     // Longer aliases first so more specific matches win.</span>
+<span id="L18"><span class="lineNum">      18</span> <span class="tlaGNC">          14 :     entries.sort((a, b) =&gt; b.alias.length.compareTo(a.alias.length));</span></span>
+<span id="L19"><span class="lineNum">      19</span>              :     _aliases = entries;</span>
+<span id="L20"><span class="lineNum">      20</span>              :   }</span>
+<span id="L21"><span class="lineNum">      21</span>              : </span>
+<span id="L22"><span class="lineNum">      22</span> <span class="tlaGNC">           4 :   static Building? resolve(String? rawLocation) {</span></span>
+<span id="L23"><span class="lineNum">      23</span>              :     if (rawLocation == null) return null;</span>
+<span id="L24"><span class="lineNum">      24</span> <span class="tlaGNC">           4 :     final normalized = _normalize(rawLocation);</span></span>
+<span id="L25"><span class="lineNum">      25</span> <span class="tlaGNC">           4 :     if (normalized.isEmpty) return null;</span></span>
+<span id="L26"><span class="lineNum">      26</span>              : </span>
+<span id="L27"><span class="lineNum">      27</span> <span class="tlaGNC">           6 :     for (final entry in _aliases) {</span></span>
+<span id="L28"><span class="lineNum">      28</span> <span class="tlaGNC">           4 :       if (normalized.contains(entry.alias)) {</span></span>
+<span id="L29"><span class="lineNum">      29</span> <span class="tlaGNC">           2 :         return entry.building;</span></span>
+<span id="L30"><span class="lineNum">      30</span>              :       }</span>
+<span id="L31"><span class="lineNum">      31</span>              :     }</span>
+<span id="L32"><span class="lineNum">      32</span>              : </span>
+<span id="L33"><span class="lineNum">      33</span>              :     return null;</span>
+<span id="L34"><span class="lineNum">      34</span>              :   }</span>
+<span id="L35"><span class="lineNum">      35</span>              : </span>
+<span id="L36"><span class="lineNum">      36</span> <span class="tlaGNC">           4 :   static String _normalize(String value) {</span></span>
+<span id="L37"><span class="lineNum">      37</span> <span class="tlaGNC">           4 :     final lower = value.toLowerCase();</span></span>
+<span id="L38"><span class="lineNum">      38</span> <span class="tlaGNC">           8 :     final cleaned = lower.replaceAll(RegExp(r'[^a-z0-9]+'), ' ');</span></span>
+<span id="L39"><span class="lineNum">      39</span> <span class="tlaGNC">           4 :     return cleaned.trim();</span></span>
+<span id="L40"><span class="lineNum">      40</span>              :   }</span>
+<span id="L41"><span class="lineNum">      41</span>              : }</span>
+<span id="L42"><span class="lineNum">      42</span>              : </span>
+<span id="L43"><span class="lineNum">      43</span>              : class _AliasEntry {</span>
+<span id="L44"><span class="lineNum">      44</span>              :   final String alias;</span>
+<span id="L45"><span class="lineNum">      45</span>              :   final Building building;</span>
+<span id="L46"><span class="lineNum">      46</span> <span class="tlaGNC">           2 :   const _AliasEntry(this.alias, this.building);</span></span>
+<span id="L47"><span class="lineNum">      47</span>              : }</span>
         </pre>
               </td>
             </tr>
