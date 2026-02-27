@@ -1,3 +1,4 @@
+export 'building.dart';
 export 'user.dart';
 export 'timetable.dart';
 export 'lecture.dart';
