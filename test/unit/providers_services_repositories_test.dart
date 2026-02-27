@@ -206,12 +206,19 @@ void main() {
 
     final oauth = await p.signInWithGoogle();
     expect(oauth, isA<bool>());
+    // Google OAuth either enters a pending browser flow (true) or fails outright (false);
+    // either way it must not leave the provider in an authenticated state.
+    expect(p.status, isNot(AuthStatus.authenticated));
 
     final reset = await p.sendPasswordResetEmail('invalid-email');
-    expect(reset, isA<bool>());
+    expect(reset, isFalse, reason: 'Invalid email format must fail validation');
 
     final update = await p.updatePassword('123456');
-    expect(update, isA<bool>());
+    expect(
+      update,
+      isFalse,
+      reason: 'Password that is too short must fail validation',
+    );
 
     await p.signOut();
     expect(p.status, AuthStatus.unauthenticated);
@@ -242,7 +249,12 @@ void main() {
     await friends.loadLeaderboard();
     friends.toggleLeaderboardType();
     friends.setCategory(LeaderboardCategory.currentStreak);
-    expect(friends.isLoading || !friends.isLoading, isTrue);
+    // toggleLeaderboardType() flips showGlobal synchronously; started true so must now be false.
+    expect(friends.showGlobal, isFalse);
+    // setCategory must actually update the stored category synchronously.
+    expect(friends.category, LeaderboardCategory.currentStreak);
+    // Note: isLoading is intentionally not checked here — both calls above fire
+    // unawaited background reloads, so isLoading is legitimately true at this point.
     expect(() => friends.acceptRequest('f1'), throwsA(isA<Object>()));
     expect(() => friends.rejectRequest('f1'), throwsA(isA<Object>()));
     expect(() => friends.removeFriend('f1'), throwsA(isA<Object>()));
@@ -255,7 +267,11 @@ void main() {
     expect(shop.items, isA<List<ShopItem>>());
     expect(shop.userPoints, isA<int>());
     expect(shop.userFreezes, isA<int>());
-    expect(shop.isPurchasing, isA<bool>());
+    expect(
+      shop.isPurchasing,
+      isFalse,
+      reason: 'isPurchasing must be false after all purchase calls settle',
+    );
     shop.clearError();
 
     final profile = ProfileProvider();
@@ -282,12 +298,17 @@ void main() {
     );
     expect(timetable.error, isNotNull);
     expect(timetable.lastSyncResult, isNull);
-    expect(timetable.isSyncing, isA<bool>());
+    expect(
+      timetable.isSyncing,
+      isFalse,
+      reason: 'isSyncing must be false after sync call settles',
+    );
     timetable.goToToday();
     timetable.nextWeek();
     timetable.previousWeek();
 
-    expect(shop.isLoading || !shop.isLoading, isTrue);
+    // isLoading must be false once all shop operations have settled.
+    expect(shop.isLoading, isFalse);
   });
 
   test('Repository auth-guard branches execute', () async {

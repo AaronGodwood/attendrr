@@ -49,7 +49,7 @@ void main() {
   });
 
   setUp(() async {
-    if (!_envReady) return;
+    if (!_envReady) return; // setUp; not a test — silent skip is correct here.
     if (client.auth.currentSession != null) {
       await client.auth.signOut();
     }
@@ -58,7 +58,10 @@ void main() {
   // Data Integrity
   group('Data Integrity Tests (Model Parsing)', () {
     test('User Model correctly parses profile data', () async {
-      if (!_envReady) return;
+      if (!_envReady) {
+        markTestSkipped('Skipped: no .env.test file with required credentials');
+        return;
+      }
       await client.auth.signInWithPassword(
         email: testUserEmail,
         password: testUserPassword,
@@ -77,12 +80,18 @@ void main() {
   // Security (RLS)
   group('RLS Policy Access Tests (NFR4 - Security)', () {
     test('RLS: Unauthenticated user cannot read profiles', () async {
-      if (!_envReady) return;
+      if (!_envReady) {
+        markTestSkipped('Skipped: no .env.test file with required credentials');
+        return;
+      }
       expect(() => userRepository.getCurrentUser(), throwsA(isA<Exception>()));
     });
 
     test('RLS: Authenticated user CAN read OWN profile data', () async {
-      if (!_envReady) return;
+      if (!_envReady) {
+        markTestSkipped('Skipped: no .env.test file with required credentials');
+        return;
+      }
       await client.auth.signInWithPassword(
         email: testUserEmail,
         password: testUserPassword,
