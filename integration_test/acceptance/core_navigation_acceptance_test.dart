@@ -74,7 +74,17 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   @override
   List<app_models.DailyAttendance>? get history => [];
   @override
+  app_models.StreakEvaluation? get lastEvaluation => null;
+  @override
+  String? get milestoneRewardMessage => null;
+  @override
   Future<void> loadProfile() async {}
+  @override
+  Future<void> refresh() async {}
+  @override
+  void clearEvaluation() {}
+  @override
+  void clearMilestoneRewardMessage() {}
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -97,9 +107,19 @@ class MockCheckInProvider extends ChangeNotifier implements CheckInProvider {
   @override
   Duration? get timeRemaining => null;
   @override
+  bool get alreadyCheckedIn => false;
+  @override
+  bool get isWithinWindow => false;
+  @override
+  bool get canCheckIn => false;
+  @override
+  int get projectedPoints => 0;
+  @override
   Future<void> loadState() async {}
   @override
   Future<void> refresh() async {}
+  @override
+  Future<void> checkIn() async {}
   @override
   Future<void> checkOut() async {}
   @override
@@ -120,9 +140,24 @@ class MockFriendsProvider extends ChangeNotifier implements FriendsProvider {
   @override
   bool get showGlobal => true;
   @override
+  app_models.LeaderboardCategory get category =>
+      app_models.LeaderboardCategory.weeklyPoints;
+  @override
   Future<void> loadFriends() async {}
   @override
   Future<void> loadLeaderboard() async {}
+  @override
+  void toggleLeaderboardType() {}
+  @override
+  void setCategory(app_models.LeaderboardCategory category) {}
+  @override
+  Future<void> sendRequest(String userId) async {}
+  @override
+  Future<void> acceptRequest(String friendshipId) async {}
+  @override
+  Future<void> rejectRequest(String friendshipId) async {}
+  @override
+  Future<void> removeFriend(String friendshipId) async {}
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }

@@ -1,9 +1,26 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:attendr/models/building.dart';
 import 'package:attendr/utils/location_lookup.dart';
 import 'package:attendr/services/ical_service.dart';
 
 void main() {
   group('UT-03 Location lookup', () {
+    setUp(() {
+      LocationLookup.seed([
+        const Building(
+          name: '1 West',
+          latitude: 51.379924,
+          longitude: -2.328749,
+          aliases: ['1 West', '1 west', '1W', '1w'],
+        ),
+        const Building(
+          name: '1 South',
+          latitude: 51.37791,
+          longitude: -2.33031,
+          aliases: ['1 South', '1 south', '1S', '1s'],
+        ),
+      ]);
+    });
     test('UT-03a: resolves known building by name', () {
       final building = LocationLookup.resolve('1 West');
       expect(building, isNotNull);
