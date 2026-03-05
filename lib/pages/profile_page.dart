@@ -384,19 +384,19 @@ class _ProfilePageState extends State<ProfilePage> {
         if (result == null) return;
         final file = result.files.single;
         final XFile xfile;
-        if (file.path != null) {
-          xfile = XFile(file.path!);
-        } else if (file.bytes != null) {
+        if (kIsWeb) {
+          if (file.bytes == null) return;
           xfile = XFile.fromData(file.bytes!, name: file.name);
         } else {
-          return;
+          if (file.path == null) return;
+          xfile = XFile(file.path!);
         }
         provider.updateAvatar(xfile);
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open image picker')),
+          SnackBar(content: Text('Upload failed: $e')),
         );
       }
     }
