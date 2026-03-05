@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart' show kIsWeb, TargetPlatform;
 import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
@@ -376,22 +375,11 @@ class _ProfilePageState extends State<ProfilePage> {
           provider.updateAvatar(image);
         }
       } else {
-        final result = await FilePicker.platform.pickFiles(
-          type: FileType.image,
-          allowMultiple: false,
-          withData: true,
-        );
-        if (result == null) return;
-        final file = result.files.single;
-        final XFile xfile;
-        if (kIsWeb) {
-          if (file.bytes == null) return;
-          xfile = XFile.fromData(file.bytes!, name: file.name);
-        } else {
-          if (file.path == null) return;
-          xfile = XFile(file.path!);
-        }
-        provider.updateAvatar(xfile);
+        // ImagePicker works on web too and handles mobile browsers correctly
+        final picker = ImagePicker();
+        final image = await picker.pickImage(source: ImageSource.gallery);
+        if (image == null) return;
+        provider.updateAvatar(image);
       }
     } catch (e) {
       if (mounted) {
