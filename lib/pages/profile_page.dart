@@ -379,10 +379,19 @@ class _ProfilePageState extends State<ProfilePage> {
         final result = await FilePicker.platform.pickFiles(
           type: FileType.image,
           allowMultiple: false,
+          withData: true,
         );
-        if (result != null && result.files.single.path != null) {
-          provider.updateAvatar(XFile(result.files.single.path!));
+        if (result == null) return;
+        final file = result.files.single;
+        final XFile xfile;
+        if (kIsWeb) {
+          if (file.bytes == null) return;
+          xfile = XFile.fromData(file.bytes!, name: file.name);
+        } else {
+          if (file.path == null) return;
+          xfile = XFile(file.path!);
         }
+        provider.updateAvatar(xfile);
       }
     } catch (e) {
       if (mounted) {
