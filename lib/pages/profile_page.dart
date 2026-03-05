@@ -396,7 +396,7 @@ class _ProfilePageState extends State<ProfilePage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open image picker')),
+          SnackBar(content: Text('Upload failed: $e')),
         );
       }
     }
