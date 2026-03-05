@@ -78,7 +78,8 @@ class ProfileProvider extends ChangeNotifier {
       final client = Supabase.instance.client;
       final userId = client.auth.currentUser!.id;
       final bytes = await imageFile.readAsBytes();
-      final ext = imageFile.path.split('.').last;
+      final filename = imageFile.name.isNotEmpty ? imageFile.name : imageFile.path;
+      final ext = filename.contains('.') ? filename.split('.').last : 'jpg';
       final path = '$userId/${DateTime.now().millisecondsSinceEpoch}.$ext';
 
       await client.storage
