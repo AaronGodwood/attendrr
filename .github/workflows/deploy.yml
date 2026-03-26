@@ -18,6 +18,8 @@ jobs:
         run: |
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
           echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+          "OAUTH_REDIRECT_URL=com.example.attendr://login-callback" >> .env
+          "PASSWORD_RESET_REDIRECT_URL=com.example.attendr://reset-password" >> .env
       - name: Verify .env exists
         run: |
           echo "Root .env:"
