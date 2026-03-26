@@ -16,8 +16,15 @@ jobs:
         run: flutter pub get
       - name: Create .env
         run: |
-          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" >> .env
+          echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
           echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
+      - name: Verify .env exists
+        run: |
+          echo "Root .env:"
+          cat .env
+          echo "---"
+          echo "pubspec assets section:"
+          grep -A 5 "assets:" pubspec.yaml
       - name: Build
         run: flutter build web --release --base-href "/attendrr/"
       - uses: peaceiris/actions-gh-pages@v3
