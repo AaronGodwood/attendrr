@@ -18,8 +18,6 @@ jobs:
         run: |
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
           echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
-          "OAUTH_REDIRECT_URL=com.example.attendr://login-callback" >> .env
-          "PASSWORD_RESET_REDIRECT_URL=com.example.attendr://reset-password" >> .env
       - name: Verify .env exists
         run: |
           echo "Root .env:"
@@ -29,6 +27,11 @@ jobs:
           grep -A 5 "assets:" pubspec.yaml
       - name: Build
         run: flutter build web --release --base-href "/attendrr/"
+      - name: Verify .env in build output
+        run: |
+          echo "Checking build output for .env:"
+          find ./build/web -name "*.env" -o -name "assets*" | head -20
+          ls -la ./build/web/assets/ || true
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
