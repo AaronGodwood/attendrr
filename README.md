@@ -1,6 +1,6 @@
 # Attendrr
 
-A Flutter application for gamified lecture attendance tracking, built for University of Bath students. Submitted as coursework for **CM22007 Software Engineering** (Year 2)..
+A Flutter application for gamified lecture attendance tracking, built for University of Bath students. Submitted as coursework for **CM22007 Software Engineering** (Year 2)...
 
 **Live deployment:** [aarongodwood.github.io/attendrr](https://aarongodwood.github.io/attendrr)
 
