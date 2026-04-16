@@ -22,6 +22,7 @@ class HomePage extends StatelessWidget {
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Timetable'),
               BottomNavigationBarItem(icon: Icon(Icons.location_on), label: 'Check In'),
+              BottomNavigationBarItem(icon: Icon(Icons.people_outline), label: 'People'),
               BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
             ],
           ),
@@ -31,9 +32,10 @@ class HomePage extends StatelessWidget {
   }
 
   int _calculateIndex(String location) {
-    if (location.startsWith('/profile')) return 2;
+    if (location.startsWith('/profile')) return 3;
     if (location.startsWith('/timetable')) return 0;
     if (location.startsWith('/checkin')) return 1;
+    if (location.startsWith('/people')) return 2;
     return 0;
   }
 
@@ -41,7 +43,8 @@ class HomePage extends StatelessWidget {
     switch (index) {
       case 0: context.go('/timetable'); break;
       case 1: context.go('/checkin'); break;
-      case 2: context.go('/profile'); break;
+      case 2: context.go('/people'); break;
+      case 3: context.go('/profile'); break;
     }
   }
 }

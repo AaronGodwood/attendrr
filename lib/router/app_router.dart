@@ -11,6 +11,7 @@ import '../pages/profile_page.dart';
 import '../pages/settings_page.dart';
 import '../pages/timetable_page.dart';
 import '../pages/checkin_page.dart';
+import '../pages/peer_stats_page.dart';
 
 class AppRouter {
   static Page _buildPageWithTransition({
@@ -128,6 +129,15 @@ class AppRouter {
                     context: context,
                     state: state,
                     child: const CheckInPage(),
+                  ),
+            ),
+            GoRoute(
+              path: '/people',
+              pageBuilder:
+                  (context, state) => _buildPageWithTransition(
+                    context: context,
+                    state: state,
+                    child: const PeerStatsPage(),
                   ),
             ),
           ],

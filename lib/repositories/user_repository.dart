@@ -56,6 +56,17 @@ class UserRepository extends BaseRepository {
     await client.from('profiles').update(updates).eq('id', currentUserId!);
   }
 
+  Future<List<User>> getAllUsers() async {
+    requireAuth();
+    final response = await client
+        .from('profiles')
+        .select()
+        .neq('id', currentUserId!)
+        .order('username')
+        .limit(200);
+    return (response as List).map((json) => User.fromJson(json)).toList();
+  }
+
   Future<List<User>> searchUsers(String query) async {
     requireAuth();
     final response = await client

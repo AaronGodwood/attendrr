@@ -5,3 +5,4 @@ export 'lecture.dart';
 export 'attendance.dart';
 export 'streak.dart';
 export 'streak_evaluation.dart';
+export 'friendship.dart';

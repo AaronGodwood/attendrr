@@ -9,6 +9,7 @@ import 'providers/profile_provider.dart';
 import 'providers/timetable_provider.dart';
 import 'providers/checkin_provider.dart';
 import 'providers/theme_provider.dart';
+import 'providers/peer_stats_provider.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
 
@@ -54,6 +55,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TimetableProvider()),
         ChangeNotifierProvider(create: (_) => CheckInProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => PeerStatsProvider()),
       ],
       child: Consumer2<AuthProvider, ThemeProvider>(
         builder: (context, authProvider, themeProvider, _) {
