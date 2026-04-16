@@ -3,7 +3,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:attendr/theme/theme_extensions.dart';
 import 'package:attendr/providers/theme_provider.dart';
-import 'package:attendr/repositories/shop_repository.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -40,11 +39,5 @@ void main() {
     await provider.setThemeMode(AppThemeMode.system);
     expect(provider.themeMode, ThemeMode.system);
     expect(provider.themeModeLabel, 'System default');
-  });
-
-  test('ShopRepository catalog definitions are available', () {
-    final catalog = ShopRepository.instance.getCatalog();
-    expect(catalog.length, greaterThanOrEqualTo(2));
-    expect(catalog.any((i) => i.name.contains('Streak')), isTrue);
   });
 }

@@ -58,12 +58,6 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   String? get error => null;
 
   @override
-  String? get milestoneRewardMessage => null;
-
-  @override
-  void clearMilestoneRewardMessage() {}
-
-  @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 

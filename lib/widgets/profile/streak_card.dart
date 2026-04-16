@@ -142,19 +142,13 @@ class StreakCard extends StatelessWidget {
             const Divider(height: 1),
             const SizedBox(height: 12),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _StatColumn(
                   icon: Icons.emoji_events,
                   iconColor: ext?.medalGold ?? Colors.amber,
                   value: '${streak.longestStreak}',
                   label: 'Longest',
-                ),
-                _StatColumn(
-                  icon: Icons.ac_unit,
-                  iconColor: ext?.tierIntermediate ?? Colors.blue,
-                  value: '${streak.streakFreezes}',
-                  label: 'Freezes',
                 ),
               ],
             ),

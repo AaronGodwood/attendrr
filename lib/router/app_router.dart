@@ -11,9 +11,6 @@ import '../pages/profile_page.dart';
 import '../pages/settings_page.dart';
 import '../pages/timetable_page.dart';
 import '../pages/checkin_page.dart';
-import '../pages/friends_page.dart';
-import '../pages/user_profile_page.dart';
-import '../pages/shop_page.dart';
 
 class AppRouter {
   static Page _buildPageWithTransition({
@@ -63,12 +60,10 @@ class AppRouter {
           return isAuthenticated ? '/timetable' : '/login';
         }
 
-        // Not authenticated and not on auth route -> redirect to login
         if (!isAuthenticated && !isAuthRoute) {
           return '/login';
         }
 
-        // Authenticated and on auth route (except splash) -> redirect to timetable
         if (isAuthenticated &&
             isAuthRoute &&
             state.matchedLocation != '/' &&
@@ -115,10 +110,6 @@ class AppRouter {
                   path: 'settings',
                   builder: (context, state) => const SettingsPage(),
                 ),
-                GoRoute(
-                  path: 'shop',
-                  builder: (context, state) => const ShopPage(),
-                ),
               ],
             ),
             GoRoute(
@@ -138,27 +129,6 @@ class AppRouter {
                     state: state,
                     child: const CheckInPage(),
                   ),
-            ),
-            GoRoute(
-              path: '/friends',
-              pageBuilder:
-                  (context, state) => _buildPageWithTransition(
-                    context: context,
-                    state: state,
-                    child: const FriendsPage(),
-                  ),
-              routes: [
-                GoRoute(
-                  path: 'user/:userId/:username',
-                  builder: (context, state) {
-                    final userId = state.pathParameters['userId']!;
-                    final username = Uri.decodeComponent(
-                      state.pathParameters['username']!,
-                    );
-                    return UserProfilePage(userId: userId, username: username);
-                  },
-                ),
-              ],
             ),
           ],
         ),

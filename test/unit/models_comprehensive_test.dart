@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:attendr/models/models.dart';
-import 'package:attendr/models/user_profile.dart';
 
 void main() {
   group('Model behavior and serialization', () {
@@ -47,79 +46,6 @@ void main() {
       expect(stats.monthlyPercent, 50);
       expect(stats.overallPercent, 50);
       expect(AttendanceStats.empty().overallPercent, 0);
-    });
-
-    test('Friendship and friend request helper behavior', () {
-      final f1 = Friendship.fromJson({
-        'id': 'f1',
-        'user_id': 'u1',
-        'friend_id': 'u2',
-        'status': 'accepted',
-        'created_at': DateTime(2026, 1, 1).toIso8601String(),
-        'updated_at': DateTime(2026, 1, 1).toIso8601String(),
-      });
-      expect(f1.isAccepted, isTrue);
-      expect(f1.statusString, 'accepted');
-      expect(f1.toJson()['status'], 'accepted');
-
-      final f2 = Friendship.fromJson({
-        'id': 'f2',
-        'user_id': 'u1',
-        'friend_id': 'u3',
-        'status': 'rejected',
-        'created_at': DateTime(2026, 1, 1).toIso8601String(),
-        'updated_at': DateTime(2026, 1, 1).toIso8601String(),
-      });
-      expect(f2.statusString, 'rejected');
-
-      const friend = FriendWithStats(
-        id: 'u9',
-        username: 'alice',
-        avatarUrl: null,
-        currentStreak: 3,
-        totalPoints: 50,
-        friendshipId: 'f9',
-      );
-      expect(friend.initials, 'A');
-
-      final req = FriendRequest.fromJson({
-        'id': 'r1',
-        'user_id': 'u4',
-        'created_at':
-            DateTime.now().subtract(const Duration(hours: 2)).toIso8601String(),
-        'profiles': {'id': 'u4', 'username': 'Bob', 'avatar_url': null},
-      });
-      expect(req.senderUsername, 'Bob');
-      expect(req.initials, 'B');
-      expect(
-        req.timeAgo.contains('h ago') || req.timeAgo == 'Just now',
-        isTrue,
-      );
-    });
-
-    test('Leaderboard category metadata and entry mapping', () {
-      expect(LeaderboardCategory.weeklyPoints.label, isNotEmpty);
-      expect(LeaderboardCategory.attendanceRate.unit, '%');
-      expect(LeaderboardCategory.currentStreak.icon, isNotNull);
-
-      final entry = LeaderboardEntry.fromJson(
-        {
-          'user_id': 'u1',
-          'total_points': 123,
-          'weekly_points': 15,
-          'current_streak': 6,
-          'attendance_rate': 92.5,
-          'profiles': {'id': 'u1', 'username': 'Neo', 'avatar_url': null},
-        },
-        1,
-        'u1',
-      );
-
-      expect(entry.isCurrentUser, isTrue);
-      expect(entry.isPodium, isTrue);
-      expect(entry.medal, isNotNull);
-      expect(entry.initials, 'N');
-      expect(entry.copyWith(rank: 4).medal, isNull);
     });
 
     test('Lecture and LectureWithAttendance state behavior', () {
@@ -180,46 +106,8 @@ void main() {
       expect(lwa2.status, LectureStatus.upcoming);
     });
 
-    test('Points/shop/purchase/timetable/user model behavior', () {
+    test('Timetable and User model behavior', () {
       final now = DateTime.now();
-      final p = Points(
-        id: 'p1',
-        userId: 'u1',
-        totalPoints: 5200,
-        weeklyPoints: 20,
-        monthlyPoints: 80,
-        weeklyBoostMultiplier: 1.1,
-        weeklyBoostExpiresAt: now.add(const Duration(hours: 1)),
-        createdAt: now,
-        updatedAt: now,
-      );
-      expect(p.weeklyBoostActive, isTrue);
-      expect(p.tier, PointsTier.master);
-      expect(p.tierName, 'Master');
-      expect(p.pointsToNextTier, 4800);
-      expect(p.currentMilestone.trophyName, 'Master Trophy');
-      expect(p.nextMilestone?.tier, PointsTier.legendary);
-      expect(
-        p.unlockedMilestones.any((m) => m.tier == PointsTier.master),
-        isTrue,
-      );
-      expect(p.copyWith(totalPoints: 10).tier, PointsTier.newcomer);
-      expect(Points.fromJson({'user_id': 'u1'}).totalPoints, 0);
-      expect(Points.empty('u2').userId, 'u2');
-
-      final s = ShopItem(type: ShopItemType.streakFreeze, cost: 100);
-      expect(s.name, 'Streak Freeze');
-      expect(s.copyWith(userQuantity: 2).userQuantity, 2);
-      expect(ShopItemType.weeklyPointsBoost.description, contains('10%'));
-
-      final purchase = Purchase.fromJson({
-        'id': 'x1',
-        'user_id': 'u1',
-        'item_type': 'streak_freeze',
-        'item_cost': 100,
-        'created_at': now.toIso8601String(),
-      });
-      expect(purchase.itemCost, 100);
 
       final tt = Timetable.fromJson({
         'id': 'tt1',
@@ -256,18 +144,6 @@ void main() {
       expect(user.initials, 'X');
       expect(user.hasIcalConnected, isFalse);
       expect(user.copyWith(icalUrl: 'https://ical').hasIcalConnected, isTrue);
-
-      final profile = UserProfile.fromJson({
-        'id': 'u1',
-        'email': 'x@test.com',
-        'username': 'x',
-        'created_at': now.toIso8601String(),
-        'updated_at': now.toIso8601String(),
-      });
-      expect(profile.username, 'x');
-      expect(profile.totalPoints, 0);
-      expect(profile.copyWith(points: p).totalPoints, p.totalPoints);
-      expect(profile.hasTimetableConnected, isFalse);
     });
   });
 }

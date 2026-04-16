@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import '../providers/profile_provider.dart';
 import '../theme/theme_extensions.dart';
 import '../widgets/common/grain_overlay.dart';
-import '../widgets/profile/tier_progress_card.dart';
 import '../widgets/profile/streak_card.dart';
 import '../widgets/profile/attendance_ring_card.dart';
 import '../widgets/profile/attendance_chart.dart';
@@ -28,7 +27,6 @@ class _ProfilePageState extends State<ProfilePage> {
       await provider.loadProfile();
       if (!mounted) return;
       _showStreakNotification(provider);
-      _showMilestoneRewardNotification(provider);
     });
   }
 
@@ -46,34 +44,9 @@ class _ProfilePageState extends State<ProfilePage> {
           duration: const Duration(seconds: 4),
         ),
       );
-    } else if (eval.freezesConsumed > 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            '${eval.freezesConsumed} streak freeze${eval.freezesConsumed > 1 ? 's' : ''} '
-            'used to protect your streak!',
-          ),
-          backgroundColor: ext?.tierIntermediate,
-          duration: const Duration(seconds: 4),
-        ),
-      );
     }
 
     provider.clearEvaluation();
-  }
-
-  void _showMilestoneRewardNotification(ProfileProvider provider) {
-    final message = provider.milestoneRewardMessage;
-    if (message == null) return;
-    final ext = Theme.of(context).extension<TerraThemeExtension>();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: ext?.success,
-        duration: const Duration(seconds: 4),
-      ),
-    );
-    provider.clearMilestoneRewardMessage();
   }
 
   @override
@@ -82,10 +55,6 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         title: const Text('Profile'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.storefront),
-            onPressed: () => context.push('/profile/shop'),
-          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () => context.push('/profile/settings'),
@@ -121,7 +90,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
               final user = provider.user;
               final streak = provider.streak;
-              final points = provider.points;
               final stats = provider.stats;
 
               if (user == null)
@@ -135,21 +103,13 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Column(
                     children: [
                       // Profile Header
-                      _buildProfileHeader(context, provider, user, points),
+                      _buildProfileHeader(context, provider, user),
                       const SizedBox(height: 20),
-
-                      // Tier Progress
-                      if (points != null)
-                        _animatedSection(
-                          index: 0,
-                          child: TierProgressCard(points: points),
-                        ),
-                      const SizedBox(height: 12),
 
                       // Streak
                       if (streak != null)
                         _animatedSection(
-                          index: 1,
+                          index: 0,
                           child: StreakCard(streak: streak),
                         ),
                       const SizedBox(height: 12),
@@ -157,7 +117,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       // Attendance Rings
                       if (stats != null)
                         _animatedSection(
-                          index: 2,
+                          index: 1,
                           child: AttendanceRingCard(stats: stats),
                         ),
                       const SizedBox(height: 12),
@@ -166,7 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (provider.history != null &&
                           provider.history!.isNotEmpty)
                         _animatedSection(
-                          index: 3,
+                          index: 2,
                           child: AttendanceChart(data: provider.history!),
                         ),
                     ],
@@ -185,7 +145,6 @@ class _ProfilePageState extends State<ProfilePage> {
     BuildContext context,
     ProfileProvider provider,
     dynamic user,
-    dynamic points,
   ) {
     final theme = Theme.of(context);
     final ext = theme.extension<TerraThemeExtension>();
@@ -252,46 +211,6 @@ class _ProfilePageState extends State<ProfilePage> {
               color: ext?.textSecondary,
             ),
           ),
-        if (points != null) ...[
-          const SizedBox(height: 6),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-            decoration: BoxDecoration(
-              gradient: ext?.tierGradient,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              points.tierName,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onPrimary,
-              ),
-            ),
-          ),
-          const SizedBox(height: 10),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surface,
-              border: Border.all(color: theme.colorScheme.outlineVariant),
-              borderRadius: BorderRadius.circular(14),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(Icons.monetization_on, size: 16, color: ext?.warning),
-                const SizedBox(width: 6),
-                Text(
-                  '${points.totalPoints} coins',
-                  style: theme.textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
       ],
     );
   }
@@ -375,7 +294,6 @@ class _ProfilePageState extends State<ProfilePage> {
           provider.updateAvatar(image);
         }
       } else {
-        // ImagePicker works on web too and handles mobile browsers correctly
         final picker = ImagePicker();
         final image = await picker.pickImage(source: ImageSource.gallery);
         if (image == null) return;

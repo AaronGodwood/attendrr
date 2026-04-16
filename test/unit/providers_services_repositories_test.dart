@@ -11,15 +11,10 @@ import 'package:attendr/services/location_service.dart';
 import 'package:attendr/services/notification_service.dart';
 import 'package:attendr/providers/auth_provider.dart';
 import 'package:attendr/providers/checkin_provider.dart';
-import 'package:attendr/providers/friends_provider.dart';
 import 'package:attendr/providers/profile_provider.dart';
-import 'package:attendr/providers/shop_provider.dart';
 import 'package:attendr/providers/timetable_provider.dart';
 import 'package:attendr/providers/theme_provider.dart';
 import 'package:attendr/repositories/attendance_repository.dart';
-import 'package:attendr/repositories/friends_repository.dart';
-import 'package:attendr/repositories/leaderboard_repository.dart';
-import 'package:attendr/repositories/shop_repository.dart';
 import 'package:attendr/repositories/timetable_repository.dart';
 import 'package:attendr/repositories/user_repository.dart';
 import 'package:attendr/models/models.dart';
@@ -244,42 +239,11 @@ void main() {
     await checkin.checkOut();
     await checkin.refresh();
 
-    final friends = FriendsProvider();
-    await friends.loadFriends();
-    await friends.loadLeaderboard();
-    friends.toggleLeaderboardType();
-    friends.setCategory(LeaderboardCategory.currentStreak);
-    // toggleLeaderboardType() flips showGlobal synchronously; started true so must now be false.
-    expect(friends.showGlobal, isFalse);
-    // setCategory must actually update the stored category synchronously.
-    expect(friends.category, LeaderboardCategory.currentStreak);
-    // Note: isLoading is intentionally not checked here — both calls above fire
-    // unawaited background reloads, so isLoading is legitimately true at this point.
-    expect(() => friends.acceptRequest('f1'), throwsA(isA<Object>()));
-    expect(() => friends.rejectRequest('f1'), throwsA(isA<Object>()));
-    expect(() => friends.removeFriend('f1'), throwsA(isA<Object>()));
-    await friends.sendRequest('u2');
-
-    final shop = ShopProvider();
-    await shop.loadShop();
-    await shop.purchaseStreakFreeze();
-    await shop.purchaseWeeklyBoost();
-    expect(shop.items, isA<List<ShopItem>>());
-    expect(shop.userPoints, isA<int>());
-    expect(shop.userFreezes, isA<int>());
-    expect(
-      shop.isPurchasing,
-      isFalse,
-      reason: 'isPurchasing must be false after all purchase calls settle',
-    );
-    shop.clearError();
-
     final profile = ProfileProvider();
     await profile.loadProfile();
     await profile.refresh();
     expect(profile.user, isNull);
     expect(profile.streak, isNull);
-    expect(profile.points, isNull);
     expect(profile.stats, isNull);
     expect(profile.history, isNull);
     expect(profile.isLoading, isFalse);
@@ -306,18 +270,12 @@ void main() {
     timetable.goToToday();
     timetable.nextWeek();
     timetable.previousWeek();
-
-    // isLoading must be false once all shop operations have settled.
-    expect(shop.isLoading, isFalse);
   });
 
   test('Repository auth-guard branches execute', () async {
     final attendance = AttendanceRepository.instance;
     final userRepo = UserRepository.instance;
-    final friendsRepo = FriendsRepository.instance;
-    final leaderboard = LeaderboardRepository.instance;
     final timetable = TimetableRepository.instance;
-    final shop = ShopRepository.instance;
 
     expect(() => attendance.getActiveAttendance(), throwsA(isA<Exception>()));
     expect(
@@ -339,7 +297,6 @@ void main() {
 
     expect(() => userRepo.getCurrentUser(), throwsA(isA<Exception>()));
     expect(() => userRepo.getCurrentStreak(), throwsA(isA<Exception>()));
-    expect(() => userRepo.getCurrentPoints(), throwsA(isA<Exception>()));
     expect(() => userRepo.getFullProfile(), throwsA(isA<Exception>()));
     expect(
       () => userRepo.updateProfile(username: 'x'),
@@ -348,29 +305,7 @@ void main() {
     expect(() => userRepo.searchUsers('x'), throwsA(isA<Exception>()));
     expect(() => userRepo.getUserProfile('u1'), throwsA(isA<Exception>()));
     expect(() => userRepo.getUserStreak('u1'), throwsA(isA<Exception>()));
-    expect(() => userRepo.getUserPoints('u1'), throwsA(isA<Exception>()));
     expect(() => userRepo.evaluateStreak(), throwsA(isA<Exception>()));
-
-    expect(() => friendsRepo.getFriends(), throwsA(isA<Exception>()));
-    expect(() => friendsRepo.getPendingRequests(), throwsA(isA<Exception>()));
-    expect(() => friendsRepo.sendRequest('u2'), throwsA(isA<Exception>()));
-    expect(
-      () => friendsRepo.getFriendRelationshipStatus('u2'),
-      throwsA(isA<Exception>()),
-    );
-    expect(
-      () => friendsRepo.getPendingRequestId('u2'),
-      throwsA(isA<Exception>()),
-    );
-
-    expect(
-      () => leaderboard.getLeaderboard(
-        category: LeaderboardCategory.weeklyPoints,
-        global: false,
-      ),
-      throwsA(isA<Exception>()),
-    );
-    expect(() => leaderboard.getUserRank(), throwsA(isA<Exception>()));
 
     expect(() => timetable.getUserTimetable(), throwsA(isA<Exception>()));
     expect(() => timetable.getAllLectures(), throwsA(isA<Exception>()));
@@ -385,20 +320,12 @@ void main() {
       throwsA(isA<Exception>()),
     );
 
-    expect(shop.getCatalog(), isNotEmpty);
-    expect(() => shop.purchaseStreakFreeze(), throwsA(isA<Exception>()));
-    expect(() => shop.purchaseWeeklyBoost(), throwsA(isA<Exception>()));
-    expect(() => shop.getPurchaseHistory(), throwsA(isA<Exception>()));
-
     await attendance.adjustUserPoints(0);
     expect(
       () => attendance.updatePoints(attendanceId: 'a1', pointsEarned: 1),
       throwsA(isA<Object>()),
     );
     expect(() => attendance.checkOut('a1'), throwsA(isA<Object>()));
-    expect(() => friendsRepo.acceptRequest('f1'), throwsA(isA<Object>()));
-    expect(() => friendsRepo.rejectRequest('f1'), throwsA(isA<Object>()));
-    expect(() => friendsRepo.removeFriend('f1'), throwsA(isA<Object>()));
   });
 
   test('Repository authenticated-path behavior executes', () async {
@@ -409,11 +336,7 @@ void main() {
 
     final attendance = AttendanceRepository.instance;
     final userRepo = UserRepository.instance;
-    final friendsRepo = FriendsRepository.instance;
-    final leaderboard = LeaderboardRepository.instance;
     final timetable = TimetableRepository.instance;
-    final shop = ShopRepository.instance;
-    String? otherUserId;
 
     Future<void> runIgnoringErrors(Future<void> Function() fn) async {
       try {
@@ -423,18 +346,6 @@ void main() {
 
     // Seed minimal data to allow repository methods to run deeper branches.
     if (userId != null) {
-      await runIgnoringErrors(() async {
-        final profiles = await client
-            .from('profiles')
-            .select('id')
-            .neq('id', userId)
-            .limit(1);
-        final list = profiles as List;
-        if (list.isNotEmpty) {
-          otherUserId = list.first['id'] as String?;
-        }
-      });
-
       String? timetableId;
       await runIgnoringErrors(() async {
         final timetableRow =
@@ -504,16 +415,6 @@ void main() {
           }
         });
       }
-
-      if (otherUserId != null) {
-        await runIgnoringErrors(() async {
-          await client.from('friendships').upsert({
-            'user_id': userId,
-            'friend_id': otherUserId!,
-            'status': 'accepted',
-          }, onConflict: 'user_id,friend_id');
-        });
-      }
     }
 
     // Attendance repository
@@ -552,12 +453,12 @@ void main() {
     });
     await runIgnoringErrors(() async {
       await attendance.getUserStats(
-        otherUserId ?? '00000000-0000-0000-0000-000000000002',
+        '00000000-0000-0000-0000-000000000002',
       );
     });
     await runIgnoringErrors(() async {
       await attendance.getUserHistory(
-        otherUserId ?? '00000000-0000-0000-0000-000000000002',
+        '00000000-0000-0000-0000-000000000002',
         7,
       );
     });
@@ -566,7 +467,6 @@ void main() {
     await runIgnoringErrors(() async {
       await userRepo.getCurrentUser();
       await userRepo.getCurrentStreak();
-      await userRepo.getCurrentPoints();
       await userRepo.getFullProfile();
     });
     await runIgnoringErrors(() async {
@@ -576,60 +476,12 @@ void main() {
     await runIgnoringErrors(() async {
       await userRepo.searchUsers('cov');
       await userRepo.getUserProfile(
-        otherUserId ?? '00000000-0000-0000-0000-000000000002',
+        '00000000-0000-0000-0000-000000000002',
       );
       await userRepo.getUserStreak(
-        otherUserId ?? '00000000-0000-0000-0000-000000000002',
+        '00000000-0000-0000-0000-000000000002',
       );
       await userRepo.evaluateStreak();
-      await userRepo.getUserPoints(
-        otherUserId ?? '00000000-0000-0000-0000-000000000002',
-      );
-    });
-
-    // Friends repository
-    await runIgnoringErrors(() async {
-      final target = otherUserId ?? '00000000-0000-0000-0000-000000000002';
-      await friendsRepo.getFriendRelationshipStatus(target);
-      await friendsRepo.getPendingRequestId(target);
-      await friendsRepo.getFriends();
-      await friendsRepo.getPendingRequests();
-      await friendsRepo.sendRequest(target);
-      await friendsRepo.acceptRequest('friendship-coverage');
-      await friendsRepo.rejectRequest('friendship-coverage');
-      await friendsRepo.removeFriend('friendship-coverage');
-    });
-
-    // Leaderboard repository
-    await runIgnoringErrors(() async {
-      await leaderboard.getLeaderboard(
-        category: LeaderboardCategory.totalPoints,
-        global: true,
-        limit: 5,
-      );
-      await leaderboard.getLeaderboard(
-        category: LeaderboardCategory.weeklyPoints,
-        global: true,
-        limit: 5,
-      );
-      await leaderboard.getLeaderboard(
-        category: LeaderboardCategory.currentStreak,
-        global: true,
-        limit: 5,
-      );
-      await leaderboard.getLeaderboard(
-        category: LeaderboardCategory.attendanceRate,
-        global: true,
-        limit: 5,
-      );
-      await leaderboard.getLeaderboard(
-        category: LeaderboardCategory.weeklyPoints,
-        global: false,
-        limit: 5,
-      );
-      await leaderboard.getFriendsLeaderboard();
-      await leaderboard.getGlobalLeaderboard(limit: 5);
-      await leaderboard.getUserRank();
     });
 
     // Timetable repository
@@ -640,14 +492,6 @@ void main() {
       await timetable.getCurrentLecture();
       await timetable.getNextLecture();
       await timetable.syncFromIcal('not a valid url');
-    });
-
-    // Shop repository
-    expect(shop.getCatalog(), isNotEmpty);
-    await runIgnoringErrors(() async {
-      await shop.purchaseStreakFreeze();
-      await shop.purchaseWeeklyBoost();
-      await shop.getPurchaseHistory();
     });
   });
 

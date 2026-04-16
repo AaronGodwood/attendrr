@@ -4,9 +4,8 @@ import '../../theme/theme_extensions.dart';
 
 class StatsCard extends StatelessWidget {
   final Streak streak;
-  final Points points;
 
-  const StatsCard({super.key, required this.streak, required this.points});
+  const StatsCard({super.key, required this.streak});
 
   @override
   Widget build(BuildContext context) {
@@ -25,16 +24,10 @@ class StatsCard extends StatelessWidget {
               label: 'Day Streak',
             ),
             _StatItem(
-              icon: Icons.star,
+              icon: Icons.emoji_events,
               iconColor: ext?.medalGold ?? Colors.amber,
-              value: '${points.totalPoints}',
-              label: 'Points',
-            ),
-            _StatItem(
-              icon: Icons.ac_unit,
-              iconColor: ext?.tierIntermediate ?? Colors.blue,
-              value: '${streak.streakFreezes}',
-              label: 'Freezes',
+              value: '${streak.longestStreak}',
+              label: 'Longest',
             ),
           ],
         ),

@@ -4,14 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:attendr/pages/forgot_password_page.dart';
 import 'package:attendr/pages/reset_password_page.dart';
 import 'package:attendr/pages/signup_page.dart';
-import 'package:attendr/pages/shop_page.dart';
 import 'package:attendr/pages/splash_page.dart';
-import 'package:attendr/pages/user_profile_page.dart';
 import 'package:attendr/providers/auth_provider.dart';
 import 'package:attendr/providers/profile_provider.dart';
-import 'package:attendr/providers/shop_provider.dart';
-import 'package:attendr/models/models.dart';
-import 'package:attendr/widgets/profile/profile_skeleton.dart';
 
 class MockAuthProvider extends ChangeNotifier implements AuthProvider {
   @override
@@ -52,51 +47,8 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   int refreshCount = 0;
 
   @override
-  String? get milestoneRewardMessage => null;
-
-  @override
   Future<void> refresh() async {
     refreshCount++;
-  }
-
-  @override
-  void clearMilestoneRewardMessage() {}
-
-  @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
-}
-
-class MockShopProvider extends ChangeNotifier implements ShopProvider {
-  @override
-  List<ShopItem> items = const [
-    ShopItem(type: ShopItemType.streakFreeze, cost: 100, userQuantity: 1),
-    ShopItem(type: ShopItemType.weeklyPointsBoost, cost: 200, userQuantity: 0),
-  ];
-
-  @override
-  int userPoints = 500;
-
-  @override
-  bool isLoading = false;
-
-  @override
-  bool isPurchasing = false;
-
-  @override
-  String? error;
-
-  @override
-  Future<void> loadShop() async {}
-
-  @override
-  Future<bool> purchaseStreakFreeze() async => true;
-
-  @override
-  Future<bool> purchaseWeeklyBoost() async => true;
-
-  @override
-  void clearError() {
-    error = null;
   }
 
   @override
@@ -194,48 +146,9 @@ void main() {
     expect(auth.lastSignUpUsername, 'valid_user');
   });
 
-  testWidgets('Shop page renders items and allows opening purchase dialog', (
-    tester,
-  ) async {
-    final shop = MockShopProvider();
-    final profile = MockProfileProvider();
-
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider<ShopProvider>.value(value: shop),
-          ChangeNotifierProvider<ProfileProvider>.value(value: profile),
-        ],
-        child: const MaterialApp(home: ShopPage()),
-      ),
-    );
-
-    await tester.pumpAndSettle();
-
-    expect(find.text('Available Items'), findsOneWidget);
-    expect(find.text('Streak Freeze'), findsOneWidget);
-    expect(find.text('Weekly Points Boost'), findsOneWidget);
-
-    await tester.tap(find.text('Buy').first);
-    await tester.pumpAndSettle();
-    expect(find.textContaining('Buy '), findsOneWidget);
-  });
-
   testWidgets('Splash page renders brand and spinner', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: SplashPage()));
     expect(find.text('Attendr'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-  });
-
-  testWidgets('User profile page shows loading skeleton initially', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      const MaterialApp(
-        home: UserProfilePage(userId: 'u-1', username: 'UserOne'),
-      ),
-    );
-
-    expect(find.byType(ProfileSkeleton), findsOneWidget);
   });
 }

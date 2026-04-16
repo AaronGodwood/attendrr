@@ -4,19 +4,15 @@ import 'package:provider/provider.dart';
 import 'package:attendr/pages/profile_page.dart';
 import 'package:attendr/providers/profile_provider.dart';
 import 'package:attendr/models/user.dart' as app_models;
-import 'package:attendr/models/points.dart';
 import 'package:attendr/models/streak.dart';
 import 'package:attendr/models/attendance.dart';
 import 'package:attendr/models/streak_evaluation.dart';
 
 class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
-  MockProfileProvider({required this.user, required this.points});
+  MockProfileProvider({required this.user});
 
   @override
   app_models.User? user;
-
-  @override
-  Points? points;
 
   @override
   Streak? streak;
@@ -40,16 +36,10 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   String? get error => null;
 
   @override
-  String? get milestoneRewardMessage => null;
-
-  @override
   Future<void> loadProfile() async {}
 
   @override
   void clearEvaluation() {}
-
-  @override
-  void clearMilestoneRewardMessage() {}
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -58,7 +48,7 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('WT-08 Profile shows coin balance', (tester) async {
+  testWidgets('WT-08 Profile shows username', (tester) async {
     final now = DateTime(2025, 1, 1);
     final user = app_models.User(
       id: 'user-1',
@@ -67,27 +57,16 @@ void main() {
       createdAt: now,
       updatedAt: now,
     );
-    final points = Points(
-      id: 'points-1',
-      userId: 'user-1',
-      totalPoints: 120,
-      weeklyPoints: 30,
-      monthlyPoints: 60,
-      weeklyBoostMultiplier: 1.0,
-      weeklyBoostExpiresAt: null,
-      createdAt: now,
-      updatedAt: now,
-    );
 
     await tester.pumpWidget(
       ChangeNotifierProvider<ProfileProvider>.value(
-        value: MockProfileProvider(user: user, points: points),
+        value: MockProfileProvider(user: user),
         child: const MaterialApp(home: ProfilePage()),
       ),
     );
 
     await tester.pumpAndSettle();
 
-    expect(find.text('120 coins'), findsOneWidget);
+    expect(find.text('tester'), findsOneWidget);
   });
 }

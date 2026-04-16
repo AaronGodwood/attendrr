@@ -27,28 +27,15 @@ class UserRepository extends BaseRepository {
     return Streak.fromJson(response);
   }
 
-  Future<Points> getCurrentPoints() async {
-    requireAuth();
-    final response =
-        await client
-            .from('points')
-            .select()
-            .eq('user_id', currentUserId!)
-            .single();
-    return Points.fromJson(response);
-  }
-
-  Future<({User user, Streak streak, Points points})> getFullProfile() async {
+  Future<({User user, Streak streak})> getFullProfile() async {
     requireAuth();
     final results = await Future.wait([
       getCurrentUser(),
       getCurrentStreak(),
-      getCurrentPoints(),
     ]);
     return (
       user: results[0] as User,
       streak: results[1] as Streak,
-      points: results[2] as Points,
     );
   }
 
@@ -112,22 +99,5 @@ class UserRepository extends BaseRepository {
       params: {'p_user_id': currentUserId!},
     );
     return StreakEvaluation.fromJson(result as Map<String, dynamic>);
-  }
-
-  Future<Points> getUserPoints(String userId) async {
-    requireAuth();
-    final response =
-        await client
-            .from('points')
-            .select()
-            .eq('user_id', userId)
-            .maybeSingle();
-
-    // If no points record exists, return default points
-    if (response == null) {
-      return Points.empty(userId);
-    }
-
-    return Points.fromJson(response);
   }
 }

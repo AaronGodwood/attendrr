@@ -1,7 +1,7 @@
-name: Deploy Flutter Web to GitHub Pages
+name: Deploy AB Test (Core Attendance) to GitHub Pages
 on:
   push:
-    branches: [main]
+    branches: [copilot/ab-test-core-attendance-timetable]
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -18,22 +18,11 @@ jobs:
         run: |
           echo "SUPABASE_URL=${{ secrets.SUPABASE_URL }}" > .env
           echo "SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}" >> .env
-      - name: Verify .env exists
-        run: |
-          echo "Root .env:"
-          cat .env
-          echo "---"
-          echo "pubspec assets section:"
-          grep -A 5 "assets:" pubspec.yaml
-      - name: Build
-        run: flutter build web --release --base-href "/attendrr/"
-      - name: Verify .env in build output
-        run: |
-          echo "Checking build output for .env:"
-          find ./build/web -name "*.env" -o -name "assets*" | head -20
-          ls -la ./build/web/assets/ || true
+      - name: Build AB test variant
+        run: flutter build web --release --base-href "/attendrr/ab-test/"
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./build/web
+          destination_dir: ab-test
           keep_files: true

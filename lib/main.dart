@@ -8,8 +8,6 @@ import 'providers/auth_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/timetable_provider.dart';
 import 'providers/checkin_provider.dart';
-import 'providers/friends_provider.dart';
-import 'providers/shop_provider.dart';
 import 'providers/theme_provider.dart';
 import 'router/app_router.dart';
 import 'theme/app_theme.dart';
@@ -55,8 +53,6 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => ProfileProvider()),
         ChangeNotifierProvider(create: (_) => TimetableProvider()),
         ChangeNotifierProvider(create: (_) => CheckInProvider()),
-        ChangeNotifierProvider(create: (_) => FriendsProvider()),
-        ChangeNotifierProvider(create: (_) => ShopProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
       ],
       child: Consumer2<AuthProvider, ThemeProvider>(

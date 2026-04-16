@@ -7,11 +7,9 @@ import 'package:attendr/providers/auth_provider.dart';
 import 'package:attendr/providers/profile_provider.dart';
 import 'package:attendr/providers/timetable_provider.dart';
 import 'package:attendr/providers/checkin_provider.dart';
-import 'package:attendr/providers/friends_provider.dart';
 import 'package:attendr/router/app_router.dart';
 import 'package:attendr/pages/timetable_page.dart';
 import 'package:attendr/pages/checkin_page.dart';
-import 'package:attendr/pages/friends_page.dart';
 import 'package:attendr/pages/profile_page.dart';
 
 // --- MOCK PROVIDERS ---
@@ -59,8 +57,6 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   @override
   String? get error => null;
   @override
-  String? get milestoneRewardMessage => null;
-  @override
   app_models.User? get user => app_models.User(
     id: 'test-user',
     email: 'test@test.com',
@@ -71,8 +67,6 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   @override
   app_models.Streak? get streak => null;
   @override
-  app_models.Points? get points => null;
-  @override
   app_models.AttendanceStats? get stats => null;
   @override
   List<app_models.DailyAttendance>? get history => [];
@@ -82,8 +76,6 @@ class MockProfileProvider extends ChangeNotifier implements ProfileProvider {
   Future<void> loadProfile() async {}
   @override
   void clearEvaluation() {}
-  @override
-  void clearMilestoneRewardMessage() {}
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -113,33 +105,10 @@ class MockCheckInProvider extends ChangeNotifier implements CheckInProvider {
   dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
 }
 
-class MockFriendsProvider extends ChangeNotifier implements FriendsProvider {
-  @override
-  bool get isLoading => false;
-  @override
-  String? get error => null;
-  @override
-  List<app_models.FriendWithStats> get friends => [];
-  @override
-  List<app_models.FriendRequest> get requests => [];
-  @override
-  List<app_models.LeaderboardEntry> get leaderboard => [];
-  @override
-  bool get showGlobal => true;
-  @override
-  Future<void> loadFriends() async {}
-  @override
-  Future<void> loadLeaderboard() async {}
-  @override
-  dynamic noSuchMethod(Invocation i) => super.noSuchMethod(i);
-}
-
 // --- TEST MAIN ---
 
 void main() {
-  testWidgets('Navigation Structure Test (Goal 2)', (
-    WidgetTester tester,
-  ) async {
+  testWidgets('Navigation Structure Test', (WidgetTester tester) async {
     final mockAuth = MockAuthProvider();
 
     final router = AppRouter.router(mockAuth);
@@ -155,9 +124,6 @@ void main() {
           ),
           ChangeNotifierProvider<CheckInProvider>.value(
             value: MockCheckInProvider(),
-          ),
-          ChangeNotifierProvider<FriendsProvider>.value(
-            value: MockFriendsProvider(),
           ),
         ],
         child: MaterialApp.router(routerConfig: router),
@@ -175,10 +141,6 @@ void main() {
     router.go('/checkin');
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.byType(CheckInPage, skipOffstage: false), findsOneWidget);
-
-    router.go('/friends');
-    await tester.pump(const Duration(milliseconds: 500));
-    expect(find.byType(FriendsPage, skipOffstage: false), findsOneWidget);
 
     router.go('/profile');
     await tester.pump(const Duration(milliseconds: 500));

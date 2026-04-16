@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:attendr/models/models.dart';
-import 'package:attendr/widgets/friends/friend_card.dart';
-import 'package:attendr/widgets/friends/friend_request_card.dart';
 import 'package:attendr/widgets/profile/streak_card.dart';
 import 'package:attendr/widgets/profile/attendance_chart.dart';
 import 'package:attendr/widgets/profile/attendance_ring_card.dart';
@@ -13,7 +11,6 @@ import 'package:attendr/widgets/checkin/checkin_skeleton.dart';
 import 'package:attendr/widgets/timetable/timetable_skeleton.dart';
 import 'package:provider/provider.dart';
 import 'package:attendr/providers/timetable_provider.dart';
-import 'package:attendr/repositories/timetable_repository.dart';
 
 class MockTimetableProvider extends ChangeNotifier
     implements TimetableProvider {
@@ -55,57 +52,6 @@ class MockTimetableProvider extends ChangeNotifier
 }
 
 void main() {
-  testWidgets('Friend card renders stats', (tester) async {
-    const friend = FriendWithStats(
-      id: 'u1',
-      username: 'Alice',
-      avatarUrl: null,
-      currentStreak: 4,
-      totalPoints: 120,
-      friendshipId: 'f1',
-    );
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(body: FriendCard(friend: friend, onRemove: () {})),
-      ),
-    );
-
-    expect(find.text('Alice'), findsOneWidget);
-    expect(find.textContaining('120'), findsOneWidget);
-  });
-
-  testWidgets('Friend request card buttons call callbacks', (tester) async {
-    var accepted = false;
-    var rejected = false;
-
-    final request = FriendRequest.fromJson({
-      'id': 'r1',
-      'user_id': 'u2',
-      'created_at':
-          DateTime.now().subtract(const Duration(minutes: 5)).toIso8601String(),
-      'profiles': {'id': 'u2', 'username': 'Bob', 'avatar_url': null},
-    });
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: FriendRequestCard(
-            request: request,
-            onAccept: () => accepted = true,
-            onReject: () => rejected = true,
-          ),
-        ),
-      ),
-    );
-
-    await tester.tap(find.byIcon(Icons.check_circle));
-    await tester.tap(find.byIcon(Icons.cancel));
-
-    expect(accepted, isTrue);
-    expect(rejected, isTrue);
-  });
-
   testWidgets('Profile widgets render with sample data', (tester) async {
     final now = DateTime.now();
     final streak = Streak(
