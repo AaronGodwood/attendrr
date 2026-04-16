@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import '../providers/checkin_provider.dart';
 import '../models/lecture.dart';
 import '../widgets/checkin/checkin_skeleton.dart';
-import '../widgets/common/grain_overlay.dart';
 import '../theme/colors.dart';
 import '../theme/theme_extensions.dart';
 import '../utils/checkin_refresh.dart';
@@ -72,9 +71,7 @@ class _CheckInPageState extends State<CheckInPage>
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          Consumer<CheckInProvider>(
+      body: Consumer<CheckInProvider>(
             builder: (context, provider, _) {
               switch (provider.state) {
                 case CheckInState.loading:
@@ -108,9 +105,6 @@ class _CheckInPageState extends State<CheckInPage>
               }
             },
           ),
-          const GrainOverlay(),
-        ],
-      ),
     );
   }
 

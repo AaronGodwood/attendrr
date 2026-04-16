@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import '../providers/profile_provider.dart';
 import '../theme/theme_extensions.dart';
-import '../widgets/common/grain_overlay.dart';
 import '../widgets/profile/raw_stats_card.dart';
 import '../widgets/profile/attendance_chart.dart';
 import '../widgets/profile/profile_skeleton.dart';
@@ -60,9 +59,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          Consumer<ProfileProvider>(
+      body: Consumer<ProfileProvider>(
             builder: (context, provider, _) {
               if (provider.isLoading) {
                 return const ProfileSkeleton();
@@ -129,9 +126,6 @@ class _ProfilePageState extends State<ProfilePage> {
               );
             },
           ),
-          const GrainOverlay(),
-        ],
-      ),
     );
   }
 

@@ -1,53 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Terra Scholar typography — Fraunces for display/headings, DM Sans for body/UI.
+/// Version A typography — DM Sans throughout for a plain, functional appearance.
 class TerraTypography {
   static TextTheme textTheme(Color textPrimary, Color textSecondary) {
     return TextTheme(
-      // ─── Display (Fraunces) ─────────────────────────────────
-      displayLarge: GoogleFonts.fraunces(
+      // ─── Display ────────────────────────────────────────────
+      displayLarge: GoogleFonts.dmSans(
         fontSize: 36,
-        fontWeight: FontWeight.w800,
+        fontWeight: FontWeight.w700,
         color: textPrimary,
         height: 1.2,
         letterSpacing: -0.5,
       ),
-      displayMedium: GoogleFonts.fraunces(
+      displayMedium: GoogleFonts.dmSans(
         fontSize: 32,
-        fontWeight: FontWeight.w800,
+        fontWeight: FontWeight.w700,
         color: textPrimary,
         height: 1.2,
         letterSpacing: -0.5,
       ),
-      displaySmall: GoogleFonts.fraunces(
+      displaySmall: GoogleFonts.dmSans(
         fontSize: 28,
-        fontWeight: FontWeight.w700,
-        color: textPrimary,
-        height: 1.2,
-      ),
-
-      // ─── Headlines (Fraunces) ───────────────────────────────
-      headlineLarge: GoogleFonts.fraunces(
-        fontSize: 24,
-        fontWeight: FontWeight.w700,
-        color: textPrimary,
-        height: 1.2,
-      ),
-      headlineMedium: GoogleFonts.fraunces(
-        fontSize: 20,
-        fontWeight: FontWeight.w700,
-        color: textPrimary,
-        height: 1.2,
-      ),
-      headlineSmall: GoogleFonts.fraunces(
-        fontSize: 18,
         fontWeight: FontWeight.w600,
         color: textPrimary,
         height: 1.2,
       ),
 
-      // ─── Titles (DM Sans, except titleLarge which is Fraunces boundary) ──
+      // ─── Headlines ──────────────────────────────────────────
+      headlineLarge: GoogleFonts.dmSans(
+        fontSize: 24,
+        fontWeight: FontWeight.w700,
+        color: textPrimary,
+        height: 1.2,
+      ),
+      headlineMedium: GoogleFonts.dmSans(
+        fontSize: 20,
+        fontWeight: FontWeight.w700,
+        color: textPrimary,
+        height: 1.2,
+      ),
+      headlineSmall: GoogleFonts.dmSans(
+        fontSize: 18,
+        fontWeight: FontWeight.w600,
+        color: textPrimary,
+        height: 1.2,
+      ),
       titleLarge: GoogleFonts.dmSans(
         fontSize: 18,
         fontWeight: FontWeight.w700,

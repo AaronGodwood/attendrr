@@ -44,7 +44,7 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.fraunces(
+        titleTextStyle: GoogleFonts.dmSans(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: TerraColors.darkTextPrimary,
@@ -166,7 +166,7 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: TerraColors.darkSurfaceVariant,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        titleTextStyle: GoogleFonts.fraunces(
+        titleTextStyle: GoogleFonts.dmSans(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: TerraColors.darkTextPrimary,
@@ -262,7 +262,7 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.fraunces(
+        titleTextStyle: GoogleFonts.dmSans(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: TerraColors.lightTextPrimary,
@@ -384,7 +384,7 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: TerraColors.lightSurface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        titleTextStyle: GoogleFonts.fraunces(
+        titleTextStyle: GoogleFonts.dmSans(
           fontSize: 20,
           fontWeight: FontWeight.w700,
           color: TerraColors.lightTextPrimary,

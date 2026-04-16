@@ -1,102 +1,102 @@
 import 'package:flutter/material.dart';
 
-/// Terra Scholar color system — warm earth tones for both dark and light themes.
+/// Version A color system — plain blue-grey palette for both dark and light themes.
 abstract class TerraColors {
   // ─── Dark Theme ───────────────────────────────────────────────
-  static const darkBackground = Color(0xFF1A1714);
-  static const darkSurface = Color(0xFF252118);
-  static const darkSurfaceVariant = Color(0xFF302A22);
-  static const darkSurfaceTint = Color(0xFF3A322A);
+  static const darkBackground = Color(0xFF121212);
+  static const darkSurface = Color(0xFF1E1E1E);
+  static const darkSurfaceVariant = Color(0xFF2A2A2A);
+  static const darkSurfaceTint = Color(0xFF333333);
 
-  static const darkPrimary = Color(0xFFC67B4E);
-  static const darkPrimaryLight = Color(0xFFE8A87C);
-  static const darkPrimaryContainer = Color(0xFF3D2A1E);
+  static const darkPrimary = Color(0xFF5B8CDE);
+  static const darkPrimaryLight = Color(0xFF7BA6E8);
+  static const darkPrimaryContainer = Color(0xFF1A2A3D);
 
-  static const darkSecondary = Color(0xFF7A9A6D);
-  static const darkSecondaryLight = Color(0xFFA3C496);
-  static const darkSecondaryContainer = Color(0xFF1E2E1A);
+  static const darkSecondary = Color(0xFF7EA8C7);
+  static const darkSecondaryLight = Color(0xFF9BBDD6);
+  static const darkSecondaryContainer = Color(0xFF1A2A35);
 
-  static const darkAccent = Color(0xFFE8D5B7);
-  static const darkAccentMuted = Color(0xFFB8A898);
+  static const darkAccent = Color(0xFFB8BEC8);
+  static const darkAccentMuted = Color(0xFF8890A0);
 
-  static const darkTextPrimary = Color(0xFFF2EAE0);
-  static const darkTextSecondary = Color(0xFF9B8E80);
-  static const darkTextDisabled = Color(0xFF5C544B);
+  static const darkTextPrimary = Color(0xFFE8E8E8);
+  static const darkTextSecondary = Color(0xFF9098A8);
+  static const darkTextDisabled = Color(0xFF505868);
 
-  static const darkDanger = Color(0xFFC45C4A);
-  static const darkDangerContainer = Color(0xFF3A1F1A);
+  static const darkDanger = Color(0xFFE05555);
+  static const darkDangerContainer = Color(0xFF2A1515);
 
-  static const darkWarning = Color(0xFFD4A24E);
-  static const darkWarningContainer = Color(0xFF3A2E1A);
+  static const darkWarning = Color(0xFFE09840);
+  static const darkWarningContainer = Color(0xFF2A2010);
 
-  static const darkOutline = Color(0xFF3D362E);
-  static const darkOutlineVariant = Color(0xFF4A4238);
+  static const darkOutline = Color(0xFF383838);
+  static const darkOutlineVariant = Color(0xFF454545);
 
   // ─── Light Theme ──────────────────────────────────────────────
-  static const lightBackground = Color(0xFFFAF6F1);
+  static const lightBackground = Color(0xFFF5F5F5);
   static const lightSurface = Color(0xFFFFFFFF);
-  static const lightSurfaceVariant = Color(0xFFF0EAE2);
-  static const lightSurfaceTint = Color(0xFFE8E0D6);
+  static const lightSurfaceVariant = Color(0xFFEEEEEE);
+  static const lightSurfaceTint = Color(0xFFE5E5E5);
 
-  static const lightPrimary = Color(0xFFB5693E);
-  static const lightPrimaryLight = Color(0xFFC67B4E);
-  static const lightPrimaryContainer = Color(0xFFFCEADD);
+  static const lightPrimary = Color(0xFF2D6BE4);
+  static const lightPrimaryLight = Color(0xFF5B8CDE);
+  static const lightPrimaryContainer = Color(0xFFE8F0FD);
 
-  static const lightSecondary = Color(0xFF5E8352);
-  static const lightSecondaryLight = Color(0xFF7A9A6D);
-  static const lightSecondaryContainer = Color(0xFFE6F0E2);
+  static const lightSecondary = Color(0xFF3A82B5);
+  static const lightSecondaryLight = Color(0xFF5B9ED6);
+  static const lightSecondaryContainer = Color(0xFFE0EEF8);
 
-  static const lightAccent = Color(0xFF8B7355);
-  static const lightAccentMuted = Color(0xFFA09080);
+  static const lightAccent = Color(0xFF6878A0);
+  static const lightAccentMuted = Color(0xFF8890A8);
 
-  static const lightTextPrimary = Color(0xFF1A1714);
-  static const lightTextSecondary = Color(0xFF6B5F53);
-  static const lightTextDisabled = Color(0xFFB0A89E);
+  static const lightTextPrimary = Color(0xFF1A1A1A);
+  static const lightTextSecondary = Color(0xFF606878);
+  static const lightTextDisabled = Color(0xFFB0B8C8);
 
-  static const lightDanger = Color(0xFFB84A38);
-  static const lightDangerContainer = Color(0xFFFCEAE6);
+  static const lightDanger = Color(0xFFD03030);
+  static const lightDangerContainer = Color(0xFFFCEAEA);
 
-  static const lightWarning = Color(0xFFB8862A);
-  static const lightWarningContainer = Color(0xFFFFF3DC);
+  static const lightWarning = Color(0xFFB87820);
+  static const lightWarningContainer = Color(0xFFFFF5DC);
 
-  static const lightOutline = Color(0xFFDDD5CB);
-  static const lightOutlineVariant = Color(0xFFC8BEB2);
+  static const lightOutline = Color(0xFFDDDDDD);
+  static const lightOutlineVariant = Color(0xFFCCCCCC);
 
   // ─── Tier Colors ──────────────────────────────────────────────
-  static const tierNewcomer = Color(0xFF9B8E80);
-  static const tierBeginner = Color(0xFF7A9A6D);
+  static const tierNewcomer = Color(0xFF9098A8);
+  static const tierBeginner = Color(0xFF7EA8C7);
   static const tierIntermediate = Color(0xFF7B8EAA);
-  static const tierExpert = Color(0xFFAA7EA8);
-  static const tierMaster = Color(0xFFC4956A);
-  static const tierLegendary = Color(0xFFD4A24E);
+  static const tierExpert = Color(0xFF8890A0);
+  static const tierMaster = Color(0xFF5B8CDE);
+  static const tierLegendary = Color(0xFF7BA6E8);
 
   // ─── Medal Colors ─────────────────────────────────────────────
-  static const medalGold = Color(0xFFE8D5B7);
-  static const medalSilver = Color(0xFFB8A898);
-  static const medalBronze = Color(0xFFC67B4E);
+  static const medalGold = Color(0xFFB8BEC8);
+  static const medalSilver = Color(0xFF8890A0);
+  static const medalBronze = Color(0xFF5B8CDE);
 
   // ─── Module Palette ───────────────────────────────────────────
   static const moduleColors = <Color>[
-    Color(0xFFC67B4E), // Terracotta
-    Color(0xFF7A9A6D), // Sage
-    Color(0xFF7B8EAA), // Dusty blue
-    Color(0xFFAA7EA8), // Muted plum
-    Color(0xFFC4956A), // Warm tan
-    Color(0xFF6B9B9B), // Teal sage
-    Color(0xFFB8845E), // Copper
-    Color(0xFF8B9A6D), // Olive sage
+    Color(0xFF5B8CDE), // Blue
+    Color(0xFF7EA8C7), // Sky blue
+    Color(0xFF6878A0), // Slate blue
+    Color(0xFF8890A8), // Grey blue
+    Color(0xFF5B9E9E), // Teal
+    Color(0xFF7898B8), // Dusty blue
+    Color(0xFF8878A8), // Lavender
+    Color(0xFF6898B8), // Steel blue
   ];
 
   // ─── Gradient Color Pairs ─────────────────────────────────────
   // Dark mode
-  static const darkStreakGradientColors = [Color(0xFFC67B4E), Color(0xFFE8A87C), Color(0xFFF0C27F)];
-  static const darkPointsGradientColors = [Color(0xFF7A9A6D), Color(0xFFA3C496)];
-  static const darkTierGradientColors = [Color(0xFFE8D5B7), Color(0xFFC67B4E)];
-  static const darkCheckinSuccessColors = [Color(0xFF7A9A6D), Color(0xFF5E8352)];
+  static const darkStreakGradientColors = [Color(0xFF5B8CDE), Color(0xFF7BA6E8), Color(0xFF9BBDD6)];
+  static const darkPointsGradientColors = [Color(0xFF7EA8C7), Color(0xFF9BBDD6)];
+  static const darkTierGradientColors = [Color(0xFFB8BEC8), Color(0xFF5B8CDE)];
+  static const darkCheckinSuccessColors = [Color(0xFF5B8CDE), Color(0xFF3A6BB8)];
 
   // Light mode
-  static const lightStreakGradientColors = [Color(0xFFB5693E), Color(0xFFC67B4E), Color(0xFFD4955E)];
-  static const lightPointsGradientColors = [Color(0xFF5E8352), Color(0xFF7A9A6D)];
-  static const lightTierGradientColors = [Color(0xFF8B7355), Color(0xFFB5693E)];
-  static const lightCheckinSuccessColors = [Color(0xFF5E8352), Color(0xFF3D6B30)];
+  static const lightStreakGradientColors = [Color(0xFF2D6BE4), Color(0xFF5B8CDE), Color(0xFF7BA6E8)];
+  static const lightPointsGradientColors = [Color(0xFF3A82B5), Color(0xFF5B9ED6)];
+  static const lightTierGradientColors = [Color(0xFF6878A0), Color(0xFF2D6BE4)];
+  static const lightCheckinSuccessColors = [Color(0xFF3A82B5), Color(0xFF1A5A8A)];
 }
