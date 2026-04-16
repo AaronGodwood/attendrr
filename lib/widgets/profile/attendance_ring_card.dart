@@ -73,17 +73,15 @@ class _AttendanceRing extends StatelessWidget {
     required this.total,
   });
 
-  Color _ringColor(TerraThemeExtension? ext) {
-    if (percent >= 80) return ext?.success ?? Colors.green;
-    if (percent >= 60) return ext?.warning ?? Colors.orange;
-    return ext?.danger ?? Colors.red;
+  Color _ringColor(BuildContext context, TerraThemeExtension? ext) {
+    return Theme.of(context).colorScheme.primary;
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final ext = theme.extension<TerraThemeExtension>();
-    final color = _ringColor(ext);
+    final color = _ringColor(context, ext);
 
     return Column(
       children: [

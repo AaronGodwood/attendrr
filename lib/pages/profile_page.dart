@@ -6,8 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../providers/profile_provider.dart';
 import '../theme/theme_extensions.dart';
 import '../widgets/common/grain_overlay.dart';
-import '../widgets/profile/streak_card.dart';
-import '../widgets/profile/attendance_ring_card.dart';
+import '../widgets/profile/raw_stats_card.dart';
 import '../widgets/profile/attendance_chart.dart';
 import '../widgets/profile/profile_skeleton.dart';
 
@@ -106,19 +105,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       _buildProfileHeader(context, provider, user),
                       const SizedBox(height: 20),
 
-                      // Streak
-                      if (streak != null)
-                        _animatedSection(
-                          index: 0,
-                          child: StreakCard(streak: streak),
-                        ),
-                      const SizedBox(height: 12),
-
-                      // Attendance Rings
+                      // Raw Stats (Version A: no leaderboard, no gamification)
                       if (stats != null)
                         _animatedSection(
-                          index: 1,
-                          child: AttendanceRingCard(stats: stats),
+                          index: 0,
+                          child: RawStatsCard(
+                            stats: stats,
+                            streak: streak,
+                          ),
                         ),
                       const SizedBox(height: 12),
 
@@ -126,7 +120,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (provider.history != null &&
                           provider.history!.isNotEmpty)
                         _animatedSection(
-                          index: 2,
+                          index: 1,
                           child: AttendanceChart(data: provider.history!),
                         ),
                     ],

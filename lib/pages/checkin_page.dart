@@ -4,7 +4,6 @@ import '../providers/checkin_provider.dart';
 import '../models/lecture.dart';
 import '../widgets/checkin/checkin_skeleton.dart';
 import '../widgets/common/grain_overlay.dart';
-import '../widgets/common/gradient_text.dart';
 import '../theme/colors.dart';
 import '../theme/theme_extensions.dart';
 import '../utils/checkin_refresh.dart';
@@ -286,9 +285,7 @@ class _CheckInPageState extends State<CheckInPage>
                     ),
                   ),
                   child: Text(
-                    canCheckIn
-                        ? 'Check In (${provider.projectedPoints} pts)'
-                        : 'Check In',
+                    'Check In',
                     style: theme.textTheme.titleMedium?.copyWith(
                       color:
                           canCheckIn
@@ -338,7 +335,6 @@ class _CheckInPageState extends State<CheckInPage>
     final ext = theme.extension<TerraThemeExtension>();
     final lecture = provider.currentLecture;
     final isLectureActive = lecture?.isActive ?? false;
-    final pointsEarned = provider.activeAttendance?.pointsEarned ?? 10;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -351,14 +347,6 @@ class _CheckInPageState extends State<CheckInPage>
             style: theme.textTheme.headlineMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
-          ),
-          const SizedBox(height: 8),
-          GradientText(
-            '+$pointsEarned points',
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-            gradient: ext?.pointsGradient,
           ),
           const SizedBox(height: 24),
 

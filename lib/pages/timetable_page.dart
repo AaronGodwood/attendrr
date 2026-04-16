@@ -529,13 +529,12 @@ class _TimetablePageState extends State<TimetablePage>
         TerraColors.moduleColors[lecture.moduleCode.hashCode.abs() %
             TerraColors.moduleColors.length];
 
-    // Status-dependent background tint
+    // Status-dependent background tint — Version A: neutral colours only
     final bgColor = switch (status) {
-      LectureStatus.attended => (ext?.success ??
-              themeData.colorScheme.secondary)
-          .withValues(alpha: 0.1),
-      LectureStatus.missed => (ext?.danger ?? themeData.colorScheme.error)
-          .withValues(alpha: 0.1),
+      LectureStatus.attended => themeData.colorScheme.primaryContainer
+          .withValues(alpha: 0.5),
+      LectureStatus.missed => themeData.colorScheme.surfaceContainerHighest
+          .withValues(alpha: 0.7),
       LectureStatus.inProgress => moduleColor.withValues(alpha: 0.15),
       LectureStatus.upcoming => moduleColor.withValues(alpha: 0.08),
     };
@@ -545,10 +544,10 @@ class _TimetablePageState extends State<TimetablePage>
         ext?.textSecondary ??
         themeData.colorScheme.onSurface.withValues(alpha: 0.6);
 
-    // Status icon colors
+    // Status icon colors — Version A: neutral (primary / onSurface only)
     final statusIconColor = switch (status) {
-      LectureStatus.attended => ext?.success,
-      LectureStatus.missed => ext?.danger,
+      LectureStatus.attended => themeData.colorScheme.primary,
+      LectureStatus.missed => themeData.colorScheme.onSurface.withValues(alpha: 0.4),
       _ => null,
     };
 
@@ -688,7 +687,6 @@ class _TimetablePageState extends State<TimetablePage>
     LectureWithAttendance lectureWithAttendance,
   ) {
     final status = lectureWithAttendance.status;
-    final points = lectureWithAttendance.pointsEarned;
     final isWide = MediaQuery.of(context).size.width >= 700;
 
     final theme = Theme.of(context);
@@ -762,32 +760,12 @@ class _TimetablePageState extends State<TimetablePage>
                   ? Icons.play_circle
                   : Icons.schedule,
               size: 16,
-              color:
-                  status == LectureStatus.attended
-                      ? ext?.success
-                      : status == LectureStatus.missed
-                      ? ext?.danger
-                      : theme.colorScheme.primary,
+              color: theme.colorScheme.primary,
             ),
             const SizedBox(width: 6),
             Text('Status: ${status.name}', style: theme.textTheme.bodyMedium),
           ],
         ),
-        if (points != null) ...[
-          const SizedBox(height: 6),
-          Row(
-            children: [
-              Icon(Icons.star, size: 16, color: ext?.warning),
-              const SizedBox(width: 6),
-              Text(
-                'Points: $points',
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-        ],
       ],
     );
 
